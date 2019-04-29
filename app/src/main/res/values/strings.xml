@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">LocTrackCar</string>
+    <string name="app_version">Версия приложения: 7.1.2</string>
+    <string name="type_map_title">Тип карты</string>
+    <string name="type_map_subtitle">Ночной режим</string>
+    <string name="other_title">О приложении</string>
+    <string name="search_place_hint">Пример: 55.041,82.93</string>
+    <string name="shortest_way">Кратчайший путь</string>
+
+    <string name="latitude_subtitle">Широта:</string>
+    <string name="longitude_subtitle">Долгота:</string>
+    <string name="search_place_request_start">По запросу</string>
+    <string name="search_place_request_end">ничего не найдено</string>
+    <string name="dialog_menu_title">Удалить</string>
+    <string name="dialog_menu_item_delete_polyline">Проложенный путь</string>
+    <string name="dialog_menu_item_delete_marker_car">Маркер</string>
+    <string name="no_address_name">Адрес недоступен</string>
+    <string name="no_internet_connection">Недоступно в офлайн-режиме</string>
+
+    <string name="support_title">Служба поддержки</string>
+    <string name="support_subtitle">
+        Обнаружили ошибку, желаете оставить отзыв с пожеланиями, пишите
+    </string>
+    <string name="support_mail">ifr0z.dev@gmail.com</string>
+    <string name="privacy_policy_title">Политика конфиденциальности</string>
+    <string name="privacy_policy_subtitle">
+        Внимательно изучите политику конфиденциальности
+    </string>
+    <string name="privacy_policy_url">https://ifr0z.github.io/LocTrackCar-Privacy-Policy/</string>
+    <string name="thanks">Спасибо за вашу поддержку</string>
+
+    <string name="notification_title">Напоминание</string>
+    <string name="notification_subtitle">Пора забрать машину</string>
+
+    <string name="description_title">Описание</string>
+    <string name="enter_description">Введите описание</string>
+</resources>

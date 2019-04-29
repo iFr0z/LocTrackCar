@@ -1,0 +1,89 @@
+apply plugin: 'com.android.application'
+apply plugin: 'com.google.gms.google-services'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
+
+android {
+    compileSdkVersion compileSdkProjectVersion
+
+    defaultConfig {
+        applicationId "tk.ifroz.LocTrackCar"
+        minSdkVersion minSdkProjectVersion
+        targetSdkVersion compileSdkProjectVersion
+        versionCode 71
+        versionName "7.1.2"
+    }
+
+    bundle {
+        density.enableSplit = true
+        abi.enableSplit = true
+        language.enableSplit = false
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'),
+                    'proguard-rules.pro'
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+
+    //  Kotlin
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:' + rootProject.kotlinVersion
+    implementation 'org.jetbrains.kotlin:kotlin-reflect:' + rootProject.kotlinVersion
+
+    //  Coroutines
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:' + rootProject.сoroutinesVersion
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:' +
+            rootProject.сoroutinesVersion
+
+    //  Anko
+    implementation 'org.jetbrains.anko:anko-commons:' + rootProject.ankoVersion
+
+    //  AndroidX
+    implementation 'com.google.android.material:material:' + rootProject.materialVersion
+    implementation 'androidx.appcompat:appcompat:' + rootProject.appCompatVersion
+    implementation 'androidx.room:room-runtime:' + rootProject.roomVersion
+    kapt 'androidx.room:room-compiler:' + rootProject.roomVersion
+    implementation 'androidx.lifecycle:lifecycle-extensions:' + rootProject.lifeCycleVersion
+    kapt 'androidx.lifecycle:lifecycle-compiler:' + rootProject.lifeCycleVersion
+
+    //  Retrofit
+    implementation 'com.squareup.retrofit2:retrofit:' + rootProject.retrofitVersion
+    implementation 'com.squareup.retrofit2:converter-moshi:' + rootProject.retrofitVersion
+    implementation 'com.squareup.okhttp3:okhttp:' + rootProject.okHttpVersion
+    implementation 'com.squareup.okio:okio:' + rootProject.okioVersion
+    implementation 'com.squareup.moshi:moshi-kotlin:' + rootProject.moshiVersion
+    kapt 'com.squareup.moshi:moshi-kotlin-codegen:' + rootProject.moshiVersion
+    implementation 'com.jakewharton.retrofit:retrofit2-kotlin-coroutines-adapter:' +
+            rootProject.retrofitCoroutinesVersion
+
+    //  Firebase
+    implementation 'com.google.firebase:firebase-core:' + rootProject.firebaseVersion
+
+    //  Yandex mapkit
+    implementation 'com.yandex.android:mapkit:' + rootProject.yandexMapKitVersion
+    implementation 'com.yandex.android:places:' + rootProject.yandexMapKitVersion
+    implementation 'com.yandex.android:transport:' + rootProject.yandexMapKitVersion
+
+    //  Play services
+    implementation 'com.google.android.gms:play-services-location:' +
+            rootProject.playServicesVersion
+
+    //  Map scale
+    implementation 'com.github.pengrad:mapscaleview:' + rootProject.mapScaleVersion
+
+    //  Sliding activity
+    implementation 'com.klinkerapps:sliding-activity:' + rootProject.slidingVersion
+}

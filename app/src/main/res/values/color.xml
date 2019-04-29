@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorStatusBar">#80000000</color>
+    <color name="colorDividerNavigationBar">#D8D8D8</color>
+
+    <color name="colorPrimaryDark">#000000</color>
+    <color name="colorPrimary">#212121</color>
+    <color name="colorAccent">#000000</color>
+
+    <color name="colorGreyRipple">#999999</color>
+    <color name="colorGrey">#717171</color>
+
+    <color name="colorAppTheme">#484848</color>
+    <color name="colorTransparent">#00000000</color>
+    <color name="colorNull">#fafafa</color>
+
+    <color name="colorAccuracyCircle">#4Dc21460</color>
+    <color name="colorWayOutline">#8a0f44</color>
+    <color name="colorDot">#c21460</color>
+</resources>

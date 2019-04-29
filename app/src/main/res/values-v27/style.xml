@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="AppTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
+
+        <item name="android:navigationBarColor">@color/colorNull</item>
+        <item name="android:windowLightNavigationBar">true</item>
+        <item name="android:navigationBarDividerColor">@color/colorDividerNavigationBar</item>
+    </style>
+
+    <style name="SlidingTheme" parent="@style/Theme.Sliding.Light">
+        <item name="colorAccent">@color/colorAccent</item>
+
+        <item name="android:navigationBarColor">@color/colorNull</item>
+        <item name="android:windowLightNavigationBar">true</item>
+        <item name="android:navigationBarDividerColor">@color/colorDividerNavigationBar</item>
+    </style>
+</resources>
