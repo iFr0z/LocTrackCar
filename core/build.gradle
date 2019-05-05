@@ -1,30 +1,20 @@
-apply plugin: 'com.android.application'
-apply plugin: 'com.google.gms.google-services'
+apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-kapt'
 
 android {
     compileSdkVersion rootProject.compileSdkVersion
 
     defaultConfig {
-        applicationId "tk.ifroz.LocTrackCar"
         minSdkVersion rootProject.minSdkVersion
         targetSdkVersion rootProject.compileSdkVersion
         versionCode rootProject.codeVersion
         versionName rootProject.nameVersion
     }
 
-    bundle {
-        density.enableSplit = true
-        abi.enableSplit = true
-        language.enableSplit = false
-    }
-
     buildTypes {
         release {
             minifyEnabled true
-            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'),
                     'proguard-rules.pro'
         }
@@ -37,8 +27,7 @@ android {
 }
 
 dependencies {
-    implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation project(':core')
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
 
     rootProject.kotlinDependencies.each { name, dependency ->
         add("implementation", dependency)
@@ -48,27 +37,7 @@ dependencies {
         add("implementation", dependency)
     }
 
-    rootProject.androidxKaptDependencies.each { name, dependency ->
-        add("kapt", dependency)
-    }
-
     rootProject.RetrofitDependencies.each { name, dependency ->
-        add("implementation", dependency)
-    }
-
-    rootProject.RetrofitKaptDependencies.each { name, dependency ->
-        add("kapt", dependency)
-    }
-
-    rootProject.googleDependencies.each { name, dependency ->
-        add("implementation", dependency)
-    }
-
-    rootProject.yandexMapKitDependencies.each { name, dependency ->
-        add("implementation", dependency)
-    }
-
-    rootProject.otherDependencies.each { name, dependency ->
         add("implementation", dependency)
     }
 }

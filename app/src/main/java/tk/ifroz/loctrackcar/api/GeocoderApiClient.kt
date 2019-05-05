@@ -6,12 +6,12 @@ import retrofit2.converter.moshi.MoshiConverterFactory.create
 
 object GeocoderApiClient {
 
-    private const val baseUrl = "https://geocode-maps.yandex.ru/"
+    private const val baseUrl = "https://geocode-maps.yandex.ru/1.x/"
 
-    fun getClient(): GeocoderApiInterface {
+    fun getClient(): GeocoderApi {
         return Builder().baseUrl(baseUrl)
             .addConverterFactory(create())
             .addCallAdapterFactory(CoroutineCallAdapterFactory()).build()
-            .create(GeocoderApiInterface::class.java)
+            .create(GeocoderApi::class.java)
     }
 }

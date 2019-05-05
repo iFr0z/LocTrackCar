@@ -1,4 +1,4 @@
-package tk.ifroz.loctrackcar.ui.custom
+package ru.ifr0z.core.custom
 
 import android.content.Context
 import android.os.Build.VERSION.SDK_INT

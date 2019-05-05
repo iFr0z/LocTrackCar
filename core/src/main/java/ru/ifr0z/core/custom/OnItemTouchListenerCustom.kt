@@ -1,4 +1,4 @@
-package tk.ifroz.loctrackcar.ui.adapter
+package ru.ifr0z.core.custom
 
 import android.content.Context
 import android.view.GestureDetector
@@ -6,9 +6,9 @@ import android.view.GestureDetector.SimpleOnGestureListener
 import android.view.MotionEvent
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.OnItemTouchListener
-import tk.ifroz.loctrackcar.ui.interfaces.ClickListener
+import ru.ifr0z.core.interfaces.ClickListener
 
-class RecyclerTouchListener(
+class OnItemTouchListenerCustom(
     context: Context, recyclerView: RecyclerView, private val clickListener: ClickListener?
 ) : OnItemTouchListener {
 

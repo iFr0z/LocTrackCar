@@ -1,7 +1,9 @@
 buildscript {
     ext {
-        compileSdkProjectVersion = 28
-        minSdkProjectVersion = 21
+        compileSdkVersion = 28
+        minSdkVersion = 21
+        codeVersion = 71
+        nameVersion = '7.1.2'
 
         kotlinVersion = '1.3.31'
         сoroutinesVersion = '1.1.1'
@@ -23,6 +25,60 @@ buildscript {
         playServicesVersion = '16.0.0'
         mapScaleVersion = '1.4.2'
         slidingVersion = '1.5.2'
+
+        kotlinDependencies = [
+                kotlin: 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:' + rootProject.kotlinVersion,
+                kotlinReflect: 'org.jetbrains.kotlin:kotlin-reflect:' + rootProject.kotlinVersion,
+                сoroutinesCore: 'org.jetbrains.kotlinx:kotlinx-coroutines-core:'
+                        + rootProject.сoroutinesVersion,
+                сoroutinesAndroid: 'org.jetbrains.kotlinx:kotlinx-coroutines-android:'
+                        + rootProject.сoroutinesVersion,
+                ankoCommons: 'org.jetbrains.anko:anko-commons:' + rootProject.ankoVersion
+        ]
+
+        androidxDependencies = [
+                material: 'com.google.android.material:material:' + rootProject.materialVersion,
+                appCompat: 'androidx.appcompat:appcompat:' + rootProject.appCompatVersion,
+                roomRuntime: 'androidx.room:room-runtime:' + rootProject.roomVersion,
+                lifeCycleExtensions: 'androidx.lifecycle:lifecycle-extensions:'
+                        + rootProject.lifeCycleVersion
+        ]
+        androidxKaptDependencies = [
+                roomCompiler: 'androidx.room:room-compiler:' + rootProject.roomVersion,
+                lifeCycleCompiler: 'androidx.lifecycle:lifecycle-compiler:'
+                        + rootProject.lifeCycleVersion
+        ]
+
+        RetrofitDependencies = [
+                retrofit: 'com.squareup.retrofit2:retrofit:' + rootProject.retrofitVersion,
+                retrofitMoshi: 'com.squareup.retrofit2:converter-moshi:'
+                        + rootProject.retrofitVersion,
+                okHttp: 'com.squareup.okhttp3:okhttp:' + rootProject.okHttpVersion,
+                okio: 'com.squareup.okio:okio:' + rootProject.okioVersion,
+                moshi: 'com.squareup.moshi:moshi-kotlin:' + rootProject.moshiVersion,
+                retrofitCoroutines: 'com.jakewharton.retrofit:retrofit2-kotlin-coroutines-adapter:'
+                        + rootProject.retrofitCoroutinesVersion
+        ]
+        RetrofitKaptDependencies = [
+                moshiCodegen: 'com.squareup.moshi:moshi-kotlin-codegen:' + rootProject.moshiVersion
+        ]
+
+        googleDependencies = [
+                firebaseCore: 'com.google.firebase:firebase-core:' + rootProject.firebaseVersion,
+                playServicesLocation: 'com.google.android.gms:play-services-location:'
+                        + rootProject.playServicesVersion
+        ]
+
+        yandexMapKitDependencies = [
+                mapkit: 'com.yandex.android:mapkit:' + rootProject.yandexMapKitVersion,
+                places: 'com.yandex.android:places:' + rootProject.yandexMapKitVersion,
+                transport: 'com.yandex.android:transport:' + rootProject.yandexMapKitVersion
+        ]
+
+        otherDependencies = [
+                mapScale: 'com.github.pengrad:mapscaleview:' + rootProject.mapScaleVersion,
+                slidingActivity: 'com.klinkerapps:sliding-activity:' + rootProject.slidingVersion
+        ]
     }
 
     repositories {

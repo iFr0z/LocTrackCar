@@ -10,10 +10,10 @@ import androidx.recyclerview.widget.LinearLayoutManager.VERTICAL
 import kotlinx.android.synthetic.main.activity_about.*
 import org.jetbrains.anko.browse
 import org.jetbrains.anko.email
+import ru.ifr0z.core.extension.recyclerTouch
 import tk.ifroz.loctrackcar.R
 import tk.ifroz.loctrackcar.ui.adapter.Item
 import tk.ifroz.loctrackcar.ui.adapter.ItemAdapter
-import tk.ifroz.loctrackcar.ui.extension.recyclerTouch
 import java.util.*
 
 class AboutActivity : AppCompatActivity() {

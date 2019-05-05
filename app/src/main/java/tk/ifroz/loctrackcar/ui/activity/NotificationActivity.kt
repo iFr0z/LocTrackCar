@@ -16,9 +16,9 @@ import androidx.core.content.ContextCompat.getColor
 import androidx.lifecycle.ViewModelProviders.of
 import com.klinker.android.sliding.SlidingActivity
 import kotlinx.android.synthetic.main.activity_notification.*
+import ru.ifr0z.core.extension.vectorDrawableToBitmap
 import tk.ifroz.loctrackcar.R
 import tk.ifroz.loctrackcar.db.entity.Reminder
-import tk.ifroz.loctrackcar.ui.extension.vectorDrawableToBitmap
 import tk.ifroz.loctrackcar.viewmodel.MarkerCarViewModel
 import java.text.SimpleDateFormat
 import java.util.*

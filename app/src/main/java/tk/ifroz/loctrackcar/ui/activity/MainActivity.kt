@@ -54,20 +54,18 @@ import kotlinx.android.synthetic.main.bottom_sheet_row_distance.*
 import kotlinx.android.synthetic.main.bottom_sheet_row_location.*
 import kotlinx.android.synthetic.main.bottom_sheet_row_notification.*
 import kotlinx.android.synthetic.main.content_main.*
-import kotlinx.coroutines.*
 import org.jetbrains.anko.selector
 import org.jetbrains.anko.share
 import org.jetbrains.anko.startActivity
 import org.jetbrains.anko.toast
+import ru.ifr0z.core.extension.bottomSheetStateCallback
+import ru.ifr0z.core.extension.onTextChanges
+import ru.ifr0z.core.extension.vectorDrawableToBitmap
+import ru.ifr0z.core.livedata.InternetConnectionLiveData
 import tk.ifroz.loctrackcar.R
-import tk.ifroz.loctrackcar.api.GeocoderApiClient.getClient
 import tk.ifroz.loctrackcar.db.entity.Target
-import tk.ifroz.loctrackcar.ui.extension.bottomSheetStateCallback
-import tk.ifroz.loctrackcar.ui.extension.onTextChanges
-import tk.ifroz.loctrackcar.ui.extension.vectorDrawableToBitmap
-import tk.ifroz.loctrackcar.util.ConnectionUtils
+import tk.ifroz.loctrackcar.viewmodel.GeocoderViewModel
 import tk.ifroz.loctrackcar.viewmodel.MarkerCarViewModel
-import java.io.IOException
 
 class MainActivity : AppCompatActivity(), UserLocationObjectListener, CameraListener, RouteListener,
     SearchListener, OnNavigationItemSelectedListener {
@@ -96,6 +94,7 @@ class MainActivity : AppCompatActivity(), UserLocationObjectListener, CameraList
     private lateinit var markerCarPedestrianRouter: PedestrianRouter
 
     private lateinit var markerCarViewModel: MarkerCarViewModel
+    private lateinit var geocoderViewModel: GeocoderViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         MapKitFactory.setApiKey(mapKitApiKey)
@@ -222,11 +221,27 @@ class MainActivity : AppCompatActivity(), UserLocationObjectListener, CameraList
         val coordinates = "$subtitleLatitude $latitude\n$subtitleLongitude $longitude"
         lat_lng_tv.text = coordinates
 
-        ConnectionUtils(this).observe(this, Observer { isConnected ->
+        InternetConnectionLiveData(this).observe(this, Observer { isConnected ->
             isConnected?.let {
-                val geocode = "$longitude,$latitude"
                 when {
-                    !markerCarStreet -> getRetrofitResponse(geocode)
+                    !markerCarStreet -> {
+                        geocoderViewModel = of(this).get(GeocoderViewModel::class.java)
+                        val geocode = "$longitude,$latitude"
+                        val params = HashMap<String, String>()
+                        params["format"] = "json"
+                        params["results"] = "1"
+                        geocoderViewModel.getStreetName(geocode, params)
+                        geocoderViewModel.geocoders.observe(this, Observer { geocoder ->
+                            geocoder?.let {
+                                val addressName = geocoder.response.geoObjectCollection
+                                    .featureMember[0].geoObject.name
+
+                                address_tv.text = addressName
+
+                                markerCarStreet = true
+                            }
+                        })
+                    }
                     !markerCarPanorama -> showPanorama(routeEndLocation)
                 }
             }
@@ -244,38 +259,6 @@ class MainActivity : AppCompatActivity(), UserLocationObjectListener, CameraList
                 description_rl.visibility = VISIBLE
             }
         })
-    }
-
-    private fun getRetrofitResponse(geocode: String) {
-        val exceptionHandler = CoroutineExceptionHandler { _, exception ->
-            println("Caught original $exception")
-        }
-        GlobalScope.launch(Dispatchers.Main + exceptionHandler) {
-            var addressName: String
-            try {
-                val result = withContext(Dispatchers.IO) {
-                    val request = getClient().getStreetNameAsync(geocode)
-                    val response = request.await()
-                    if (response.isSuccessful) {
-                        response.body()
-                    } else {
-                        null
-                    }
-                }
-                addressName = if (result == null) {
-                    val addressNameError = getString(R.string.no_address_name)
-                    addressNameError
-                } else {
-                    result.response.geoObjectCollection.featureMember[0].geoObject.name
-                }
-
-                markerCarStreet = true
-            } catch (e: IOException) {
-                val addressNameNetworkError = getString(R.string.no_internet_connection)
-                addressName = addressNameNetworkError
-            }
-            address_tv.text = addressName
-        }
     }
 
     private fun showPanorama(routeEndLocation: Point) {

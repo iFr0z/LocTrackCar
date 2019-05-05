@@ -1,4 +1,4 @@
-package tk.ifroz.loctrackcar.ui.extension
+package ru.ifr0z.core.extension
 
 import android.content.Context
 import android.graphics.Bitmap

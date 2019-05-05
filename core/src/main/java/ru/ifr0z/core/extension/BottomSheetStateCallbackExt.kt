@@ -1,4 +1,4 @@
-package tk.ifroz.loctrackcar.ui.extension
+package ru.ifr0z.core.extension
 
 import android.view.View
 import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCallback

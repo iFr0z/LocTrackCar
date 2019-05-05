@@ -1,4 +1,4 @@
-package tk.ifroz.loctrackcar.util
+package ru.ifr0z.core.livedata
 
 import android.annotation.TargetApi
 import android.content.BroadcastReceiver
@@ -17,7 +17,7 @@ import android.os.Build.VERSION_CODES.LOLLIPOP
 import android.os.Build.VERSION_CODES.N
 import androidx.lifecycle.LiveData
 
-class ConnectionUtils(private val context: Context) : LiveData<Boolean>() {
+class InternetConnectionLiveData(private val context: Context) : LiveData<Boolean>() {
 
     private var connectivityManager: ConnectivityManager =
         context.getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager

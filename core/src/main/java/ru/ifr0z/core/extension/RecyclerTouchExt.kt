@@ -1,14 +1,14 @@
-package tk.ifroz.loctrackcar.ui.extension
+package ru.ifr0z.core.extension
 
 import android.content.Context
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
-import tk.ifroz.loctrackcar.ui.adapter.RecyclerTouchListener
-import tk.ifroz.loctrackcar.ui.interfaces.ClickListener
+import ru.ifr0z.core.custom.OnItemTouchListenerCustom
+import ru.ifr0z.core.interfaces.ClickListener
 
 fun Context.recyclerTouch(viewRecycler: RecyclerView, onEvent: (Int?) -> Unit) {
     viewRecycler.addOnItemTouchListener(
-        RecyclerTouchListener(
+        OnItemTouchListenerCustom(
             this,
             viewRecycler,
             object : ClickListener {
