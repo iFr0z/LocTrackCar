@@ -14,8 +14,8 @@ interface TargetDao {
     fun getTarget(): LiveData<Target>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insert(target: Target)
+    suspend fun insert(target: Target)
 
     @Query("DELETE FROM marker_car_target_table")
-    fun delete()
+    suspend fun delete()
 }

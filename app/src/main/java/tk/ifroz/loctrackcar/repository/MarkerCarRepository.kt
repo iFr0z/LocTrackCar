@@ -20,32 +20,32 @@ class MarkerCarRepository(
     val descriptions: LiveData<Description> = descriptionDao.getDescription()
 
     @WorkerThread
-    fun insertTarget(target: Target) {
+    suspend fun insertTarget(target: Target) {
         targetDao.insert(target)
     }
 
     @WorkerThread
-    fun insertReminder(reminder: Reminder) {
+    suspend fun insertReminder(reminder: Reminder) {
         reminderDao.insert(reminder)
     }
 
     @WorkerThread
-    fun insertDescription(description: Description) {
+    suspend fun insertDescription(description: Description) {
         descriptionDao.insert(description)
     }
 
     @WorkerThread
-    fun deleteTarget() {
+    suspend fun deleteTarget() {
         targetDao.delete()
     }
 
     @WorkerThread
-    fun deleteReminder() {
+    suspend fun deleteReminder() {
         reminderDao.delete()
     }
 
     @WorkerThread
-    fun deleteDescription() {
+    suspend fun deleteDescription() {
         descriptionDao.delete()
     }
 }

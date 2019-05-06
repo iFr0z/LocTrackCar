@@ -13,8 +13,8 @@ interface ReminderDao {
     fun getReminder(): LiveData<Reminder>
 
     @Insert
-    fun insert(reminder: Reminder)
+    suspend fun insert(reminder: Reminder)
 
     @Query("DELETE FROM marker_car_reminder_table")
-    fun delete()
+    suspend fun delete()
 }

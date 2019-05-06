@@ -13,8 +13,8 @@ interface DescriptionDao {
     fun getDescription(): LiveData<Description>
 
     @Insert
-    fun insert(description: Description)
+    suspend fun insert(description: Description)
 
     @Query("DELETE FROM marker_car_description_table")
-    fun delete()
+    suspend fun delete()
 }
