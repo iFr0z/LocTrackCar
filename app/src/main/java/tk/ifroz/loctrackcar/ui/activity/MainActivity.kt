@@ -1,6 +1,5 @@
 package tk.ifroz.loctrackcar.ui.activity
 
-import android.Manifest.permission.ACCESS_COARSE_LOCATION
 import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
@@ -110,25 +109,23 @@ class MainActivity : AppCompatActivity(), UserLocationObjectListener, CameraList
     }
 
     private fun checkPermission() {
-        val permissionACL = checkSelfPermission(this, ACCESS_COARSE_LOCATION)
-        val permissionAFL = checkSelfPermission(this, ACCESS_FINE_LOCATION)
-        if (permissionACL != PERMISSION_GRANTED || permissionAFL != PERMISSION_GRANTED) {
-            requestPermissions(
-                this,
-                arrayOf(ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION),
-                requestPermissionLocation
-            )
+        val permissionLocation = checkSelfPermission(this, ACCESS_FINE_LOCATION)
+        if (permissionLocation != PERMISSION_GRANTED) {
+            requestPermissions(this, arrayOf(ACCESS_FINE_LOCATION), requestPermissionLocation)
         } else {
             onMapReady()
         }
     }
 
-    override fun onRequestPermissionsResult(code: Int, strings: Array<String>, ints: IntArray) {
-        when (code) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int, permissions: Array<String>, grantResults: IntArray
+    ) {
+        when (requestCode) {
             requestPermissionLocation -> {
-                if (ints[0] == PERMISSION_GRANTED) {
+                if (grantResults[0] == PERMISSION_GRANTED) {
                     onMapReady()
                 }
+
                 return
             }
         }
@@ -632,7 +629,7 @@ class MainActivity : AppCompatActivity(), UserLocationObjectListener, CameraList
 
     companion object {
         const val mapKitApiKey = "e4b59fa0-e067-42ae-9044-5c6a038503e9"
-        const val requestPermissionLocation = 34
+        const val requestPermissionLocation = 1
         const val latLngPattern = "(^[-+]?(?:[1-8]?\\d(?:\\.\\d+)?|90(?:\\.0+)?))," +
                 "\\s*([-+]?(?:180(?:\\.0+)?|(?:(?:1[0-7]\\d)|(?:[1-9]?\\d))(?:\\.\\d+)?))\$"
     }
