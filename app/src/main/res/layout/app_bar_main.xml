@@ -19,7 +19,7 @@
         app:cardUseCompatPadding="true">
 
         <androidx.appcompat.widget.Toolbar
-            android:id="@+id/search_place_toolbar"
+            android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="46dp"
             android:background="@color/colorNull">

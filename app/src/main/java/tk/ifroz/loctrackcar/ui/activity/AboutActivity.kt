@@ -26,9 +26,9 @@ class AboutActivity : AppCompatActivity() {
     }
 
     private fun userInterface() {
-        setSupportActionBar(about_toolbar)
+        setSupportActionBar(toolbar)
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
-        about_toolbar.setNavigationOnClickListener {
+        toolbar.setNavigationOnClickListener {
             finish()
         }
 

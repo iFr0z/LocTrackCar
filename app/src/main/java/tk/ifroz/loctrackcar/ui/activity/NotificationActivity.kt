@@ -35,9 +35,9 @@ class NotificationActivity : AppCompatActivity() {
     }
 
     private fun userInterface() {
-        setSupportActionBar(notification_toolbar)
+        setSupportActionBar(toolbar)
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
-        notification_toolbar.setNavigationOnClickListener {
+        toolbar.setNavigationOnClickListener {
             finish()
         }
 

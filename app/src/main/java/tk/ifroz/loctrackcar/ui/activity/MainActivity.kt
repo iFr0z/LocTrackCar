@@ -140,7 +140,7 @@ class MainActivity : AppCompatActivity(), UserLocationObjectListener, CameraList
             insets
         }
 
-        setSupportActionBar(search_place_toolbar)
+        setSupportActionBar(toolbar)
         initToggleToolbar()
         navigation_v.setNavigationItemSelectedListener(this)
 
@@ -416,7 +416,7 @@ class MainActivity : AppCompatActivity(), UserLocationObjectListener, CameraList
         search_place_et.isCursorVisible = true
 
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
-        search_place_toolbar.setNavigationOnClickListener {
+        toolbar.setNavigationOnClickListener {
             searchPlaceCursorOff()
         }
 
@@ -458,7 +458,7 @@ class MainActivity : AppCompatActivity(), UserLocationObjectListener, CameraList
 
     private fun initToggleToolbar() {
         val toggle = ActionBarDrawerToggle(
-            this, drawer_l, search_place_toolbar, R.string.app_name, R.string.app_name
+            this, drawer_l, toolbar, R.string.app_name, R.string.app_name
         )
         drawer_l.addDrawerListener(toggle)
         toggle.syncState()
