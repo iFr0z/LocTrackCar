@@ -70,7 +70,7 @@
         android:background="@color/colorNull"
         android:visibility="invisible"
         app:elevation="8dp"
-        app:itemIconTint="@color/colorPrimary"
+        app:itemIconTint="@color/colorPrimaryDark"
         app:labelVisibilityMode="unlabeled"
         app:menu="@menu/menu_bottom_navigation_main_activity" />
 
