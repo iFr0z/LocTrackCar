@@ -27,10 +27,6 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="tk.ifroz.loctrackcar.ui.activity.AboutActivity"
-            android:excludeFromRecents="true"
-            android:taskAffinity="" />
-        <activity
             android:name="tk.ifroz.loctrackcar.ui.activity.NotificationActivity"
             android:excludeFromRecents="true"
             android:taskAffinity="" />

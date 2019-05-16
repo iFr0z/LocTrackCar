@@ -7,19 +7,19 @@
         <menu>
             <group android:checkableBehavior="all">
                 <item
-                    android:id="@+id/night"
+                    android:id="@+id/type_map_night"
                     android:icon="@drawable/ic_brightness_3_black_24dp"
                     android:title="@string/type_map_subtitle" />
             </group>
         </menu>
     </item>
 
-    <item android:title="@string/other_title">
+    <item android:title="@string/about_app">
         <menu>
             <group android:checkableBehavior="single">
                 <item
-                    android:id="@+id/about"
-                    android:title="@string/app_name" />
+                    android:id="@+id/privacy_policy"
+                    android:title="@string/privacy_policy_title" />
             </group>
         </menu>
     </item>

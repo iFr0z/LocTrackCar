@@ -52,10 +52,7 @@ import kotlinx.android.synthetic.main.bottom_sheet_row_distance.*
 import kotlinx.android.synthetic.main.bottom_sheet_row_location.*
 import kotlinx.android.synthetic.main.bottom_sheet_row_notification.*
 import kotlinx.android.synthetic.main.content_main.*
-import org.jetbrains.anko.selector
-import org.jetbrains.anko.share
-import org.jetbrains.anko.startActivity
-import org.jetbrains.anko.toast
+import org.jetbrains.anko.*
 import ru.ifr0z.core.extension.bottomSheetStateCallback
 import ru.ifr0z.core.extension.onTextChanges
 import ru.ifr0z.core.extension.vectorDrawableToBitmap
@@ -441,7 +438,7 @@ class MainActivity : AppCompatActivity(), UserLocationObjectListener, CameraList
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.night -> {
+            R.id.type_map_night -> {
                 if (item.isChecked) {
                     item.isChecked = false
                     map_v.map.isNightModeEnabled = false
@@ -450,7 +447,10 @@ class MainActivity : AppCompatActivity(), UserLocationObjectListener, CameraList
                     map_v.map.isNightModeEnabled = true
                 }
             }
-            R.id.about -> startActivity<AboutActivity>()
+            R.id.privacy_policy -> {
+                val privacyPolicyUrl = getString(R.string.privacy_policy_url)
+                browse(privacyPolicyUrl)
+            }
         }
         drawer_l.closeDrawer(START)
         return false
