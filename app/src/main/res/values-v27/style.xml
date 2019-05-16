@@ -10,12 +10,4 @@
         <item name="android:windowLightNavigationBar">true</item>
         <item name="android:navigationBarDividerColor">@color/colorDividerNavigationBar</item>
     </style>
-
-    <style name="SlidingTheme" parent="@style/Theme.Sliding.Light">
-        <item name="colorAccent">@color/colorAccent</item>
-
-        <item name="android:navigationBarColor">@color/colorNull</item>
-        <item name="android:windowLightNavigationBar">true</item>
-        <item name="android:navigationBarDividerColor">@color/colorDividerNavigationBar</item>
-    </style>
 </resources>

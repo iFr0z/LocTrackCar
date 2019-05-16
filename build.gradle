@@ -24,7 +24,6 @@ buildscript {
         yandexMapKitVersion = '3.3.1'
         playServicesVersion = '16.0.0'
         mapScaleVersion = '1.4.2'
-        slidingVersion = '1.5.2'
 
         kotlinDependencies = [
                 kotlin: 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:' + rootProject.kotlinVersion,
@@ -79,8 +78,7 @@ buildscript {
         ]
 
         otherDependencies = [
-                mapScale: 'com.github.pengrad:mapscaleview:' + rootProject.mapScaleVersion,
-                slidingActivity: 'com.klinkerapps:sliding-activity:' + rootProject.slidingVersion
+                mapScale: 'com.github.pengrad:mapscaleview:' + rootProject.mapScaleVersion
         ]
     }
 

@@ -11,10 +11,9 @@ import android.media.RingtoneManager.getDefaultUri
 import android.os.Build.VERSION.SDK_INT
 import android.os.Build.VERSION_CODES.O
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationCompat.Builder
-import androidx.core.content.ContextCompat.getColor
 import androidx.lifecycle.ViewModelProviders.of
-import com.klinker.android.sliding.SlidingActivity
 import kotlinx.android.synthetic.main.activity_notification.*
 import ru.ifr0z.core.extension.vectorDrawableToBitmap
 import tk.ifroz.loctrackcar.R
@@ -24,27 +23,28 @@ import java.text.SimpleDateFormat
 import java.util.*
 import java.util.Locale.getDefault
 
-class NotificationActivity : SlidingActivity() {
+class NotificationActivity : AppCompatActivity() {
 
     private lateinit var markerCarViewModel: MarkerCarViewModel
 
-    override fun init(savedInstanceState: Bundle?) {
-        setContent(R.layout.activity_notification)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_notification)
 
         userInterface()
     }
 
     private fun userInterface() {
+        setSupportActionBar(notification_toolbar)
+        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+        notification_toolbar.setNavigationOnClickListener {
+            finish()
+        }
+
         val titleNotification = getString(R.string.notification_title)
-        title = titleNotification
+        collapsing_toolbar_l.title = titleNotification
 
-        val colorPrimary = getColor(this, R.color.colorPrimary)
-        val colorPrimaryDark = getColor(this, R.color.colorPrimaryDark)
-        setPrimaryColors(colorPrimary, colorPrimaryDark)
-
-        enableFullscreen()
-
-        setFab(colorPrimaryDark, R.drawable.ic_done_white_24dp) {
+        done_fab.setOnClickListener {
             val calendar = Calendar.getInstance()
             calendar.set(
                 date_p.year, date_p.month, date_p.dayOfMonth, time_p.hour, time_p.minute, 0
