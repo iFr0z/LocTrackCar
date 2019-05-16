@@ -32,7 +32,4 @@
 
     <string name="notification_title">Напоминание</string>
     <string name="notification_subtitle">Пора забрать машину</string>
-
-    <string name="description_title">Описание</string>
-    <string name="enter_description">Введите описание</string>
 </resources>

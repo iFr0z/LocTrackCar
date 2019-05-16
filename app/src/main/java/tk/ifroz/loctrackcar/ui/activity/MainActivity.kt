@@ -48,7 +48,6 @@ import com.yandex.runtime.Error
 import com.yandex.runtime.image.ImageProvider.fromBitmap
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
-import kotlinx.android.synthetic.main.bottom_sheet_row_description.*
 import kotlinx.android.synthetic.main.bottom_sheet_row_distance.*
 import kotlinx.android.synthetic.main.bottom_sheet_row_location.*
 import kotlinx.android.synthetic.main.bottom_sheet_row_notification.*
@@ -248,12 +247,6 @@ class MainActivity : AppCompatActivity(), UserLocationObjectListener, CameraList
             reminder?.let {
                 notification_tv.text = reminder.reminder
                 notification_rl.visibility = VISIBLE
-            }
-        })
-        markerCarViewModel.descriptions.observe(this, Observer { description ->
-            description?.let {
-                description_tv.text = description.description
-                description_rl.visibility = VISIBLE
             }
         })
     }
@@ -503,7 +496,6 @@ class MainActivity : AppCompatActivity(), UserLocationObjectListener, CameraList
         bottom_navigation_v.setOnNavigationItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.time -> startActivity<NotificationActivity>()
-                R.id.add -> startActivity<DescriptionActivity>()
                 R.id.way -> drawPolyline()
                 R.id.share -> share("${routeEndLocation.latitude},${routeEndLocation.longitude}")
                 R.id.more -> dialogMarkerCarMenu()
@@ -587,10 +579,8 @@ class MainActivity : AppCompatActivity(), UserLocationObjectListener, CameraList
 
             markerCarViewModel.deleteTarget()
             markerCarViewModel.deleteReminder()
-            markerCarViewModel.deleteDescription()
 
             notification_rl.visibility = GONE
-            description_rl.visibility = GONE
 
             markerCarStreet = false
             markerCarPanorama = false

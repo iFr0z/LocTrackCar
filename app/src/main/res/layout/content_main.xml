@@ -58,8 +58,6 @@
 
             <include layout="@layout/bottom_sheet_row_notification" />
 
-            <include layout="@layout/bottom_sheet_row_description" />
-
         </LinearLayout>
 
     </androidx.core.widget.NestedScrollView>
