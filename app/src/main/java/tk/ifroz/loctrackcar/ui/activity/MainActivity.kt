@@ -542,7 +542,7 @@ class MainActivity : AppCompatActivity(), UserLocationObjectListener, CameraList
 
             val distance = routes[0].sections[0].metadata.weight.walkingDistance.text
             val time = routes[0].sections[0].metadata.weight.time.text
-            val combination = "$distance \u00B7 $time"
+            val combination = "$distance \u00B7 $time \u00B7\uD83D\uDEB6"
             distance_tv.text = combination
             distance_rl.visibility = VISIBLE
 
