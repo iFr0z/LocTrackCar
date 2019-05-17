@@ -9,11 +9,6 @@
         tools:ignore="MenuTitle" />
 
     <item
-        android:id="@+id/way"
-        android:icon="@drawable/ic_directions_black_24dp"
-        tools:ignore="MenuTitle" />
-
-    <item
         android:id="@+id/share"
         android:icon="@drawable/ic_share_black_24dp"
         tools:ignore="MenuTitle" />

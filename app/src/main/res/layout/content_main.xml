@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -27,6 +26,27 @@
             app:elevation="8dp"
             app:rippleColor="@color/colorNull"
             app:srcCompat="@drawable/ic_marker_white_24dp" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/location_fab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="16dp"
+            app:backgroundTint="@color/colorNull"
+            app:elevation="8dp"
+            app:rippleColor="@color/colorGreyRipple"
+            app:srcCompat="@drawable/ic_gps_off_black_24dp" />
+
+        <com.github.pengrad.mapscaleview.MapScaleView
+            android:id="@+id/map_scale_v"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|center"
+            app:scale_expandRtl="true"
+            app:scale_outline="true"
+            app:scale_textSize="15sp" />
 
     </FrameLayout>
 
@@ -62,6 +82,25 @@
 
     </androidx.core.widget.NestedScrollView>
 
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_anchor="@id/bottom_sheet"
+        app:layout_anchorGravity="right">
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/directions_walk_fab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:visibility="invisible"
+            app:backgroundTint="@color/colorNull"
+            app:elevation="8dp"
+            app:rippleColor="@color/colorGreyRipple"
+            app:srcCompat="@drawable/ic_directions_walk_black_24dp" />
+
+    </LinearLayout>
+
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigation_v"
         android:layout_width="match_parent"
@@ -73,36 +112,5 @@
         app:itemIconTint="@color/colorPrimaryDark"
         app:labelVisibilityMode="unlabeled"
         app:menu="@menu/menu_bottom_navigation_main_activity" />
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_anchor="@id/bottom_sheet"
-        app:layout_anchorGravity="right">
-
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/location_fab"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_margin="16dp"
-            app:backgroundTint="@color/colorNull"
-            app:elevation="8dp"
-            app:rippleColor="@color/colorGreyRipple"
-            app:srcCompat="@drawable/ic_gps_off_black_24dp"
-            tools:ignore="RelativeOverlap" />
-
-        <com.github.pengrad.mapscaleview.MapScaleView
-            android:id="@+id/map_scale_v"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_margin="16dp"
-            android:layout_toStartOf="@+id/location_fab"
-            app:scale_expandRtl="true"
-            app:scale_outline="true"
-            app:scale_textSize="15sp" />
-
-    </RelativeLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

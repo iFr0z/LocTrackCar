@@ -148,17 +148,6 @@ class MainActivity : AppCompatActivity(), UserLocationObjectListener, CameraList
 
         bottomSheetMarkerCar()
 
-        location_fab.setOnClickListener {
-            if (permissionLocation) {
-                from(bottom_sheet).state = STATE_HIDDEN
-
-                cameraUserPosition()
-
-                followUserLocation = true
-            } else {
-                checkPermission()
-            }
-        }
         marker_fab.setOnClickListener {
             if (permissionLocation) {
                 noAnchor()
@@ -175,6 +164,18 @@ class MainActivity : AppCompatActivity(), UserLocationObjectListener, CameraList
             } else {
                 checkPermission()
             }
+        }
+        location_fab.setOnClickListener {
+            if (permissionLocation) {
+                cameraUserPosition()
+
+                followUserLocation = true
+            } else {
+                checkPermission()
+            }
+        }
+        directions_walk_fab.setOnClickListener {
+            drawPolyline()
         }
 
         retrieveMarkerCar()
@@ -474,6 +475,8 @@ class MainActivity : AppCompatActivity(), UserLocationObjectListener, CameraList
                     bottom_navigation_v.animate().translationY(0f).alpha(1.0f)
 
                     marker_fab.hide()
+                    location_fab.animate().translationX(200f).alpha(0.0f)
+                    directions_walk_fab.show()
 
                     app_bar_l.animate().translationY(-200f).alpha(0.0f)
 
@@ -483,6 +486,8 @@ class MainActivity : AppCompatActivity(), UserLocationObjectListener, CameraList
                     bottom_navigation_v.animate().translationY(150f).alpha(0.0f)
 
                     marker_fab.show()
+                    location_fab.animate().translationX(0f).alpha(1.0f)
+                    directions_walk_fab.hide()
 
                     app_bar_l.animate().translationY(0f).alpha(1.0f)
 
@@ -496,7 +501,6 @@ class MainActivity : AppCompatActivity(), UserLocationObjectListener, CameraList
         bottom_navigation_v.setOnNavigationItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.time -> startActivity<NotificationActivity>()
-                R.id.way -> drawPolyline()
                 R.id.share -> share("${routeEndLocation.latitude},${routeEndLocation.longitude}")
                 R.id.more -> dialogMarkerCarMenu()
             }
