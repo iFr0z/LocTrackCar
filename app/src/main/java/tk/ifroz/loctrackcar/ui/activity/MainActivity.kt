@@ -8,7 +8,6 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.inputmethod.EditorInfo.IME_ACTION_SEARCH
 import android.view.inputmethod.InputMethodManager
-import android.widget.TextView
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat.*
@@ -53,6 +52,7 @@ import kotlinx.android.synthetic.main.content_main.*
 import org.jetbrains.anko.*
 import ru.ifr0z.core.custom.ImageProviderCustom
 import ru.ifr0z.core.extension.bottomSheetStateCallback
+import ru.ifr0z.core.extension.onEditorAction
 import ru.ifr0z.core.extension.onTextChanges
 import ru.ifr0z.core.livedata.InternetConnectionLiveData
 import tk.ifroz.loctrackcar.R
@@ -344,24 +344,21 @@ class MainActivity : AppCompatActivity(), UserLocationObjectListener, CameraList
             searchPlaceCursorOn()
             false
         }
-        search_place_et.setOnEditorActionListener(TextView.OnEditorActionListener { _, id, _ ->
-            if (id == IME_ACTION_SEARCH) {
-                searchPlaceCursorOff()
 
-                if (!markerSearchPlace && search_place_et.text.matches(latLngPattern.toRegex())) {
-                    val arrayLatLng = search_place_et.text.split(",".toRegex())
-                    val searchPlaceLatitude = arrayLatLng[0].toDouble()
-                    val searchPlaceLongitude = arrayLatLng[1].toDouble()
-                    drawMarkerSearchPlace(searchPlaceLatitude, searchPlaceLongitude)
-                } else {
-                    val requestStart = getString(R.string.search_place_request_start)
-                    val requestEnd = getString(R.string.search_place_request_end)
-                    toast("$requestStart '${search_place_et.text}' $requestEnd")
-                }
-                return@OnEditorActionListener true
+        val requestStart = getString(R.string.search_place_request_start)
+        val requestEnd = getString(R.string.search_place_request_end)
+        search_place_et.onEditorAction(
+            IME_ACTION_SEARCH, latLngPattern, requestStart, requestEnd
+        ) { arrayLatLng ->
+            searchPlaceCursorOff()
+
+            if (!markerSearchPlace) {
+                val searchPlaceLatitude = arrayLatLng!![0].toDouble()
+                val searchPlaceLongitude = arrayLatLng[1].toDouble()
+                drawMarkerSearchPlace(searchPlaceLatitude, searchPlaceLongitude)
             }
-            true
-        })
+        }
+
         search_place_et.onTextChanges(clear_search_iv)
         clear_search_iv.setOnClickListener {
             if (markerSearchPlace) {
@@ -370,7 +367,7 @@ class MainActivity : AppCompatActivity(), UserLocationObjectListener, CameraList
                 markerSearchPlace = false
             }
 
-            search_place_et.setText("")
+            search_place_et.text.clear()
         }
     }
 
