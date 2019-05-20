@@ -53,9 +53,9 @@ import kotlinx.android.synthetic.main.bottom_sheet_row_location.*
 import kotlinx.android.synthetic.main.bottom_sheet_row_notification.*
 import kotlinx.android.synthetic.main.content_main.*
 import org.jetbrains.anko.*
+import ru.ifr0z.core.custom.ImageProviderCustom
 import ru.ifr0z.core.extension.bottomSheetStateCallback
 import ru.ifr0z.core.extension.onTextChanges
-import ru.ifr0z.core.extension.vectorDrawableToBitmap
 import ru.ifr0z.core.livedata.InternetConnectionLiveData
 import tk.ifroz.loctrackcar.R
 import tk.ifroz.loctrackcar.db.entity.Target
@@ -200,7 +200,7 @@ class MainActivity : AppCompatActivity(), UserLocationObjectListener, CameraList
     private fun drawMarkerCar(routeEndLocation: Point) {
         markerCarObject = map_v.map.mapObjects.addCollection()
         markerCarPlacemark = markerCarObject.addPlacemark(routeEndLocation)
-        val bitmap = this.vectorDrawableToBitmap(R.drawable.ic_marker_black_45dp)
+        val bitmap = ImageProviderCustom(this, R.drawable.ic_marker_black_45dp).image
         markerCarPlacemark.setIcon(fromBitmap(bitmap))
         markerCarPlacemark.setIconStyle(IconStyle().setAnchor(PointF(0.5f, 1f)))
 
@@ -329,7 +329,7 @@ class MainActivity : AppCompatActivity(), UserLocationObjectListener, CameraList
     override fun onObjectAdded(userLocationView: UserLocationView) {
         setAnchor()
 
-        val bitmap = this.vectorDrawableToBitmap(R.drawable.ic_dot_rose_24dp)
+        val bitmap = ImageProviderCustom(this, R.drawable.ic_dot_rose_24dp).image
         userLocationView.pin.setIcon(fromBitmap(bitmap))
         userLocationView.pin.setIconStyle(IconStyle().setFlat(true))
         userLocationView.arrow.setIcon(fromBitmap(bitmap))
@@ -401,7 +401,7 @@ class MainActivity : AppCompatActivity(), UserLocationObjectListener, CameraList
         markerSearchPlaceObject = map_v.map.mapObjects.addCollection()
         val point = Point(searchPlaceLatitude, searchPlaceLongitude)
         markerSearchPlacePlacemark = markerSearchPlaceObject.addPlacemark(point)
-        val bitmap = this.vectorDrawableToBitmap(R.drawable.ic_place_black_45dp)
+        val bitmap = ImageProviderCustom(this, R.drawable.ic_place_black_45dp).image
         markerSearchPlacePlacemark.setIcon(fromBitmap(bitmap))
         markerSearchPlacePlacemark.setIconStyle(IconStyle().setAnchor(PointF(0.5f, 1f)))
 
