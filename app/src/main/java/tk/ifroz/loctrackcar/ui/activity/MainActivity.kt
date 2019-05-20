@@ -1,8 +1,6 @@
 package tk.ifroz.loctrackcar.ui.activity
 
 import android.Manifest.permission.ACCESS_FINE_LOCATION
-import android.animation.Animator
-import android.animation.AnimatorListenerAdapter
 import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.graphics.PointF
 import android.os.Bundle
@@ -364,36 +362,15 @@ class MainActivity : AppCompatActivity(), UserLocationObjectListener, CameraList
             }
             true
         })
-        search_place_et.onTextChanges { sequence ->
-            when {
-                sequence!!.isNotEmpty() -> {
-                    clear_search_iv.animate().alpha(1.0f).setListener(
-                        object : AnimatorListenerAdapter() {
-                            override fun onAnimationEnd(animation: Animator) {
-                                clear_search_iv.visibility = VISIBLE
-                                clear_search_iv.setOnClickListener {
-                                    if (markerSearchPlace) {
-                                        markerSearchPlaceObject.clear()
+        search_place_et.onTextChanges(clear_search_iv)
+        clear_search_iv.setOnClickListener {
+            if (markerSearchPlace) {
+                markerSearchPlaceObject.clear()
 
-                                        markerSearchPlace = false
-                                    }
-
-                                    search_place_et.setText("")
-                                }
-                            }
-                        }
-                    )
-                }
-                sequence.isEmpty() -> {
-                    clear_search_iv.animate().alpha(0.0f).setListener(
-                        object : AnimatorListenerAdapter() {
-                            override fun onAnimationEnd(animation: Animator) {
-                                clear_search_iv.visibility = INVISIBLE
-                            }
-                        }
-                    )
-                }
+                markerSearchPlace = false
             }
+
+            search_place_et.setText("")
         }
     }
 
