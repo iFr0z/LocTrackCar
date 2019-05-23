@@ -49,12 +49,15 @@ import kotlinx.android.synthetic.main.bottom_sheet_row_distance.*
 import kotlinx.android.synthetic.main.bottom_sheet_row_location.*
 import kotlinx.android.synthetic.main.bottom_sheet_row_notification.*
 import kotlinx.android.synthetic.main.content_main.*
-import org.jetbrains.anko.*
+import org.jetbrains.anko.browse
+import org.jetbrains.anko.selector
+import org.jetbrains.anko.share
+import org.jetbrains.anko.startActivity
 import ru.ifr0z.core.custom.ImageProviderCustom
 import ru.ifr0z.core.extension.bottomSheetStateCallback
 import ru.ifr0z.core.extension.onEditorAction
 import ru.ifr0z.core.extension.onTextChanges
-import ru.ifr0z.core.livedata.InternetConnectionLiveData
+import ru.ifr0z.core.livedata.ConnectivityLiveData
 import tk.ifroz.loctrackcar.R
 import tk.ifroz.loctrackcar.db.entity.Target
 import tk.ifroz.loctrackcar.viewmodel.GeocoderViewModel
@@ -213,7 +216,7 @@ class MainActivity : AppCompatActivity(), UserLocationObjectListener, CameraList
         val coordinates = "$subtitleLatitude $latitude\n$subtitleLongitude $longitude"
         lat_lng_tv.text = coordinates
 
-        InternetConnectionLiveData(this).observe(this, Observer { isConnected ->
+        ConnectivityLiveData(this).observe(this, Observer { isConnected ->
             isConnected?.let {
                 when {
                     !markerCarStreet -> {
