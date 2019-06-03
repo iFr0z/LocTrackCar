@@ -15,6 +15,7 @@ import androidx.core.view.GravityCompat.START
 import androidx.drawerlayout.widget.DrawerLayout.*
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders.of
+import androidx.work.WorkManager
 import com.google.android.material.bottomsheet.BottomSheetBehavior.*
 import com.google.android.material.navigation.NavigationView.OnNavigationItemSelectedListener
 import com.yandex.mapkit.Animation
@@ -60,6 +61,7 @@ import ru.ifr0z.core.extension.onTextChanges
 import ru.ifr0z.core.livedata.ConnectivityLiveData
 import tk.ifroz.loctrackcar.R
 import tk.ifroz.loctrackcar.db.entity.Target
+import tk.ifroz.loctrackcar.ui.work.NotificationWork.Companion.NOTIFICATION_ID
 import tk.ifroz.loctrackcar.viewmodel.GeocoderViewModel
 import tk.ifroz.loctrackcar.viewmodel.MarkerCarViewModel
 
@@ -560,6 +562,8 @@ class MainActivity : AppCompatActivity(), UserLocationObjectListener, CameraList
 
             markerCarViewModel.deleteTarget()
             markerCarViewModel.deleteReminder()
+
+            WorkManager.getInstance(this).cancelAllWorkByTag(NOTIFICATION_ID)
 
             notification_rl.visibility = GONE
 

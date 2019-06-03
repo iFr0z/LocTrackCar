@@ -18,34 +18,30 @@ class TimePickerCustom : TimePicker {
     )
 
     override fun setHour(hour: Int) {
-        if (SDK_INT >= M) {
-            super.setHour(hour)
-        } else {
-            super.setCurrentHour(hour)
+        when {
+            SDK_INT >= M -> super.setHour(hour)
+            else -> super.setCurrentHour(hour)
         }
     }
 
     override fun setMinute(minute: Int) {
-        if (SDK_INT >= M) {
-            super.setMinute(minute)
-        } else {
-            super.setCurrentMinute(minute)
+        when {
+            SDK_INT >= M -> super.setMinute(minute)
+            else -> super.setCurrentMinute(minute)
         }
     }
 
     override fun getHour(): Int {
-        return if (SDK_INT >= M) {
-            super.getHour()
-        } else {
-            super.getCurrentHour()
+        return when {
+            SDK_INT >= M -> super.getHour()
+            else -> super.getCurrentHour()
         }
     }
 
     override fun getMinute(): Int {
-        return if (SDK_INT >= M) {
-            super.getMinute()
-        } else {
-            super.getCurrentMinute()
+        return when {
+            SDK_INT >= M -> super.getMinute()
+            else -> super.getCurrentMinute()
         }
     }
 }

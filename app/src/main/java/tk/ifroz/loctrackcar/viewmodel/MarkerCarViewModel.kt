@@ -29,8 +29,8 @@ class MarkerCarViewModel(application: Application) : AndroidViewModel(applicatio
         repository.insertTarget(target)
     }
 
-    fun insertReminder(reminder: Reminder) = viewModelScope.launch(Dispatchers.IO) {
-        repository.insertReminder(reminder)
+    fun upsertReminder(reminder: Reminder) = viewModelScope.launch(Dispatchers.IO) {
+        repository.upsertReminder(reminder)
     }
 
     fun deleteTarget() = viewModelScope.launch(Dispatchers.IO) {

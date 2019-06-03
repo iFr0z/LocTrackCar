@@ -35,9 +35,6 @@
             android:name="android.max_aspect"
             android:value="2.1" />
 
-        <receiver
-            android:name="tk.ifroz.loctrackcar.ui.activity.NotificationBroadcastReceiver"
-            android:process=":remote" />
     </application>
 
 </manifest>

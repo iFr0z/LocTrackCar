@@ -1,27 +1,24 @@
 package tk.ifroz.loctrackcar.ui.activity
 
-import android.app.AlarmManager
-import android.app.AlarmManager.RTC_WAKEUP
-import android.app.Notification
-import android.app.PendingIntent.getActivity
-import android.app.PendingIntent.getBroadcast
-import android.content.Intent
-import android.media.RingtoneManager.TYPE_NOTIFICATION
-import android.media.RingtoneManager.getDefaultUri
-import android.os.Build.VERSION.SDK_INT
-import android.os.Build.VERSION_CODES.O
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.NotificationCompat.Builder
 import androidx.lifecycle.ViewModelProviders.of
+import androidx.work.Data
+import androidx.work.OneTimeWorkRequest
+import androidx.work.WorkManager
+import com.google.android.material.snackbar.Snackbar.LENGTH_LONG
+import com.google.android.material.snackbar.Snackbar.make
 import kotlinx.android.synthetic.main.activity_notification.*
-import ru.ifr0z.core.extension.vectorDrawableToBitmap
 import tk.ifroz.loctrackcar.R
 import tk.ifroz.loctrackcar.db.entity.Reminder
+import tk.ifroz.loctrackcar.ui.work.NotificationWork
+import tk.ifroz.loctrackcar.ui.work.NotificationWork.Companion.NOTIFICATION_ID
 import tk.ifroz.loctrackcar.viewmodel.MarkerCarViewModel
+import java.lang.System.currentTimeMillis
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.Locale.getDefault
+import java.util.concurrent.TimeUnit.MILLISECONDS
 
 class NotificationActivity : AppCompatActivity() {
 
@@ -45,53 +42,43 @@ class NotificationActivity : AppCompatActivity() {
         collapsing_toolbar_l.title = titleNotification
 
         done_fab.setOnClickListener {
-            val calendar = Calendar.getInstance()
-            calendar.set(
+            val currentCalendar = Calendar.getInstance()
+            val specificCalendarToTrigger = Calendar.getInstance()
+            specificCalendarToTrigger.set(
                 date_p.year, date_p.month, date_p.dayOfMonth, time_p.hour, time_p.minute, 0
             )
 
-            val currentCalendar = Calendar.getInstance()
-            if (calendar >= currentCalendar) {
-                val bitmap = this.vectorDrawableToBitmap(R.drawable.ic_marker_black_24dp)
-                val subtitleNotification = getString(R.string.notification_subtitle)
-                val intent = Intent(this, NotificationBroadcastReceiver::class.java)
-                    .putExtra("title", titleNotification).putExtra("subtitle", subtitleNotification)
+            if (specificCalendarToTrigger >= currentCalendar) {
+                val data = Data.Builder().putInt(NOTIFICATION_ID, 0).build()
+                val currentTime = currentTimeMillis()
+                val specificTimeToTrigger = specificCalendarToTrigger.timeInMillis
+                val delay = specificTimeToTrigger - currentTime
+                scheduleNotification(delay, data, NOTIFICATION_ID)
 
-                val pendingIntent = getActivity(this, 0, intent, 0)
-                val ringtoneManager = getDefaultUri(TYPE_NOTIFICATION)
-                val builder = Builder(this, NotificationBroadcastReceiver.NOTIFICATION_CHANNEL)
-                    .setLargeIcon(bitmap).setSmallIcon(R.drawable.ic_marker_notification_white)
-                    .setContentTitle(titleNotification).setContentText(subtitleNotification)
-                    .setContentIntent(pendingIntent).setSound(ringtoneManager)
-                    .setVibrate(longArrayOf(100, 200, 300, 400, 500, 400, 300, 200, 400))
-                    .setAutoCancel(true)
-
-                if (SDK_INT >= O) {
-                    builder.setChannelId(NotificationBroadcastReceiver.NOTIFICATION_CHANNEL)
-                }
-                scheduleNotification(builder.build(), calendar)
+                val patternNotification = getString(R.string.notification_pattern)
+                markerCarViewModel = of(this).get(MarkerCarViewModel::class.java)
+                markerCarViewModel.upsertReminder(
+                    Reminder(
+                        SimpleDateFormat(
+                            patternNotification, getDefault()
+                        ).format(specificCalendarToTrigger.time).toString()
+                    )
+                )
 
                 finish()
+            } else {
+                val errorNotification = getString(R.string.notification_error)
+                make(coordinator_l, errorNotification, LENGTH_LONG).show()
             }
         }
     }
 
-    private fun scheduleNotification(notification: Notification, calendar: Calendar) {
-        markerCarViewModel = of(this).get(MarkerCarViewModel::class.java)
-        markerCarViewModel.insertReminder(
-            Reminder(
-                SimpleDateFormat(
-                    "dd.MM.yy \u00B7 HH:mm", getDefault()
-                ).format(calendar.time).toString()
-            )
-        )
+    private fun scheduleNotification(delay: Long, data: Data, tag: String) {
+        val notificationWork = OneTimeWorkRequest.Builder(NotificationWork::class.java).addTag(tag)
+            .setInitialDelay(delay, MILLISECONDS).setInputData(data).build()
 
-        val alarmManager = getSystemService(ALARM_SERVICE) as AlarmManager
-        val intent = Intent(this, NotificationBroadcastReceiver::class.java)
-            .putExtra(NotificationBroadcastReceiver.NOTIFICATION_ID, 1)
-            .putExtra(NotificationBroadcastReceiver.NOTIFICATION, notification)
-
-        val pendingIntent = getBroadcast(this, 0, intent, 0)
-        alarmManager.setExact(RTC_WAKEUP, calendar.timeInMillis, pendingIntent)
+        val instanceWorkManager = WorkManager.getInstance(this)
+        instanceWorkManager.cancelAllWorkByTag(tag)
+        instanceWorkManager.enqueue(notificationWork)
     }
 }

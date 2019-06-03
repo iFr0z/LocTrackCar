@@ -1,20 +1,24 @@
 package tk.ifroz.loctrackcar.db.dao
 
 import androidx.lifecycle.LiveData
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.Query
+import androidx.room.*
 import tk.ifroz.loctrackcar.db.entity.Reminder
 
 @Dao
-interface ReminderDao {
+abstract class ReminderDao {
 
     @Query("SELECT reminder FROM marker_car_reminder_table")
-    fun getReminder(): LiveData<Reminder>
+    abstract fun getReminder(): LiveData<Reminder>
 
     @Insert
-    suspend fun insert(reminder: Reminder)
+    abstract suspend fun insert(reminder: Reminder)
 
     @Query("DELETE FROM marker_car_reminder_table")
-    suspend fun delete()
+    abstract suspend fun delete()
+
+    @Transaction
+    open suspend fun upsert(reminder: Reminder) {
+        delete()
+        insert(reminder)
+    }
 }
