@@ -2,26 +2,23 @@ package tk.ifroz.loctrackcar.ui.activity
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders.of
 import androidx.work.Data
-import androidx.work.OneTimeWorkRequest
-import androidx.work.WorkManager
-import com.google.android.material.snackbar.Snackbar.LENGTH_LONG
-import com.google.android.material.snackbar.Snackbar.make
+import androidx.work.WorkInfo
 import kotlinx.android.synthetic.main.activity_notification.*
 import tk.ifroz.loctrackcar.R
 import tk.ifroz.loctrackcar.db.entity.Reminder
-import tk.ifroz.loctrackcar.ui.work.NotificationWork
 import tk.ifroz.loctrackcar.ui.work.NotificationWork.Companion.NOTIFICATION_ID
 import tk.ifroz.loctrackcar.viewmodel.MarkerCarViewModel
-import java.lang.System.currentTimeMillis
+import tk.ifroz.loctrackcar.viewmodel.NotificationViewModel
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.Locale.getDefault
-import java.util.concurrent.TimeUnit.MILLISECONDS
 
 class NotificationActivity : AppCompatActivity() {
 
+    private lateinit var notificationViewModel: NotificationViewModel
     private lateinit var markerCarViewModel: MarkerCarViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,43 +39,40 @@ class NotificationActivity : AppCompatActivity() {
         collapsing_toolbar_l.title = titleNotification
 
         done_fab.setOnClickListener {
-            val currentCalendar = Calendar.getInstance()
-            val specificCalendarToTrigger = Calendar.getInstance()
-            specificCalendarToTrigger.set(
+            notificationViewModel = of(this).get(NotificationViewModel::class.java)
+            val customCalendar = Calendar.getInstance()
+            customCalendar.set(
                 date_p.year, date_p.month, date_p.dayOfMonth, time_p.hour, time_p.minute, 0
             )
+            val data = Data.Builder().putInt(NOTIFICATION_ID, 0).build()
+            val errorNotification = getString(R.string.notification_error)
+            notificationViewModel.scheduleNotification(
+                customCalendar, data, NOTIFICATION_ID, coordinator_l, errorNotification
+            )
+            notificationViewModel.outputStatus.observe(
+                this, Observer<List<WorkInfo>> { listOfWorkInfo ->
+                    listOfWorkInfo?.let {
+                        if (listOfWorkInfo.isNullOrEmpty()) {
+                            return@Observer
+                        }
 
-            if (specificCalendarToTrigger >= currentCalendar) {
-                val data = Data.Builder().putInt(NOTIFICATION_ID, 0).build()
-                val currentTime = currentTimeMillis()
-                val specificTimeToTrigger = specificCalendarToTrigger.timeInMillis
-                val delay = specificTimeToTrigger - currentTime
-                scheduleNotification(delay, data, NOTIFICATION_ID)
+                        val workInfo = listOfWorkInfo[0]
+                        if (!workInfo.state.isFinished) {
+                            val patternNotification = getString(R.string.notification_pattern)
+                            markerCarViewModel = of(this).get(MarkerCarViewModel::class.java)
+                            markerCarViewModel.upsertReminder(
+                                Reminder(
+                                    SimpleDateFormat(
+                                        patternNotification, getDefault()
+                                    ).format(customCalendar.time).toString()
+                                )
+                            )
 
-                val patternNotification = getString(R.string.notification_pattern)
-                markerCarViewModel = of(this).get(MarkerCarViewModel::class.java)
-                markerCarViewModel.upsertReminder(
-                    Reminder(
-                        SimpleDateFormat(
-                            patternNotification, getDefault()
-                        ).format(specificCalendarToTrigger.time).toString()
-                    )
-                )
-
-                finish()
-            } else {
-                val errorNotification = getString(R.string.notification_error)
-                make(coordinator_l, errorNotification, LENGTH_LONG).show()
-            }
+                            finish()
+                        }
+                    }
+                }
+            )
         }
-    }
-
-    private fun scheduleNotification(delay: Long, data: Data, tag: String) {
-        val notificationWork = OneTimeWorkRequest.Builder(NotificationWork::class.java).addTag(tag)
-            .setInitialDelay(delay, MILLISECONDS).setInputData(data).build()
-
-        val instanceWorkManager = WorkManager.getInstance(this)
-        instanceWorkManager.cancelAllWorkByTag(tag)
-        instanceWorkManager.enqueue(notificationWork)
     }
 }

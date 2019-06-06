@@ -15,7 +15,7 @@ import androidx.core.view.GravityCompat.START
 import androidx.drawerlayout.widget.DrawerLayout.*
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders.of
-import androidx.work.WorkManager
+import androidx.work.WorkInfo
 import com.google.android.material.bottomsheet.BottomSheetBehavior.*
 import com.google.android.material.navigation.NavigationView.OnNavigationItemSelectedListener
 import com.yandex.mapkit.Animation
@@ -61,9 +61,9 @@ import ru.ifr0z.core.extension.onTextChanges
 import ru.ifr0z.core.livedata.ConnectivityLiveData
 import tk.ifroz.loctrackcar.R
 import tk.ifroz.loctrackcar.db.entity.Target
-import tk.ifroz.loctrackcar.ui.work.NotificationWork.Companion.NOTIFICATION_ID
 import tk.ifroz.loctrackcar.viewmodel.GeocoderViewModel
 import tk.ifroz.loctrackcar.viewmodel.MarkerCarViewModel
+import tk.ifroz.loctrackcar.viewmodel.NotificationViewModel
 
 class MainActivity : AppCompatActivity(), UserLocationObjectListener, CameraListener, RouteListener,
     SearchListener, OnNavigationItemSelectedListener {
@@ -91,6 +91,7 @@ class MainActivity : AppCompatActivity(), UserLocationObjectListener, CameraList
     private lateinit var markerCarPolylineObject: MapObjectCollection
     private lateinit var markerCarPedestrianRouter: PedestrianRouter
 
+    private lateinit var notificationViewModel: NotificationViewModel
     private lateinit var markerCarViewModel: MarkerCarViewModel
     private lateinit var geocoderViewModel: GeocoderViewModel
 
@@ -247,9 +248,28 @@ class MainActivity : AppCompatActivity(), UserLocationObjectListener, CameraList
         markerCarViewModel.reminders.observe(this, Observer { reminder ->
             reminder?.let {
                 notification_tv.text = reminder.reminder
-                notification_rl.visibility = VISIBLE
+
+                from(bottom_sheet).state = STATE_EXPANDED
             }
         })
+
+        notificationViewModel = of(this).get(NotificationViewModel::class.java)
+        notificationViewModel.outputStatus.observe(
+            this, Observer<List<WorkInfo>> { listOfWorkInfo ->
+                listOfWorkInfo?.let {
+                    if (listOfWorkInfo.isNullOrEmpty()) {
+                        return@Observer
+                    }
+
+                    val workInfo = listOfWorkInfo[0]
+                    if (workInfo.state.isFinished) {
+                        notification_rl.visibility = GONE
+                    } else {
+                        notification_rl.visibility = VISIBLE
+                    }
+                }
+            }
+        )
     }
 
     private fun showPanorama(routeEndLocation: Point) {
@@ -562,10 +582,7 @@ class MainActivity : AppCompatActivity(), UserLocationObjectListener, CameraList
 
             markerCarViewModel.deleteTarget()
             markerCarViewModel.deleteReminder()
-
-            WorkManager.getInstance(this).cancelAllWorkByTag(NOTIFICATION_ID)
-
-            notification_rl.visibility = GONE
+            notificationViewModel.cancel()
 
             markerCarStreet = false
             markerCarPanorama = false
