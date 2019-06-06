@@ -15,6 +15,7 @@ import androidx.core.view.GravityCompat.START
 import androidx.drawerlayout.widget.DrawerLayout.*
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders.of
+import androidx.work.Data
 import androidx.work.WorkInfo
 import com.google.android.material.bottomsheet.BottomSheetBehavior.*
 import com.google.android.material.navigation.NavigationView.OnNavigationItemSelectedListener
@@ -61,6 +62,10 @@ import ru.ifr0z.core.extension.onTextChanges
 import ru.ifr0z.core.livedata.ConnectivityLiveData
 import tk.ifroz.loctrackcar.R
 import tk.ifroz.loctrackcar.db.entity.Target
+import tk.ifroz.loctrackcar.ui.work.GeocoderWork.Companion.FORMAT_DATA
+import tk.ifroz.loctrackcar.ui.work.GeocoderWork.Companion.GEOCODE_DATA
+import tk.ifroz.loctrackcar.ui.work.GeocoderWork.Companion.OUTPUT_DATA
+import tk.ifroz.loctrackcar.ui.work.GeocoderWork.Companion.RESULTS_DATA
 import tk.ifroz.loctrackcar.viewmodel.GeocoderViewModel
 import tk.ifroz.loctrackcar.viewmodel.MarkerCarViewModel
 import tk.ifroz.loctrackcar.viewmodel.NotificationViewModel
@@ -78,7 +83,6 @@ class MainActivity : AppCompatActivity(), UserLocationObjectListener, CameraList
     private lateinit var markerCarObject: MapObjectCollection
     private lateinit var markerCarPlacemark: PlacemarkMapObject
 
-    private var markerCarStreet = false
     private var markerCarPanorama = false
 
     private lateinit var markerSearchPlaceObject: MapObjectCollection
@@ -221,29 +225,35 @@ class MainActivity : AppCompatActivity(), UserLocationObjectListener, CameraList
 
         ConnectivityLiveData(this).observe(this, Observer { isConnected ->
             isConnected?.let {
-                when {
-                    !markerCarStreet -> {
-                        geocoderViewModel = of(this).get(GeocoderViewModel::class.java)
-                        val geocode = "$longitude,$latitude"
-                        val params = HashMap<String, String>()
-                        params["format"] = "json"
-                        params["results"] = "1"
-                        geocoderViewModel.getStreetName(geocode, params)
-                        geocoderViewModel.geocoders.observe(this, Observer { geocoder ->
-                            geocoder?.let {
-                                val addressName = geocoder.response.geoObjectCollection
-                                    .featureMember[0].geoObject.name
-
-                                address_tv.text = addressName
-
-                                markerCarStreet = true
-                            }
-                        })
-                    }
-                    !markerCarPanorama -> showPanorama(routeEndLocation)
+                if (!markerCarPanorama) {
+                    showPanorama(routeEndLocation)
                 }
             }
         })
+
+        geocoderViewModel = of(this).get(GeocoderViewModel::class.java)
+        val geocode = "$longitude,$latitude"
+        val format = "json"
+        val results = "1"
+        val data = Data.Builder().putString(GEOCODE_DATA, geocode).putString(FORMAT_DATA, format)
+            .putString(RESULTS_DATA, results).build()
+
+        geocoderViewModel.getStreetName(data)
+        geocoderViewModel.outputStatus.observe(
+            this, Observer<List<WorkInfo>> { listOfWorkInfo ->
+                listOfWorkInfo?.let {
+                    if (listOfWorkInfo.isNullOrEmpty()) {
+                        return@Observer
+                    }
+
+                    val workInfo = listOfWorkInfo[0]
+                    if (workInfo.state.isFinished) {
+                        val addressName = workInfo.outputData.getString(OUTPUT_DATA)
+                        address_tv.text = addressName
+                    }
+                }
+            }
+        )
 
         markerCarViewModel.reminders.observe(this, Observer { reminder ->
             reminder?.let {
@@ -584,7 +594,6 @@ class MainActivity : AppCompatActivity(), UserLocationObjectListener, CameraList
             markerCarViewModel.deleteReminder()
             notificationViewModel.cancel()
 
-            markerCarStreet = false
             markerCarPanorama = false
             markerCar = false
 

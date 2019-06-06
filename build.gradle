@@ -13,7 +13,7 @@ buildscript {
         appCompatVersion = '1.0.2'
         roomVersion = '2.1.0-alpha07'
         lifeCycleVersion = '2.1.0-alpha04'
-        workVersion = "2.1.0-alpha02"
+        workVersion = "2.1.0-alpha03"
 
         retrofitVersion = '2.5.0'
         okHttpVersion = '3.14.0'
@@ -45,7 +45,8 @@ buildscript {
                         + rootProject.lifeCycleVersion,
                 lifeCycleExtensions: 'androidx.lifecycle:lifecycle-extensions:'
                         + rootProject.lifeCycleVersion,
-                workVersion: 'androidx.work:work-runtime:' + rootProject.workVersion
+                workRuntime: 'androidx.work:work-runtime:' + rootProject.workVersion,
+                workRuntimeKtx: 'androidx.work:work-runtime-ktx:' + rootProject.workVersion
         ]
         androidxKaptDependencies = [
                 roomCompiler: 'androidx.room:room-compiler:' + rootProject.roomVersion,

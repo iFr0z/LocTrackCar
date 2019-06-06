@@ -1,24 +1,27 @@
 package tk.ifroz.loctrackcar.viewmodel
 
-import androidx.lifecycle.MutableLiveData
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import ru.ifr0z.core.viewmodel.BaseViewModel
-import tk.ifroz.loctrackcar.api.GeocoderApiClient.getClient
-import tk.ifroz.loctrackcar.model.Result
-import tk.ifroz.loctrackcar.repository.GeocoderRepository
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
+import androidx.work.*
+import androidx.work.NetworkType.CONNECTED
+import tk.ifroz.loctrackcar.ui.work.GeocoderWork
 
-class GeocoderViewModel : BaseViewModel() {
+class GeocoderViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val repository: GeocoderRepository = GeocoderRepository(getClient())
+    private val workManager: WorkManager = WorkManager.getInstance(application)
+    internal val outputStatus: LiveData<List<WorkInfo>>
+        get() = workManager.getWorkInfosByTagLiveData(DATA_ID)
 
-    val geocoders = MutableLiveData<Result>()
+    internal fun getStreetName(data: Data) {
+        val constraints = Constraints.Builder().setRequiredNetworkType(CONNECTED).build()
+        val streetNameWork = OneTimeWorkRequest.Builder(GeocoderWork::class.java).addTag(DATA_ID)
+            .setInputData(data).setConstraints(constraints).build()
 
-    fun getStreetName(geocoder: String, params: Map<String, String>) = launch {
-        val streetName = withContext(Dispatchers.IO) {
-            repository.getStreetName(geocoder, params)
-        }
-        geocoders.setValue(streetName)
+        workManager.enqueue(streetNameWork)
+    }
+
+    companion object {
+        const val DATA_ID = "LocTrackCar_street_data_id"
     }
 }

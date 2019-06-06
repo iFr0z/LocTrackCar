@@ -6,10 +6,10 @@ import tk.ifroz.loctrackcar.model.Result
 
 class GeocoderRepository(private val api: GeocoderApi) : BaseRepository() {
 
-    suspend fun getStreetName(geocode: String, params: Map<String, String>): Result? {
+    suspend fun getStreetName(geocode: String, format: String, results: String): Result? {
         return safeApiCall(
             call = {
-                api.getStreetNameAsync(geocode, params).await()
+                api.getStreetNameAsync(geocode, format, results).await()
             },
             errorMessage = "Error get street name"
         )
