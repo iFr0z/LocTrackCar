@@ -58,7 +58,7 @@ class NotificationActivity : AppCompatActivity() {
                         val workInfo = listOfWorkInfo[0]
                         if (!workInfo.state.isFinished) {
                             val patternNotification = getString(R.string.notification_pattern)
-                            carViewModel = of(this).get(carViewModel::class.java)
+                            carViewModel = of(this).get(CarViewModel::class.java)
                             carViewModel.upsertReminder(
                                 Reminder(
                                     SimpleDateFormat(

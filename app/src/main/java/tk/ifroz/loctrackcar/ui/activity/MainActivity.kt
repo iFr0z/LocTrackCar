@@ -194,7 +194,7 @@ class MainActivity : AppCompatActivity(), UserLocationObjectListener, CameraList
     }
 
     private fun retrieveCar() {
-        carViewModel = of(this).get(carViewModel::class.java)
+        carViewModel = of(this).get(CarViewModel::class.java)
         carViewModel.targets.observe(this, Observer { target ->
             target?.let {
                 routeEnd = Point(target.latitude, target.longitude)
