@@ -66,38 +66,37 @@ import tk.ifroz.loctrackcar.ui.work.GeocoderWork.Companion.FORMAT_DATA
 import tk.ifroz.loctrackcar.ui.work.GeocoderWork.Companion.GEOCODE_DATA
 import tk.ifroz.loctrackcar.ui.work.GeocoderWork.Companion.OUTPUT_DATA
 import tk.ifroz.loctrackcar.ui.work.GeocoderWork.Companion.RESULTS_DATA
+import tk.ifroz.loctrackcar.viewmodel.CarViewModel
 import tk.ifroz.loctrackcar.viewmodel.GeocoderViewModel
-import tk.ifroz.loctrackcar.viewmodel.MarkerCarViewModel
 import tk.ifroz.loctrackcar.viewmodel.NotificationViewModel
 
 class MainActivity : AppCompatActivity(), UserLocationObjectListener, CameraListener, RouteListener,
     SearchListener, OnNavigationItemSelectedListener {
 
-    private var permissionLocation = false
-    private var followUserLocation = false
-    private var markerCar = false
+    private var isPermission = false
+    private var isFollowUser = false
+    private var isCar = false
+    private var isPanorama = false
+    private var isPedestrian = false
+    private var isMarker = false
 
-    private var routeEndLocation = Point(0.0, 0.0)
-    private var routeStartLocation = Point(0.0, 0.0)
-
-    private lateinit var markerCarObject: MapObjectCollection
-    private lateinit var markerCarPlacemark: PlacemarkMapObject
-
-    private var markerCarPanorama = false
-
-    private lateinit var markerSearchPlaceObject: MapObjectCollection
-    private lateinit var markerSearchPlacePlacemark: PlacemarkMapObject
-    private var markerSearchPlace = false
+    private var routeEnd = Point(0.0, 0.0)
+    private var routeStart = Point(0.0, 0.0)
 
     private lateinit var userLocationLayer: UserLocationLayer
 
-    private var markerCarPolyline = false
-    private lateinit var markerCarPolylineObject: MapObjectCollection
-    private lateinit var markerCarPedestrianRouter: PedestrianRouter
+    private lateinit var carObject: MapObjectCollection
+    private lateinit var carPlacemark: PlacemarkMapObject
 
-    private lateinit var notificationViewModel: NotificationViewModel
-    private lateinit var markerCarViewModel: MarkerCarViewModel
+    private lateinit var carPedestrianObject: MapObjectCollection
+    private lateinit var carPedestrianRouter: PedestrianRouter
+
+    private lateinit var markerObject: MapObjectCollection
+    private lateinit var markerPlacemark: PlacemarkMapObject
+
+    private lateinit var carViewModel: CarViewModel
     private lateinit var geocoderViewModel: GeocoderViewModel
+    private lateinit var notificationViewModel: NotificationViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         MapKitFactory.setApiKey(mapKitApiKey)
@@ -129,7 +128,6 @@ class MainActivity : AppCompatActivity(), UserLocationObjectListener, CameraList
                 if (grantResults[0] == PERMISSION_GRANTED) {
                     onMapReady()
                 }
-
                 return
             }
         }
@@ -154,18 +152,18 @@ class MainActivity : AppCompatActivity(), UserLocationObjectListener, CameraList
 
         searchPlace()
 
-        bottomSheetMarkerCar()
+        bottomSheetCar()
 
-        marker_fab.setOnClickListener {
-            if (permissionLocation) {
+        car_fab.setOnClickListener {
+            if (isPermission) {
                 noAnchor()
 
-                if (markerCar) {
+                if (isCar) {
                     map_v.map.move(
-                        CameraPosition(routeEndLocation, 16f, 0f, 0f), Animation(SMOOTH, 1f), null
+                        CameraPosition(routeEnd, 16f, 0f, 0f), Animation(SMOOTH, 1f), null
                     )
                 } else {
-                    insertMarkerCar()
+                    insertCar()
                 }
 
                 from(bottom_sheet).state = STATE_COLLAPSED
@@ -174,58 +172,58 @@ class MainActivity : AppCompatActivity(), UserLocationObjectListener, CameraList
             }
         }
         location_fab.setOnClickListener {
-            if (permissionLocation) {
-                cameraUserPosition()
+            if (isPermission) {
+                cameraPositionUser()
 
-                followUserLocation = true
+                isFollowUser = true
             } else {
                 checkPermission()
             }
         }
-        directions_walk_fab.setOnClickListener {
-            drawPolyline()
+        walk_fab.setOnClickListener {
+            drawPedestrian()
         }
 
-        retrieveMarkerCar()
+        retrieveCar()
     }
 
-    private fun insertMarkerCar() {
+    private fun insertCar() {
         val cameraPositionLatitude = userLocationLayer.cameraPosition()!!.target.latitude
         val cameraPositionLongitude = userLocationLayer.cameraPosition()!!.target.longitude
-        markerCarViewModel.insertTarget(Target(cameraPositionLatitude, cameraPositionLongitude))
+        carViewModel.insertTarget(Target(cameraPositionLatitude, cameraPositionLongitude))
     }
 
-    private fun retrieveMarkerCar() {
-        markerCarViewModel = of(this).get(MarkerCarViewModel::class.java)
-        markerCarViewModel.targets.observe(this, Observer { target ->
+    private fun retrieveCar() {
+        carViewModel = of(this).get(carViewModel::class.java)
+        carViewModel.targets.observe(this, Observer { target ->
             target?.let {
-                routeEndLocation = Point(target.latitude, target.longitude)
-                drawMarkerCar(routeEndLocation)
+                routeEnd = Point(target.latitude, target.longitude)
+                drawCar(routeEnd)
             }
         })
     }
 
-    private fun drawMarkerCar(routeEndLocation: Point) {
-        markerCarObject = map_v.map.mapObjects.addCollection()
-        markerCarPlacemark = markerCarObject.addPlacemark(routeEndLocation)
+    private fun drawCar(routeEnd: Point) {
+        carObject = map_v.map.mapObjects.addCollection()
+        carPlacemark = carObject.addPlacemark(routeEnd)
         val bitmap = ImageProviderCustom(this, R.drawable.ic_marker_black_45dp).image
-        markerCarPlacemark.setIcon(fromBitmap(bitmap))
-        markerCarPlacemark.setIconStyle(IconStyle().setAnchor(PointF(0.5f, 1f)))
+        carPlacemark.setIcon(fromBitmap(bitmap))
+        carPlacemark.setIconStyle(IconStyle().setAnchor(PointF(0.5f, 1f)))
 
-        dataMarkerCar(routeEndLocation.latitude, routeEndLocation.longitude)
+        dataCar(routeEnd.latitude, routeEnd.longitude)
 
-        markerCar = true
+        isCar = true
     }
 
-    private fun dataMarkerCar(latitude: Double, longitude: Double) {
+    private fun dataCar(latitude: Double, longitude: Double) {
         val subtitleLatitude = getString(R.string.latitude_subtitle)
         val subtitleLongitude = getString(R.string.longitude_subtitle)
         val coordinates = "$subtitleLatitude $latitude\n$subtitleLongitude $longitude"
-        lat_lng_tv.text = coordinates
+        coordinates_tv.text = coordinates
 
         ConnectivityLiveData(this).observe(this, Observer { isNetworkAvailable ->
-            if (isNetworkAvailable && !markerCarPanorama) {
-                showPanorama(routeEndLocation)
+            if (isNetworkAvailable && !isPanorama) {
+                showPanorama(routeEnd)
             }
         })
 
@@ -243,7 +241,6 @@ class MainActivity : AppCompatActivity(), UserLocationObjectListener, CameraList
                     if (listOfWorkInfo.isNullOrEmpty()) {
                         return@Observer
                     }
-
                     val workInfo = listOfWorkInfo[0]
                     if (workInfo.state.isFinished) {
                         val addressName = workInfo.outputData.getString(OUTPUT_DATA)
@@ -253,7 +250,7 @@ class MainActivity : AppCompatActivity(), UserLocationObjectListener, CameraList
             }
         )
 
-        markerCarViewModel.reminders.observe(this, Observer { reminder ->
+        carViewModel.reminders.observe(this, Observer { reminder ->
             reminder?.let {
                 notification_tv.text = reminder.reminder
 
@@ -268,7 +265,6 @@ class MainActivity : AppCompatActivity(), UserLocationObjectListener, CameraList
                     if (listOfWorkInfo.isNullOrEmpty()) {
                         return@Observer
                     }
-
                     val workInfo = listOfWorkInfo[0]
                     if (workInfo.state.isFinished) {
                         notification_rl.visibility = GONE
@@ -280,20 +276,17 @@ class MainActivity : AppCompatActivity(), UserLocationObjectListener, CameraList
         )
     }
 
-    private fun showPanorama(routeEndLocation: Point) {
+    private fun showPanorama(routeEnd: Point) {
         val panoramaService = PlacesFactory.getInstance().createPanoramaService()
-        panoramaService.findNearest(
-            Point(routeEndLocation.latitude, routeEndLocation.longitude), this
-        )
+        panoramaService.findNearest(Point(routeEnd.latitude, routeEnd.longitude), this)
     }
 
     override fun onPanoramaSearchResult(panoramaId: String) {
         panorama_v.player.openPanorama(panoramaId)
-        val panoramaLogoAlignment = Alignment(RIGHT, TOP)
-        panorama_v.player.logo.setAlignment(panoramaLogoAlignment)
+        panorama_v.player.logo.setAlignment(Alignment(RIGHT, TOP))
         panorama_v.setNoninteractive(true)
 
-        markerCarPanorama = true
+        isPanorama = true
     }
 
     override fun onPanoramaSearchError(error: Error) {}
@@ -306,19 +299,17 @@ class MainActivity : AppCompatActivity(), UserLocationObjectListener, CameraList
 
         map_v.map.addCameraListener(this)
 
-        cameraUserPosition()
+        cameraPositionUser()
 
         map_scale_v.metersOnly()
 
-        permissionLocation = true
+        isPermission = true
     }
 
-    private fun cameraUserPosition() {
+    private fun cameraPositionUser() {
         if (userLocationLayer.cameraPosition() != null) {
-            routeStartLocation = userLocationLayer.cameraPosition()!!.target
-            map_v.map.move(
-                CameraPosition(routeStartLocation, 16f, 0f, 0f), Animation(SMOOTH, 1f), null
-            )
+            routeStart = userLocationLayer.cameraPosition()!!.target
+            map_v.map.move(CameraPosition(routeStart, 16f, 0f, 0f), Animation(SMOOTH, 1f), null)
         } else {
             map_v.map.move(CameraPosition(Point(0.0, 0.0), 16f, 0f, 0f))
         }
@@ -330,11 +321,11 @@ class MainActivity : AppCompatActivity(), UserLocationObjectListener, CameraList
         map_scale_v.update(map.cameraPosition.zoom, map.cameraPosition.target.latitude)
 
         if (finish) {
-            if (followUserLocation) {
+            if (isFollowUser) {
                 setAnchor()
             }
         } else {
-            if (!followUserLocation) {
+            if (!isFollowUser) {
                 noAnchor()
             }
         }
@@ -348,7 +339,7 @@ class MainActivity : AppCompatActivity(), UserLocationObjectListener, CameraList
 
         location_fab.setImageResource(R.drawable.ic_my_location_black_24dp)
 
-        followUserLocation = false
+        isFollowUser = false
     }
 
     private fun noAnchor() {
@@ -381,40 +372,40 @@ class MainActivity : AppCompatActivity(), UserLocationObjectListener, CameraList
         val requestStart = getString(R.string.search_place_request_start)
         val requestEnd = getString(R.string.search_place_request_end)
         search_place_et.onEditorAction(
-            IME_ACTION_SEARCH, latLngPattern, requestStart, requestEnd
+            IME_ACTION_SEARCH, coordinatesPattern, requestStart, requestEnd
         ) { arrayLatLng ->
             searchPlaceCursorOff()
 
-            if (!markerSearchPlace) {
-                val searchPlaceLatitude = arrayLatLng!![0].toDouble()
-                val searchPlaceLongitude = arrayLatLng[1].toDouble()
-                drawMarkerSearchPlace(searchPlaceLatitude, searchPlaceLongitude)
+            if (!isMarker) {
+                val markerLatitude = arrayLatLng!![0].toDouble()
+                val markerLongitude = arrayLatLng[1].toDouble()
+                drawMarker(markerLatitude, markerLongitude)
             }
         }
 
         search_place_et.onTextChanges(clear_search_iv)
         clear_search_iv.setOnClickListener {
-            if (markerSearchPlace) {
-                markerSearchPlaceObject.clear()
+            if (isMarker) {
+                markerObject.clear()
 
-                markerSearchPlace = false
+                isMarker = false
             }
 
             search_place_et.text.clear()
         }
     }
 
-    private fun drawMarkerSearchPlace(searchPlaceLatitude: Double, searchPlaceLongitude: Double) {
-        markerSearchPlaceObject = map_v.map.mapObjects.addCollection()
-        val point = Point(searchPlaceLatitude, searchPlaceLongitude)
-        markerSearchPlacePlacemark = markerSearchPlaceObject.addPlacemark(point)
+    private fun drawMarker(markerLatitude: Double, markerLongitude: Double) {
+        markerObject = map_v.map.mapObjects.addCollection()
+        val point = Point(markerLatitude, markerLongitude)
+        markerPlacemark = markerObject.addPlacemark(point)
         val bitmap = ImageProviderCustom(this, R.drawable.ic_place_black_45dp).image
-        markerSearchPlacePlacemark.setIcon(fromBitmap(bitmap))
-        markerSearchPlacePlacemark.setIconStyle(IconStyle().setAnchor(PointF(0.5f, 1f)))
+        markerPlacemark.setIcon(fromBitmap(bitmap))
+        markerPlacemark.setIconStyle(IconStyle().setAnchor(PointF(0.5f, 1f)))
 
         map_v.map.move(CameraPosition(point, 16f, 0f, 0f), Animation(SMOOTH, 1f), null)
 
-        markerSearchPlace = true
+        isMarker = true
     }
 
     private fun searchPlaceCursorOn() {
@@ -427,7 +418,7 @@ class MainActivity : AppCompatActivity(), UserLocationObjectListener, CameraList
 
         drawer_l.setDrawerLockMode(LOCK_MODE_LOCKED_CLOSED)
 
-        if (permissionLocation) {
+        if (isPermission) {
             noAnchor()
         }
     }
@@ -472,7 +463,7 @@ class MainActivity : AppCompatActivity(), UserLocationObjectListener, CameraList
         toggle.syncState()
     }
 
-    private fun bottomSheetMarkerCar() {
+    private fun bottomSheetCar() {
         from(bottom_sheet).state = STATE_HIDDEN
 
         bottom_sheet.bottomSheetStateCallback { state ->
@@ -481,9 +472,9 @@ class MainActivity : AppCompatActivity(), UserLocationObjectListener, CameraList
                     bottom_navigation_v.visibility = VISIBLE
                     bottom_navigation_v.animate().translationY(0f).alpha(1.0f)
 
-                    marker_fab.hide()
+                    car_fab.hide()
                     location_fab.animate().translationX(200f).alpha(0.0f)
-                    directions_walk_fab.show()
+                    walk_fab.show()
 
                     app_bar_l.animate().translationY(-200f).alpha(0.0f)
 
@@ -492,9 +483,9 @@ class MainActivity : AppCompatActivity(), UserLocationObjectListener, CameraList
                 STATE_HIDDEN -> {
                     bottom_navigation_v.animate().translationY(150f).alpha(0.0f)
 
-                    marker_fab.show()
+                    car_fab.show()
                     location_fab.animate().translationX(0f).alpha(1.0f)
-                    directions_walk_fab.hide()
+                    walk_fab.hide()
 
                     app_bar_l.animate().translationY(0f).alpha(1.0f)
 
@@ -508,44 +499,44 @@ class MainActivity : AppCompatActivity(), UserLocationObjectListener, CameraList
         bottom_navigation_v.setOnNavigationItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.time -> startActivity<NotificationActivity>()
-                R.id.share -> share("${routeEndLocation.latitude},${routeEndLocation.longitude}")
-                R.id.more -> dialogMarkerCarMenu()
+                R.id.share -> share("${routeEnd.latitude},${routeEnd.longitude}")
+                R.id.more -> dialogMenuCar()
             }
             true
         }
         return true
     }
 
-    private fun drawPolyline() {
-        routeStartLocation = userLocationLayer.cameraPosition()!!.target
-        if (!markerCarPolyline) {
-            markerCarPolylineObject = map_v.map.mapObjects.addCollection()
+    private fun drawPedestrian() {
+        routeStart = userLocationLayer.cameraPosition()!!.target
+        if (!isPedestrian) {
+            carPedestrianObject = map_v.map.mapObjects.addCollection()
             val points = ArrayList<RequestPoint>()
-            points.add(RequestPoint(routeStartLocation, WAYPOINT, null))
-            points.add(RequestPoint(routeEndLocation, WAYPOINT, null))
-            markerCarPedestrianRouter = TransportFactory.getInstance().createPedestrianRouter()
-            markerCarPedestrianRouter.requestRoutes(points, TimeOptions(), this)
+            points.add(RequestPoint(routeStart, WAYPOINT, null))
+            points.add(RequestPoint(routeEnd, WAYPOINT, null))
+            carPedestrianRouter = TransportFactory.getInstance().createPedestrianRouter()
+            carPedestrianRouter.requestRoutes(points, TimeOptions(), this)
         } else {
-            cameraPolylinePosition()
+            cameraPositionPedestrian()
         }
     }
 
-    private fun cameraPolylinePosition() {
+    private fun cameraPositionPedestrian() {
         val screenCenter = Point(
-            (routeStartLocation.latitude + routeEndLocation.latitude) / 2,
-            (routeStartLocation.longitude + routeEndLocation.longitude) / 2
+            (routeStart.latitude + routeEnd.latitude) / 2,
+            (routeStart.longitude + routeEnd.longitude) / 2
         )
         map_v.map.move(CameraPosition(screenCenter, 14f, 0f, 0f), Animation(SMOOTH, 1f), null)
     }
 
     override fun onMasstransitRoutes(routes: List<Route>) {
         if (routes.isNotEmpty()) {
-            val polylineMapObject = markerCarPolylineObject.addPolyline(routes[0].geometry)
-            polylineMapObject.strokeColor = getColor(this, R.color.colorDot)
-            polylineMapObject.outlineColor = getColor(this, R.color.colorWayOutline)
-            polylineMapObject.outlineWidth = 1f
+            val pedestrianMapObject = carPedestrianObject.addPolyline(routes[0].geometry)
+            pedestrianMapObject.strokeColor = getColor(this, R.color.colorDot)
+            pedestrianMapObject.outlineColor = getColor(this, R.color.colorWayOutline)
+            pedestrianMapObject.outlineWidth = 1f
 
-            cameraPolylinePosition()
+            cameraPositionPedestrian()
 
             val distance = routes[0].sections[0].metadata.weight.walkingDistance.text
             val time = routes[0].sections[0].metadata.weight.time.text
@@ -553,47 +544,47 @@ class MainActivity : AppCompatActivity(), UserLocationObjectListener, CameraList
             distance_tv.text = combination
             distance_rl.visibility = VISIBLE
 
-            markerCarPolyline = true
+            isPedestrian = true
         }
     }
 
     override fun onMasstransitRoutesError(error: Error) {}
 
-    private fun dialogMarkerCarMenu() {
-        val deleteMarkerCarPolyline = getString(R.string.dialog_menu_item_delete_polyline)
-        val deleteMarkerCar = getString(R.string.dialog_menu_item_delete_marker_car)
-        val listItem = listOf(deleteMarkerCarPolyline, deleteMarkerCar)
+    private fun dialogMenuCar() {
+        val deletePedestrian = getString(R.string.dialog_menu_item_delete_pedestrian)
+        val deleteCar = getString(R.string.dialog_menu_item_delete_car)
         val menuTitle = getString(R.string.dialog_menu_title)
+        val listItem = listOf(deletePedestrian, deleteCar)
         selector(menuTitle, listItem) { _, itemId ->
             when (itemId) {
-                0 -> deleteMarkerCarPolyline()
-                1 -> deleteMarkerCar()
+                0 -> deletePedestrian()
+                1 -> deleteCar()
             }
         }
     }
 
-    private fun deleteMarkerCarPolyline() {
-        if (markerCarPolyline) {
-            markerCarPolylineObject.clear()
+    private fun deletePedestrian() {
+        if (isPedestrian) {
+            carPedestrianObject.clear()
 
             distance_rl.visibility = GONE
 
-            markerCarPolyline = false
+            isPedestrian = false
         }
     }
 
-    private fun deleteMarkerCar() {
-        if (markerCar) {
-            deleteMarkerCarPolyline()
+    private fun deleteCar() {
+        if (isCar) {
+            deletePedestrian()
 
-            markerCarObject.clear()
+            carObject.clear()
 
-            markerCarViewModel.deleteTarget()
-            markerCarViewModel.deleteReminder()
+            carViewModel.deleteTarget()
+            carViewModel.deleteReminder()
             notificationViewModel.cancel()
 
-            markerCarPanorama = false
-            markerCar = false
+            isPanorama = false
+            isCar = false
 
             from(bottom_sheet).state = STATE_HIDDEN
         }
@@ -629,7 +620,7 @@ class MainActivity : AppCompatActivity(), UserLocationObjectListener, CameraList
     companion object {
         const val mapKitApiKey = "e4b59fa0-e067-42ae-9044-5c6a038503e9"
         const val requestPermissionLocation = 1
-        const val latLngPattern = "(^[-+]?(?:[1-8]?\\d(?:\\.\\d+)?|90(?:\\.0+)?))," +
+        const val coordinatesPattern = "(^[-+]?(?:[1-8]?\\d(?:\\.\\d+)?|90(?:\\.0+)?))," +
                 "\\s*([-+]?(?:180(?:\\.0+)?|(?:(?:1[0-7]\\d)|(?:[1-9]?\\d))(?:\\.\\d+)?))\$"
     }
 }

@@ -16,7 +16,7 @@
         <include layout="@layout/app_bar_main" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/marker_fab"
+            android:id="@+id/car_fab"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|end"
@@ -89,7 +89,7 @@
         app:layout_anchorGravity="right">
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/directions_walk_fab"
+            android:id="@+id/walk_fab"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="16dp"

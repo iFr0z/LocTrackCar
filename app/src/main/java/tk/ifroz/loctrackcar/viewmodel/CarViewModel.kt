@@ -11,7 +11,7 @@ import tk.ifroz.loctrackcar.db.entity.Reminder
 import tk.ifroz.loctrackcar.db.entity.Target
 import tk.ifroz.loctrackcar.repository.MarkerCarRepository
 
-class MarkerCarViewModel(application: Application) : AndroidViewModel(application) {
+class CarViewModel(application: Application) : AndroidViewModel(application) {
 
     private val repository: MarkerCarRepository
     val targets: LiveData<Target>

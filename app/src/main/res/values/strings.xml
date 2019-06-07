@@ -13,8 +13,8 @@
     <string name="search_place_request_start">По запросу</string>
     <string name="search_place_request_end">ничего не найдено</string>
     <string name="dialog_menu_title">Удалить</string>
-    <string name="dialog_menu_item_delete_polyline">Проложенный путь</string>
-    <string name="dialog_menu_item_delete_marker_car">Маркер</string>
+    <string name="dialog_menu_item_delete_pedestrian">Проложенный путь</string>
+    <string name="dialog_menu_item_delete_car">Маркер</string>
     <string name="no_address_name">Адрес недоступен</string>
     <string name="no_internet_connection">Недоступно в офлайн-режиме</string>
 
