@@ -223,11 +223,9 @@ class MainActivity : AppCompatActivity(), UserLocationObjectListener, CameraList
         val coordinates = "$subtitleLatitude $latitude\n$subtitleLongitude $longitude"
         lat_lng_tv.text = coordinates
 
-        ConnectivityLiveData(this).observe(this, Observer { isConnected ->
-            isConnected?.let {
-                if (!markerCarPanorama) {
-                    showPanorama(routeEndLocation)
-                }
+        ConnectivityLiveData(this).observe(this, Observer { isNetworkAvailable ->
+            if (isNetworkAvailable && !markerCarPanorama) {
+                showPanorama(routeEndLocation)
             }
         })
 
