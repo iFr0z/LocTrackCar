@@ -94,10 +94,10 @@
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
             android:visibility="invisible"
-            app:backgroundTint="@color/colorNull"
+            app:backgroundTint="@color/colorPrimaryDark"
             app:elevation="8dp"
-            app:rippleColor="@color/colorGreyRipple"
-            app:srcCompat="@drawable/ic_directions_walk_black_24dp" />
+            app:rippleColor="@color/colorNull"
+            app:srcCompat="@drawable/ic_directions_walk_white_24dp" />
 
     </LinearLayout>
 
