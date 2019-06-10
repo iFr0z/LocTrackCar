@@ -125,7 +125,7 @@ class MainActivity : AppCompatActivity(), UserLocationObjectListener, CameraList
     ) {
         when (requestCode) {
             requestPermissionLocation -> {
-                if (grantResults[0] == PERMISSION_GRANTED) {
+                if (grantResults.isNotEmpty() && grantResults[0] == PERMISSION_GRANTED) {
                     onMapReady()
                 }
                 return
