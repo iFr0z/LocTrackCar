@@ -67,8 +67,4 @@ dependencies {
     rootProject.yandexMapKitDependencies.each { name, dependency ->
         add("implementation", dependency)
     }
-
-    rootProject.otherDependencies.each { name, dependency ->
-        add("implementation", dependency)
-    }
 }

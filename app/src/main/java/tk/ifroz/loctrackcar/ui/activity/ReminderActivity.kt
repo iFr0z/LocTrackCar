@@ -6,24 +6,24 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders.of
 import androidx.work.Data
 import androidx.work.WorkInfo
-import kotlinx.android.synthetic.main.activity_notification.*
+import kotlinx.android.synthetic.main.activity_reminder.*
 import tk.ifroz.loctrackcar.R
 import tk.ifroz.loctrackcar.db.entity.Reminder
-import tk.ifroz.loctrackcar.ui.work.NotificationWork.Companion.NOTIFICATION_ID
+import tk.ifroz.loctrackcar.ui.work.ReminderWork.Companion.NOTIFICATION_ID
 import tk.ifroz.loctrackcar.viewmodel.CarViewModel
-import tk.ifroz.loctrackcar.viewmodel.NotificationViewModel
+import tk.ifroz.loctrackcar.viewmodel.ReminderViewModel
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.Locale.getDefault
 
-class NotificationActivity : AppCompatActivity() {
+class ReminderActivity : AppCompatActivity() {
 
-    private lateinit var notificationViewModel: NotificationViewModel
+    private lateinit var reminderViewModel: ReminderViewModel
     private lateinit var carViewModel: CarViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_notification)
+        setContentView(R.layout.activity_reminder)
 
         userInterface()
     }
@@ -39,17 +39,17 @@ class NotificationActivity : AppCompatActivity() {
         collapsing_toolbar_l.title = titleNotification
 
         done_fab.setOnClickListener {
-            notificationViewModel = of(this).get(NotificationViewModel::class.java)
+            reminderViewModel = of(this).get(ReminderViewModel::class.java)
             val customCalendar = Calendar.getInstance()
             customCalendar.set(
                 date_p.year, date_p.month, date_p.dayOfMonth, time_p.hour, time_p.minute, 0
             )
             val data = Data.Builder().putInt(NOTIFICATION_ID, 0).build()
-            val errorNotification = getString(R.string.notification_error)
-            notificationViewModel.scheduleNotification(
-                customCalendar, data, NOTIFICATION_ID, coordinator_l, errorNotification
+            val errorReminder = getString(R.string.reminder_error)
+            reminderViewModel.scheduleNotification(
+                customCalendar, data, NOTIFICATION_ID, coordinator_l, errorReminder
             )
-            notificationViewModel.outputStatus.observe(
+            reminderViewModel.outputStatus.observe(
                 this, Observer<List<WorkInfo>> { listOfWorkInfo ->
                     listOfWorkInfo?.let {
                         if (listOfWorkInfo.isNullOrEmpty()) {
@@ -57,12 +57,12 @@ class NotificationActivity : AppCompatActivity() {
                         }
                         val workInfo = listOfWorkInfo[0]
                         if (!workInfo.state.isFinished) {
-                            val patternNotification = getString(R.string.notification_pattern)
+                            val patternReminder = getString(R.string.reminder_pattern)
                             carViewModel = of(this).get(CarViewModel::class.java)
                             carViewModel.upsertReminder(
                                 Reminder(
                                     SimpleDateFormat(
-                                        patternNotification, getDefault()
+                                        patternReminder, getDefault()
                                     ).format(customCalendar.time).toString()
                                 )
                             )

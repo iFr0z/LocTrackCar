@@ -9,7 +9,7 @@ buildscript {
         сoroutinesVersion = '1.2.1'
         ankoVersion = '0.10.8'
 
-        materialVersion = '1.0.0'
+        materialVersion = '1.1.0-alpha07'
         appCompatVersion = '1.0.2'
         roomVersion = '2.1.0-alpha07'
         lifeCycleVersion = '2.1.0-alpha04'
@@ -24,7 +24,6 @@ buildscript {
         firebaseVersion = '16.0.8'
         yandexMapKitVersion = '3.3.1'
         playServicesVersion = '16.0.0'
-        mapScaleVersion = '1.4.2'
 
         kotlinDependencies = [
                 kotlin: 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:' + rootProject.kotlinVersion,
@@ -78,10 +77,6 @@ buildscript {
                 mapkit: 'com.yandex.android:mapkit:' + rootProject.yandexMapKitVersion,
                 places: 'com.yandex.android:places:' + rootProject.yandexMapKitVersion,
                 transport: 'com.yandex.android:transport:' + rootProject.yandexMapKitVersion
-        ]
-
-        otherDependencies = [
-                mapScale: 'com.github.pengrad:mapscaleview:' + rootProject.mapScaleVersion
         ]
     }
 

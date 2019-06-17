@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.yandex.mapkit.mapview.MapView
+        android:id="@+id/map_v"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/car_fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center|end"
+        android:layout_marginTop="70dp"
+        android:layout_marginEnd="16dp"
+        app:backgroundTint="@color/colorPrimaryDark"
+        app:elevation="8dp"
+        app:icon="@drawable/ic_marker_black_24dp"
+        app:iconTint="@color/colorNull"
+        app:rippleColor="@color/colorNull" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/location_fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center|end"
+        android:layout_marginEnd="16dp"
+        app:backgroundTint="@color/colorNull"
+        app:elevation="8dp"
+        app:rippleColor="@color/colorGreyRipple"
+        app:srcCompat="@drawable/ic_gps_off_black_24dp" />
+
+    <include layout="@layout/app_bar_main" />
+
+</FrameLayout>

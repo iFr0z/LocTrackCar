@@ -4,21 +4,17 @@ import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.graphics.PointF
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuItem
+import android.view.View.GONE
 import android.view.inputmethod.EditorInfo.IME_ACTION_SEARCH
 import android.view.inputmethod.InputMethodManager
-import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat.*
-import androidx.core.view.GravityCompat.START
 import androidx.drawerlayout.widget.DrawerLayout.*
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders.of
 import androidx.work.Data
 import androidx.work.WorkInfo
 import com.google.android.material.bottomsheet.BottomSheetBehavior.*
-import com.google.android.material.navigation.NavigationView.OnNavigationItemSelectedListener
 import com.yandex.mapkit.Animation
 import com.yandex.mapkit.Animation.Type.SMOOTH
 import com.yandex.mapkit.MapKitFactory
@@ -45,13 +41,13 @@ import com.yandex.mapkit.user_location.UserLocationObjectListener
 import com.yandex.mapkit.user_location.UserLocationView
 import com.yandex.runtime.Error
 import com.yandex.runtime.image.ImageProvider.fromBitmap
-import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
+import kotlinx.android.synthetic.main.bottom_sheet_backend.*
+import kotlinx.android.synthetic.main.bottom_sheet_frontend.*
+import kotlinx.android.synthetic.main.bottom_sheet_navigation.*
 import kotlinx.android.synthetic.main.bottom_sheet_row_distance.*
 import kotlinx.android.synthetic.main.bottom_sheet_row_location.*
-import kotlinx.android.synthetic.main.bottom_sheet_row_notification.*
-import kotlinx.android.synthetic.main.content_main.*
-import org.jetbrains.anko.browse
+import kotlinx.android.synthetic.main.bottom_sheet_row_reminder.*
 import org.jetbrains.anko.selector
 import org.jetbrains.anko.share
 import org.jetbrains.anko.startActivity
@@ -68,10 +64,10 @@ import tk.ifroz.loctrackcar.ui.work.GeocoderWork.Companion.OUTPUT_DATA
 import tk.ifroz.loctrackcar.ui.work.GeocoderWork.Companion.RESULTS_DATA
 import tk.ifroz.loctrackcar.viewmodel.CarViewModel
 import tk.ifroz.loctrackcar.viewmodel.GeocoderViewModel
-import tk.ifroz.loctrackcar.viewmodel.NotificationViewModel
+import tk.ifroz.loctrackcar.viewmodel.ReminderViewModel
 
 class MainActivity : AppCompatActivity(), UserLocationObjectListener, CameraListener, RouteListener,
-    SearchListener, OnNavigationItemSelectedListener {
+    SearchListener {
 
     private var isPermission = false
     private var isFollowUser = false
@@ -96,7 +92,7 @@ class MainActivity : AppCompatActivity(), UserLocationObjectListener, CameraList
 
     private lateinit var carViewModel: CarViewModel
     private lateinit var geocoderViewModel: GeocoderViewModel
-    private lateinit var notificationViewModel: NotificationViewModel
+    private lateinit var reminderViewModel: ReminderViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         MapKitFactory.setApiKey(mapKitApiKey)
@@ -144,11 +140,8 @@ class MainActivity : AppCompatActivity(), UserLocationObjectListener, CameraList
         }
 
         setSupportActionBar(toolbar)
-        initToggleToolbar()
-        navigation_v.setNavigationItemSelectedListener(this)
 
-        val mapLogoAlignment = Alignment(LEFT, BOTTOM)
-        map_v.map.logo.setAlignment(mapLogoAlignment)
+        map_v.map.logo.setAlignment(Alignment(LEFT, BOTTOM))
 
         searchPlace()
 
@@ -166,22 +159,21 @@ class MainActivity : AppCompatActivity(), UserLocationObjectListener, CameraList
                     insertCar()
                 }
 
-                from(bottom_sheet).state = STATE_COLLAPSED
+                from(bottom_sheet).state = STATE_EXPANDED
             } else {
                 checkPermission()
             }
         }
         location_fab.setOnClickListener {
             if (isPermission) {
+                from(bottom_sheet).state = STATE_HIDDEN
+
                 cameraPositionUser()
 
                 isFollowUser = true
             } else {
                 checkPermission()
             }
-        }
-        walk_fab.setOnClickListener {
-            drawPedestrian()
         }
 
         retrieveCar()
@@ -252,14 +244,14 @@ class MainActivity : AppCompatActivity(), UserLocationObjectListener, CameraList
 
         carViewModel.reminders.observe(this, Observer { reminder ->
             reminder?.let {
-                notification_tv.text = reminder.reminder
+                reminder_tv.text = reminder.reminder
 
                 from(bottom_sheet).state = STATE_EXPANDED
             }
         })
 
-        notificationViewModel = of(this).get(NotificationViewModel::class.java)
-        notificationViewModel.outputStatus.observe(
+        reminderViewModel = of(this).get(ReminderViewModel::class.java)
+        reminderViewModel.outputStatus.observe(
             this, Observer<List<WorkInfo>> { listOfWorkInfo ->
                 listOfWorkInfo?.let {
                     if (listOfWorkInfo.isNullOrEmpty()) {
@@ -267,9 +259,9 @@ class MainActivity : AppCompatActivity(), UserLocationObjectListener, CameraList
                     }
                     val workInfo = listOfWorkInfo[0]
                     if (workInfo.state.isFinished) {
-                        notification_rl.visibility = GONE
+                        reminder_cv.visibility = GONE
                     } else {
-                        notification_rl.visibility = VISIBLE
+                        reminder_cv.visibility = VISIBLE
                     }
                 }
             }
@@ -301,8 +293,6 @@ class MainActivity : AppCompatActivity(), UserLocationObjectListener, CameraList
 
         cameraPositionUser()
 
-        map_scale_v.metersOnly()
-
         isPermission = true
     }
 
@@ -318,8 +308,6 @@ class MainActivity : AppCompatActivity(), UserLocationObjectListener, CameraList
     override fun onCameraPositionChanged(
         map: Map, cPos: CameraPosition, cUpd: CameraUpdateSource, finish: Boolean
     ) {
-        map_scale_v.update(map.cameraPosition.zoom, map.cameraPosition.target.latitude)
-
         if (finish) {
             if (isFollowUser) {
                 setAnchor()
@@ -411,12 +399,12 @@ class MainActivity : AppCompatActivity(), UserLocationObjectListener, CameraList
     private fun searchPlaceCursorOn() {
         search_place_et.isCursorVisible = true
 
+        search_iv.visibility = GONE
+
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         toolbar.setNavigationOnClickListener {
             searchPlaceCursorOff()
         }
-
-        drawer_l.setDrawerLockMode(LOCK_MODE_LOCKED_CLOSED)
 
         if (isPermission) {
             noAnchor()
@@ -429,38 +417,9 @@ class MainActivity : AppCompatActivity(), UserLocationObjectListener, CameraList
 
         search_place_et.isCursorVisible = false
 
+        search_iv.visibility = VISIBLE
+
         supportActionBar!!.setDisplayHomeAsUpEnabled(false)
-        initToggleToolbar()
-
-        drawer_l.setDrawerLockMode(LOCK_MODE_UNLOCKED)
-    }
-
-    override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.type_map_night -> {
-                if (item.isChecked) {
-                    item.isChecked = false
-                    map_v.map.isNightModeEnabled = false
-                } else {
-                    item.isChecked = true
-                    map_v.map.isNightModeEnabled = true
-                }
-            }
-            R.id.privacy_policy -> {
-                val privacyPolicyUrl = getString(R.string.privacy_policy_url)
-                browse(privacyPolicyUrl)
-            }
-        }
-        drawer_l.closeDrawer(START)
-        return false
-    }
-
-    private fun initToggleToolbar() {
-        val toggle = ActionBarDrawerToggle(
-            this, drawer_l, toolbar, R.string.app_name, R.string.app_name
-        )
-        drawer_l.addDrawerListener(toggle)
-        toggle.syncState()
     }
 
     private fun bottomSheetCar() {
@@ -468,43 +427,31 @@ class MainActivity : AppCompatActivity(), UserLocationObjectListener, CameraList
 
         bottom_sheet.bottomSheetStateCallback { state ->
             when (state) {
-                STATE_COLLAPSED -> {
-                    bottom_navigation_v.visibility = VISIBLE
-                    bottom_navigation_v.animate().translationY(0f).alpha(1.0f)
-
+                STATE_EXPANDED -> {
                     car_fab.hide()
-                    location_fab.animate().translationX(200f).alpha(0.0f)
-                    walk_fab.show()
 
                     app_bar_l.animate().translationY(-200f).alpha(0.0f)
-
-                    drawer_l.setDrawerLockMode(LOCK_MODE_LOCKED_CLOSED)
                 }
                 STATE_HIDDEN -> {
-                    bottom_navigation_v.animate().translationY(150f).alpha(0.0f)
-
                     car_fab.show()
-                    location_fab.animate().translationX(0f).alpha(1.0f)
-                    walk_fab.hide()
 
                     app_bar_l.animate().translationY(0f).alpha(1.0f)
-
-                    drawer_l.setDrawerLockMode(LOCK_MODE_UNLOCKED)
                 }
             }
         }
-    }
 
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        bottom_navigation_v.setOnNavigationItemSelectedListener { item ->
-            when (item.itemId) {
-                R.id.time -> startActivity<NotificationActivity>()
-                R.id.share -> share("${routeEnd.latitude},${routeEnd.longitude}")
-                R.id.more -> dialogMenuCar()
-            }
-            true
+        pedestrian_fab.setOnClickListener {
+            drawPedestrian()
         }
-        return true
+        reminder_fab.setOnClickListener {
+            startActivity<ReminderActivity>()
+        }
+        share_fab.setOnClickListener {
+            share("${routeEnd.latitude},${routeEnd.longitude}")
+        }
+        delete_fab.setOnClickListener {
+            dialogMenuCar()
+        }
     }
 
     private fun drawPedestrian() {
@@ -542,7 +489,7 @@ class MainActivity : AppCompatActivity(), UserLocationObjectListener, CameraList
             val time = routes[0].sections[0].metadata.weight.time.text
             val combination = "$distance \u00B7 $time \u00B7\uD83D\uDEB6"
             distance_tv.text = combination
-            distance_rl.visibility = VISIBLE
+            distance_cv.visibility = VISIBLE
 
             isPedestrian = true
         }
@@ -567,7 +514,7 @@ class MainActivity : AppCompatActivity(), UserLocationObjectListener, CameraList
         if (isPedestrian) {
             carPedestrianObject.clear()
 
-            distance_rl.visibility = GONE
+            distance_cv.visibility = GONE
 
             isPedestrian = false
         }
@@ -581,7 +528,7 @@ class MainActivity : AppCompatActivity(), UserLocationObjectListener, CameraList
 
             carViewModel.deleteTarget()
             carViewModel.deleteReminder()
-            notificationViewModel.cancel()
+            reminderViewModel.cancel()
 
             isPanorama = false
             isCar = false
@@ -591,15 +538,12 @@ class MainActivity : AppCompatActivity(), UserLocationObjectListener, CameraList
     }
 
     override fun onBackPressed() {
-        val stateDrawer = drawer_l.isDrawerOpen(START)
-        val stateCollapsed = from(bottom_sheet).state == STATE_COLLAPSED
         val stateExpanded = from(bottom_sheet).state == STATE_EXPANDED
         val stateCursor = search_place_et.isCursorVisible
         when {
-            stateDrawer -> drawer_l.closeDrawer(START)
-            stateCollapsed || stateExpanded -> from(bottom_sheet).state = STATE_HIDDEN
+            stateExpanded -> from(bottom_sheet).state = STATE_HIDDEN
             stateCursor -> searchPlaceCursorOff()
-            !stateCollapsed || !stateDrawer || !stateCursor -> super.onBackPressed()
+            !stateExpanded || !stateCursor -> super.onBackPressed()
         }
     }
 

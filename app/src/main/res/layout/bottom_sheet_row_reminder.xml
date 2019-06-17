@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/distance_cv"
+    android:id="@+id/reminder_cv"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginStart="16dp"
     android:layout_marginTop="16dp"
+    android:layout_marginEnd="16dp"
     android:layout_marginBottom="16dp"
     android:visibility="gone"
     app:cardCornerRadius="23dp"
@@ -22,7 +22,7 @@
         android:paddingBottom="16dp">
 
         <TextView
-            android:id="@+id/distance_tv"
+            android:id="@+id/reminder_tv"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ellipsize="end"
@@ -33,7 +33,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ellipsize="end"
-            android:text="@string/shortest_way"
+            android:text="@string/notification_title"
             android:textColor="@color/colorNull"
             android:textSize="14sp" />
 

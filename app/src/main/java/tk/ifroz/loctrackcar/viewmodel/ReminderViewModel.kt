@@ -9,12 +9,12 @@ import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import com.google.android.material.snackbar.Snackbar
-import tk.ifroz.loctrackcar.ui.work.NotificationWork
-import tk.ifroz.loctrackcar.ui.work.NotificationWork.Companion.NOTIFICATION_ID
+import tk.ifroz.loctrackcar.ui.work.ReminderWork
+import tk.ifroz.loctrackcar.ui.work.ReminderWork.Companion.NOTIFICATION_ID
 import java.util.*
 import java.util.concurrent.TimeUnit.MILLISECONDS
 
-class NotificationViewModel(application: Application) : AndroidViewModel(application) {
+class ReminderViewModel(application: Application) : AndroidViewModel(application) {
 
     private val workManager: WorkManager = WorkManager.getInstance(application)
     internal val outputStatus: LiveData<List<WorkInfo>>
@@ -31,11 +31,11 @@ class NotificationViewModel(application: Application) : AndroidViewModel(applica
         val customTime = customCalendar.timeInMillis
         if (customTime > currentTime) {
             val delay = customTime - currentTime
-            val notificationWork = OneTimeWorkRequest.Builder(NotificationWork::class.java)
+            val reminderWork = OneTimeWorkRequest.Builder(ReminderWork::class.java)
                 .addTag(tag).setInitialDelay(delay, MILLISECONDS).setInputData(data).build()
 
             cancel()
-            workManager.enqueue(notificationWork)
+            workManager.enqueue(reminderWork)
         } else {
             Snackbar.make(coordinatorLayout, error, Snackbar.LENGTH_LONG).show()
         }

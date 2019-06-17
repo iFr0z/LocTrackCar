@@ -27,16 +27,16 @@ import ru.ifr0z.core.extension.vectorDrawableToBitmap
 import tk.ifroz.loctrackcar.R
 import tk.ifroz.loctrackcar.ui.activity.MainActivity
 
-class NotificationWork(context: Context, params: WorkerParameters) : Worker(context, params) {
+class ReminderWork(context: Context, params: WorkerParameters) : Worker(context, params) {
 
     override fun doWork(): Result {
         val id = inputData.getLong(NOTIFICATION_ID, 0).toInt()
-        sendNotification(id)
+        showNotification(id)
 
         return success()
     }
 
-    private fun sendNotification(id: Int) {
+    private fun showNotification(id: Int) {
         val intent = Intent(applicationContext, MainActivity::class.java)
         intent.flags = FLAG_ACTIVITY_NEW_TASK or FLAG_ACTIVITY_CLEAR_TASK
         intent.putExtra(NOTIFICATION_ID, id)

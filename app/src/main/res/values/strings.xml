@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">LocTrackCar</string>
-    <string name="app_version">Версия приложения: 7.1.2</string>
-    <string name="type_map_title">Тип карты</string>
-    <string name="type_map_subtitle">Ночной режим</string>
-    <string name="about_app">О приложении</string>
     <string name="search_place_hint">Пример: 55.041,82.93</string>
     <string name="shortest_way">Кратчайший путь</string>
+    <string name="pedestrian_title">Маршрут</string>
+    <string name="share_title">Поделиться</string>
 
     <string name="latitude_subtitle">Широта:</string>
     <string name="longitude_subtitle">Долгота:</string>
@@ -15,14 +13,9 @@
     <string name="dialog_menu_title">Удалить</string>
     <string name="dialog_menu_item_delete_pedestrian">Проложенный путь</string>
     <string name="dialog_menu_item_delete_car">Маркер</string>
-    <string name="no_address_name">Адрес недоступен</string>
-    <string name="no_internet_connection">Недоступно в офлайн-режиме</string>
-
-    <string name="privacy_policy_title">Политика конфиденциальности</string>
-    <string name="privacy_policy_url">https://ifr0z.github.io/LocTrackCar-Privacy-Policy/</string>
 
     <string name="notification_title">Напоминание</string>
     <string name="notification_subtitle">Пора забрать машину</string>
-    <string name="notification_pattern">dd.MM.yy \u00B7 HH:mm</string>
-    <string name="notification_error">Неправильное время и дата</string>
+    <string name="reminder_pattern">dd.MM.yy \u00B7 HH:mm</string>
+    <string name="reminder_error">Неправильное время и дата</string>
 </resources>
