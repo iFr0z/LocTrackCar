@@ -80,5 +80,6 @@ class ReminderWork(context: Context, params: WorkerParameters) : Worker(context,
         const val NOTIFICATION_ID = "LocTrackCar_notification_id"
         const val NOTIFICATION_NAME = "LocTrackCar"
         const val NOTIFICATION_CHANNEL = "LocTrackCar_channel_01"
+        const val NOTIFICATION_WORK = "LocTrackCar_notification_work"
     }
 }

@@ -47,7 +47,7 @@ class ReminderActivity : AppCompatActivity() {
             val data = Data.Builder().putInt(NOTIFICATION_ID, 0).build()
             val errorReminder = getString(R.string.reminder_error)
             reminderViewModel.scheduleNotification(
-                customCalendar, data, NOTIFICATION_ID, coordinator_l, errorReminder
+                customCalendar, data, coordinator_l, errorReminder
             )
             reminderViewModel.outputStatus.observe(
                 this, Observer<List<WorkInfo>> { listOfWorkInfo ->
