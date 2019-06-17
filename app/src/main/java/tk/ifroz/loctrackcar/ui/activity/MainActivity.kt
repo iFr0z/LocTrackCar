@@ -528,6 +528,7 @@ class MainActivity : AppCompatActivity(), UserLocationObjectListener, CameraList
 
             carViewModel.deleteTarget()
             carViewModel.deleteReminder()
+            geocoderViewModel.cancel()
             reminderViewModel.cancel()
 
             isPanorama = false

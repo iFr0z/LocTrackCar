@@ -22,6 +22,10 @@ class GeocoderViewModel(application: Application) : AndroidViewModel(application
         workManager.beginUniqueWork(GEOCODER_WORK, REPLACE, streetNameWork).enqueue()
     }
 
+    internal fun cancel() {
+        workManager.cancelUniqueWork(GEOCODER_WORK)
+    }
+
     companion object {
         const val GEOCODER_WORK = "LocTrackCar_geocoder_work"
     }
