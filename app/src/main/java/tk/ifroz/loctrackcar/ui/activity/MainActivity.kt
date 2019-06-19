@@ -2,6 +2,7 @@ package tk.ifroz.loctrackcar.ui.activity
 
 import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.content.pm.PackageManager.PERMISSION_GRANTED
+import android.content.res.Configuration.*
 import android.graphics.PointF
 import android.os.Bundle
 import android.view.View.GONE
@@ -48,6 +49,7 @@ import kotlinx.android.synthetic.main.bottom_sheet_navigation.*
 import kotlinx.android.synthetic.main.bottom_sheet_row_distance.*
 import kotlinx.android.synthetic.main.bottom_sheet_row_location.*
 import kotlinx.android.synthetic.main.bottom_sheet_row_reminder.*
+import org.jetbrains.anko.configuration
 import org.jetbrains.anko.selector
 import org.jetbrains.anko.share
 import org.jetbrains.anko.startActivity
@@ -142,6 +144,11 @@ class MainActivity : AppCompatActivity(), UserLocationObjectListener, CameraList
         setSupportActionBar(toolbar)
 
         map_v.map.logo.setAlignment(Alignment(LEFT, BOTTOM))
+
+        when (configuration.uiMode and UI_MODE_NIGHT_MASK) {
+            UI_MODE_NIGHT_NO -> map_v.map.isNightModeEnabled = false
+            UI_MODE_NIGHT_YES -> map_v.map.isNightModeEnabled = true
+        }
 
         searchPlace()
 
@@ -379,7 +386,7 @@ class MainActivity : AppCompatActivity(), UserLocationObjectListener, CameraList
                 isMarker = false
             }
 
-            search_place_et.text.clear()
+            search_place_et.text?.clear()
         }
     }
 
