@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    style="@style/CardViewSecondaryTheme"
+    style="@style/CardViewTheme"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="16dp">
@@ -12,7 +12,7 @@
         android:layout_height="112dp"
         app:movable="true" />
 
-    <LinearLayout
+    <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
         android:layout_height="112dp"
         android:background="@drawable/bg_linear_gradient"
@@ -22,7 +22,7 @@
         android:paddingEnd="?listPreferredItemPaddingRight"
         android:paddingBottom="16dp">
 
-        <TextView
+        <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/address_tv"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -30,7 +30,7 @@
             android:textColor="@color/colorNull"
             android:textSize="16sp" />
 
-        <TextView
+        <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/coordinates_tv"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -38,6 +38,6 @@
             android:textColor="@color/colorNull"
             android:textSize="14sp" />
 
-    </LinearLayout>
+    </androidx.appcompat.widget.LinearLayoutCompat>
 
 </androidx.cardview.widget.CardView>

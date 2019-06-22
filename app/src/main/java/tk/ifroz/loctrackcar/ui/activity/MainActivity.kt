@@ -5,12 +5,9 @@ import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.content.res.Configuration.*
 import android.graphics.PointF
 import android.os.Bundle
-import android.view.View.GONE
-import android.view.inputmethod.EditorInfo.IME_ACTION_SEARCH
-import android.view.inputmethod.InputMethodManager
+import android.view.View.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat.*
-import androidx.drawerlayout.widget.DrawerLayout.*
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders.of
 import androidx.work.Data
@@ -55,11 +52,10 @@ import org.jetbrains.anko.share
 import org.jetbrains.anko.startActivity
 import ru.ifr0z.core.custom.ImageProviderCustom
 import ru.ifr0z.core.extension.bottomSheetStateCallback
-import ru.ifr0z.core.extension.onEditorAction
-import ru.ifr0z.core.extension.onTextChanges
 import ru.ifr0z.core.livedata.ConnectivityLiveData
 import tk.ifroz.loctrackcar.R
 import tk.ifroz.loctrackcar.db.entity.Target
+import tk.ifroz.loctrackcar.ui.fragment.SearchPlaceFragment
 import tk.ifroz.loctrackcar.ui.work.GeocoderWork.Companion.FORMAT_DATA
 import tk.ifroz.loctrackcar.ui.work.GeocoderWork.Companion.GEOCODE_DATA
 import tk.ifroz.loctrackcar.ui.work.GeocoderWork.Companion.OUTPUT_DATA
@@ -67,6 +63,7 @@ import tk.ifroz.loctrackcar.ui.work.GeocoderWork.Companion.RESULTS_DATA
 import tk.ifroz.loctrackcar.viewmodel.CarViewModel
 import tk.ifroz.loctrackcar.viewmodel.GeocoderViewModel
 import tk.ifroz.loctrackcar.viewmodel.ReminderViewModel
+import tk.ifroz.loctrackcar.viewmodel.SearchPlaceViewModel
 
 class MainActivity : AppCompatActivity(), UserLocationObjectListener, CameraListener, RouteListener,
     SearchListener {
@@ -95,6 +92,7 @@ class MainActivity : AppCompatActivity(), UserLocationObjectListener, CameraList
     private lateinit var carViewModel: CarViewModel
     private lateinit var geocoderViewModel: GeocoderViewModel
     private lateinit var reminderViewModel: ReminderViewModel
+    private lateinit var searchPlaceViewModel: SearchPlaceViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         MapKitFactory.setApiKey(mapKitApiKey)
@@ -359,35 +357,36 @@ class MainActivity : AppCompatActivity(), UserLocationObjectListener, CameraList
     override fun onObjectUpdated(userLocationView: UserLocationView, event: ObjectEvent) {}
 
     private fun searchPlace() {
-        search_place_et.setOnTouchListener { _, _ ->
-            searchPlaceCursorOn()
-            false
-        }
-
-        val requestStart = getString(R.string.search_place_request_start)
-        val requestEnd = getString(R.string.search_place_request_end)
-        search_place_et.onEditorAction(
-            IME_ACTION_SEARCH, coordinatesPattern, requestStart, requestEnd
-        ) { arrayLatLng ->
-            searchPlaceCursorOff()
-
-            if (!isMarker) {
-                val markerLatitude = arrayLatLng!![0].toDouble()
-                val markerLongitude = arrayLatLng[1].toDouble()
-                drawMarker(markerLatitude, markerLongitude)
+        search_place_tv.setOnClickListener {
+            if (isPermission) {
+                noAnchor()
             }
+
+            val searchPlaceFragment = SearchPlaceFragment.newInstance()
+            searchPlaceFragment.show(supportFragmentManager, "search_place_fragment")
         }
 
-        search_place_et.onTextChanges(clear_search_iv)
-        clear_search_iv.setOnClickListener {
+        searchPlaceViewModel = of(this).get(SearchPlaceViewModel::class.java)
+        searchPlaceViewModel.searchPlaceResult.observe(this, Observer { searchPlaceResult ->
             if (isMarker) {
                 markerObject.clear()
 
                 isMarker = false
             }
 
-            search_place_et.text?.clear()
-        }
+            if (!searchPlaceResult.isNullOrEmpty()) {
+                val markerLatitude = searchPlaceResult[0]
+                val markerLongitude = searchPlaceResult[1]
+                val searchPlaceFormatResult =
+                    getString(R.string.search_place_format, markerLatitude, markerLongitude)
+
+                search_place_tv.text = searchPlaceFormatResult
+
+                drawMarker(markerLatitude.toDouble(), markerLongitude.toDouble())
+            } else {
+                search_place_tv.text = ""
+            }
+        })
     }
 
     private fun drawMarker(markerLatitude: Double, markerLongitude: Double) {
@@ -403,32 +402,6 @@ class MainActivity : AppCompatActivity(), UserLocationObjectListener, CameraList
         isMarker = true
     }
 
-    private fun searchPlaceCursorOn() {
-        search_place_et.isCursorVisible = true
-
-        search_iv.visibility = GONE
-
-        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
-        toolbar.setNavigationOnClickListener {
-            searchPlaceCursorOff()
-        }
-
-        if (isPermission) {
-            noAnchor()
-        }
-    }
-
-    private fun searchPlaceCursorOff() {
-        val inputMethodManager = this.getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
-        inputMethodManager.hideSoftInputFromWindow(search_place_et.windowToken, 0)
-
-        search_place_et.isCursorVisible = false
-
-        search_iv.visibility = VISIBLE
-
-        supportActionBar!!.setDisplayHomeAsUpEnabled(false)
-    }
-
     private fun bottomSheetCar() {
         from(bottom_sheet).state = STATE_HIDDEN
 
@@ -437,7 +410,7 @@ class MainActivity : AppCompatActivity(), UserLocationObjectListener, CameraList
                 STATE_EXPANDED -> {
                     car_fab.hide()
 
-                    app_bar_l.animate().translationY(-200f).alpha(0.0f)
+                    app_bar_l.animate().translationY(200f).alpha(0.0f)
                 }
                 STATE_HIDDEN -> {
                     car_fab.show()
@@ -547,11 +520,9 @@ class MainActivity : AppCompatActivity(), UserLocationObjectListener, CameraList
 
     override fun onBackPressed() {
         val stateExpanded = from(bottom_sheet).state == STATE_EXPANDED
-        val stateCursor = search_place_et.isCursorVisible
         when {
             stateExpanded -> from(bottom_sheet).state = STATE_HIDDEN
-            stateCursor -> searchPlaceCursorOff()
-            !stateExpanded || !stateCursor -> super.onBackPressed()
+            else -> super.onBackPressed()
         }
     }
 
@@ -572,7 +543,5 @@ class MainActivity : AppCompatActivity(), UserLocationObjectListener, CameraList
     companion object {
         const val mapKitApiKey = "e4b59fa0-e067-42ae-9044-5c6a038503e9"
         const val requestPermissionLocation = 1
-        const val coordinatesPattern = "(^[-+]?(?:[1-8]?\\d(?:\\.\\d+)?|90(?:\\.0+)?))," +
-                "\\s*([-+]?(?:180(?:\\.0+)?|(?:(?:1[0-7]\\d)|(?:[1-9]?\\d))(?:\\.\\d+)?))\$"
     }
 }

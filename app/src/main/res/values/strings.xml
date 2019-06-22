@@ -13,6 +13,7 @@
     <string name="dialog_menu_title">Удалить</string>
     <string name="dialog_menu_item_delete_pedestrian">Проложенный путь</string>
     <string name="dialog_menu_item_delete_car">Маркер</string>
+    <string name="search_place_format">%1$s,%2$s</string>
 
     <string name="notification_title">Напоминание</string>
     <string name="notification_subtitle">Пора забрать машину</string>
