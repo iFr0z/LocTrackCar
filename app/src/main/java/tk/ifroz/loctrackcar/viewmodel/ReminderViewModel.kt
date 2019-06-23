@@ -10,8 +10,8 @@ import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import com.google.android.material.snackbar.Snackbar
-import tk.ifroz.loctrackcar.ui.work.ReminderWork
-import tk.ifroz.loctrackcar.ui.work.ReminderWork.Companion.NOTIFICATION_WORK
+import tk.ifroz.loctrackcar.work.ReminderWork
+import tk.ifroz.loctrackcar.work.ReminderWork.Companion.NOTIFICATION_WORK
 import java.util.*
 import java.util.concurrent.TimeUnit.MILLISECONDS
 

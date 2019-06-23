@@ -6,7 +6,7 @@ import androidx.lifecycle.LiveData
 import androidx.work.*
 import androidx.work.ExistingWorkPolicy.REPLACE
 import androidx.work.NetworkType.CONNECTED
-import tk.ifroz.loctrackcar.ui.work.GeocoderWork
+import tk.ifroz.loctrackcar.work.GeocoderWork
 
 class GeocoderViewModel(application: Application) : AndroidViewModel(application) {
 

@@ -1,4 +1,4 @@
-package tk.ifroz.loctrackcar.ui.activity
+package tk.ifroz.loctrackcar.ui
 
 import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.content.pm.PackageManager.PERMISSION_GRANTED
@@ -49,21 +49,21 @@ import kotlinx.android.synthetic.main.bottom_sheet_row_reminder.*
 import org.jetbrains.anko.configuration
 import org.jetbrains.anko.selector
 import org.jetbrains.anko.share
-import org.jetbrains.anko.startActivity
 import ru.ifr0z.core.custom.ImageProviderCustom
 import ru.ifr0z.core.extension.bottomSheetStateCallback
 import ru.ifr0z.core.livedata.ConnectivityLiveData
 import tk.ifroz.loctrackcar.R
 import tk.ifroz.loctrackcar.db.entity.Target
+import tk.ifroz.loctrackcar.ui.fragment.ReminderFragment
 import tk.ifroz.loctrackcar.ui.fragment.SearchPlaceFragment
-import tk.ifroz.loctrackcar.ui.work.GeocoderWork.Companion.FORMAT_DATA
-import tk.ifroz.loctrackcar.ui.work.GeocoderWork.Companion.GEOCODE_DATA
-import tk.ifroz.loctrackcar.ui.work.GeocoderWork.Companion.OUTPUT_DATA
-import tk.ifroz.loctrackcar.ui.work.GeocoderWork.Companion.RESULTS_DATA
 import tk.ifroz.loctrackcar.viewmodel.CarViewModel
 import tk.ifroz.loctrackcar.viewmodel.GeocoderViewModel
 import tk.ifroz.loctrackcar.viewmodel.ReminderViewModel
 import tk.ifroz.loctrackcar.viewmodel.SearchPlaceViewModel
+import tk.ifroz.loctrackcar.work.GeocoderWork.Companion.FORMAT_DATA
+import tk.ifroz.loctrackcar.work.GeocoderWork.Companion.GEOCODE_DATA
+import tk.ifroz.loctrackcar.work.GeocoderWork.Companion.OUTPUT_DATA
+import tk.ifroz.loctrackcar.work.GeocoderWork.Companion.RESULTS_DATA
 
 class MainActivity : AppCompatActivity(), UserLocationObjectListener, CameraListener, RouteListener,
     SearchListener {
@@ -110,7 +110,10 @@ class MainActivity : AppCompatActivity(), UserLocationObjectListener, CameraList
     private fun checkPermission() {
         val permissionLocation = checkSelfPermission(this, ACCESS_FINE_LOCATION)
         if (permissionLocation != PERMISSION_GRANTED) {
-            requestPermissions(this, arrayOf(ACCESS_FINE_LOCATION), requestPermissionLocation)
+            requestPermissions(
+                this, arrayOf(ACCESS_FINE_LOCATION),
+                requestPermissionLocation
+            )
         } else {
             onMapReady()
         }
@@ -363,7 +366,7 @@ class MainActivity : AppCompatActivity(), UserLocationObjectListener, CameraList
             }
 
             val searchPlaceFragment = SearchPlaceFragment.newInstance()
-            searchPlaceFragment.show(supportFragmentManager, "search_place_fragment")
+            searchPlaceFragment.show(supportFragmentManager, searchPlaceFragments)
         }
 
         searchPlaceViewModel = of(this).get(SearchPlaceViewModel::class.java)
@@ -424,7 +427,8 @@ class MainActivity : AppCompatActivity(), UserLocationObjectListener, CameraList
             drawPedestrian()
         }
         reminder_fab.setOnClickListener {
-            startActivity<ReminderActivity>()
+            val reminderFragment = ReminderFragment.newInstance()
+            reminderFragment.show(supportFragmentManager, reminderFragments)
         }
         share_fab.setOnClickListener {
             share("${routeEnd.latitude},${routeEnd.longitude}")
@@ -543,5 +547,7 @@ class MainActivity : AppCompatActivity(), UserLocationObjectListener, CameraList
     companion object {
         const val mapKitApiKey = "e4b59fa0-e067-42ae-9044-5c6a038503e9"
         const val requestPermissionLocation = 1
+        const val searchPlaceFragments = "search_place_fragment"
+        const val reminderFragments = "reminder_fragment"
     }
 }

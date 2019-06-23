@@ -18,7 +18,7 @@
         android:theme="@style/AppTheme"
         tools:ignore="AllowBackup,GoogleAppIndexingWarning">
         <activity
-            android:name="tk.ifroz.loctrackcar.ui.activity.MainActivity"
+            android:name="tk.ifroz.loctrackcar.ui.MainActivity"
             android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -26,10 +26,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name="tk.ifroz.loctrackcar.ui.activity.ReminderActivity"
-            android:excludeFromRecents="true"
-            android:taskAffinity="" />
 
         <meta-data
             android:name="android.max_aspect"

@@ -1,4 +1,4 @@
-package tk.ifroz.loctrackcar.ui.work
+package tk.ifroz.loctrackcar.work
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -25,7 +25,7 @@ import androidx.work.Worker
 import androidx.work.WorkerParameters
 import ru.ifr0z.core.extension.vectorDrawableToBitmap
 import tk.ifroz.loctrackcar.R
-import tk.ifroz.loctrackcar.ui.activity.MainActivity
+import tk.ifroz.loctrackcar.ui.MainActivity
 
 class ReminderWork(context: Context, params: WorkerParameters) : Worker(context, params) {
 

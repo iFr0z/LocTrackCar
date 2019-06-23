@@ -1,4 +1,4 @@
-package tk.ifroz.loctrackcar.ui.work
+package tk.ifroz.loctrackcar.work
 
 import android.content.Context
 import androidx.work.CoroutineWorker

@@ -17,6 +17,5 @@
 
     <string name="notification_title">Напоминание</string>
     <string name="notification_subtitle">Пора забрать машину</string>
-    <string name="reminder_pattern">dd.MM.yy \u00B7 HH:mm</string>
     <string name="reminder_error">Неправильное время и дата</string>
 </resources>
