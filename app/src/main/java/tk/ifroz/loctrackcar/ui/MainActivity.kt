@@ -253,8 +253,6 @@ class MainActivity : AppCompatActivity(), UserLocationObjectListener, CameraList
         carViewModel.reminders.observe(this, Observer { reminder ->
             reminder?.let {
                 reminder_tv.text = reminder.reminder
-
-                from(bottom_sheet).state = STATE_EXPANDED
             }
         })
 
@@ -482,14 +480,16 @@ class MainActivity : AppCompatActivity(), UserLocationObjectListener, CameraList
     override fun onMasstransitRoutesError(error: Error) {}
 
     private fun dialogMenuCar() {
+        val deleteReminder = getString(R.string.notification_title)
         val deletePedestrian = getString(R.string.dialog_menu_item_delete_pedestrian)
         val deleteCar = getString(R.string.dialog_menu_item_delete_car)
         val menuTitle = getString(R.string.dialog_menu_title)
-        val listItem = listOf(deletePedestrian, deleteCar)
+        val listItem = listOf(deleteReminder, deletePedestrian, deleteCar)
         selector(menuTitle, listItem) { _, itemId ->
             when (itemId) {
-                0 -> deletePedestrian()
-                1 -> deleteCar()
+                0 -> reminderViewModel.cancel()
+                1 -> deletePedestrian()
+                2 -> deleteCar()
             }
         }
     }
