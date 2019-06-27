@@ -25,6 +25,10 @@ class ReminderFragment : BottomSheetDialogFragment() {
     private lateinit var reminderViewModel: ReminderViewModel
     private lateinit var carViewModel: CarViewModel
 
+    init {
+        setStyle(STYLE_NORMAL, R.style.BottomSheetDialogTheme)
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {

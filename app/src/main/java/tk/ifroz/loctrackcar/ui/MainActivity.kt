@@ -142,8 +142,6 @@ class MainActivity : AppCompatActivity(), UserLocationObjectListener, CameraList
             insets
         }
 
-        setSupportActionBar(toolbar)
-
         map_v.map.logo.setAlignment(Alignment(LEFT, BOTTOM))
 
         when (configuration.uiMode and UI_MODE_NIGHT_MASK) {
@@ -358,7 +356,7 @@ class MainActivity : AppCompatActivity(), UserLocationObjectListener, CameraList
     override fun onObjectUpdated(userLocationView: UserLocationView, event: ObjectEvent) {}
 
     private fun searchPlace() {
-        search_place_tv.setOnClickListener {
+        search_place_fab.setOnClickListener {
             if (isPermission) {
                 noAnchor()
             }
@@ -375,17 +373,18 @@ class MainActivity : AppCompatActivity(), UserLocationObjectListener, CameraList
                 isMarker = false
             }
 
+            val searchPlaceTitle = getString(R.string.search_place_title)
             if (!searchPlaceResult.isNullOrEmpty()) {
                 val markerLatitude = searchPlaceResult[0]
                 val markerLongitude = searchPlaceResult[1]
-                val searchPlaceFormatResult =
-                    getString(R.string.search_place_format, markerLatitude, markerLongitude)
-
-                search_place_tv.text = searchPlaceFormatResult
-
                 drawMarker(markerLatitude.toDouble(), markerLongitude.toDouble())
+
+                val searchPlaceTitleFormat =
+                    getString(R.string.search_place_title_format, searchPlaceTitle)
+
+                search_place_fab.text = searchPlaceTitleFormat
             } else {
-                search_place_tv.text = ""
+                search_place_fab.text = searchPlaceTitle
             }
         })
     }
@@ -410,13 +409,11 @@ class MainActivity : AppCompatActivity(), UserLocationObjectListener, CameraList
             when (state) {
                 STATE_EXPANDED -> {
                     car_fab.hide()
-
-                    app_bar_l.animate().translationY(200f).alpha(0.0f)
+                    search_place_fab.hide()
                 }
                 STATE_HIDDEN -> {
                     car_fab.show()
-
-                    app_bar_l.animate().translationY(0f).alpha(1.0f)
+                    search_place_fab.show()
                 }
             }
         }

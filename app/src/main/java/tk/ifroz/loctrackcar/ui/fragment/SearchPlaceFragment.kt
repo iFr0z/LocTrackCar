@@ -19,6 +19,10 @@ class SearchPlaceFragment : BottomSheetDialogFragment() {
 
     private lateinit var searchPlaceViewModel: SearchPlaceViewModel
 
+    init {
+        setStyle(STYLE_NORMAL, R.style.BottomSheetDialogTheme)
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {

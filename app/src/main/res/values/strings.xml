@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">LocTrackCar</string>
-    <string name="search_place_hint">Пример: 55.041,82.93</string>
     <string name="shortest_way">Кратчайший путь</string>
     <string name="pedestrian_title">Маршрут</string>
     <string name="share_title">Поделиться</string>
-
     <string name="latitude_subtitle">Широта:</string>
     <string name="longitude_subtitle">Долгота:</string>
+    <string name="search_place_title">Поиск</string>
+    <string name="search_place_title_format">%1$s (1)</string>
+    <string name="search_place_hint">Пример: 55.041,82.93</string>
+    <string name="search_place_format">%1$s,%2$s</string>
     <string name="search_place_request_start">По запросу</string>
     <string name="search_place_request_end">ничего не найдено</string>
     <string name="dialog_menu_title">Удалить</string>
     <string name="dialog_menu_item_delete_pedestrian">Проложенный путь</string>
     <string name="dialog_menu_item_delete_car">Маркер</string>
-    <string name="search_place_format">%1$s,%2$s</string>
-
     <string name="notification_title">Напоминание</string>
     <string name="notification_subtitle">Пора забрать машину</string>
     <string name="reminder_error">Неправильное время и дата</string>

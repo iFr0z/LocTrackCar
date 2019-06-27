@@ -8,20 +8,14 @@
     </style>
 
     <style name="SplashTheme" parent="AppTheme">
-        <item name="colorAccent">@color/colorPrimaryDark</item>
         <item name="android:windowBackground">@drawable/branded_logo</item>
         <item name="android:statusBarColor">@color/colorStatusBar</item>
     </style>
 
-    <style name="ToolbarPrimaryTheme" parent="AppTheme">
-        <item name="android:background">@drawable/bg_one_corner</item>
-    </style>
-
-    <style name="ToolbarSecondaryTheme">
+    <style name="AppbarPrimaryTheme">
         <item name="android:textColorSecondary">@color/colorNull</item>
         <item name="android:textColorPrimary">@color/colorNull</item>
         <item name="colorControlHighlight">@color/colorNull</item>
-        <item name="elevation">8dp</item>
     </style>
 
     <style name="NestedScrollViewTheme">
@@ -29,10 +23,17 @@
         <item name="android:scrollbars">none</item>
     </style>
 
+    <style name="FloatingActionButtonTheme">
+        <item name="backgroundTint">@color/colorNull</item>
+        <item name="iconTint">@color/colorPrimaryDark</item>
+        <item name="rippleColor">@color/colorGreyRipple</item>
+        <item name="android:textColor">@color/colorPrimaryDark</item>
+    </style>
+
     <style name="FloatingActionButtonPrimaryTheme">
         <item name="backgroundTint">@color/colorPrimaryDark</item>
         <item name="iconTint">@color/colorNull</item>
-        <item name="rippleColor">@color/colorNull</item>
+        <item name="rippleColor">@color/colorGreyRipple</item>
         <item name="android:textColor">@color/colorNull</item>
     </style>
 
@@ -43,14 +44,18 @@
         <item name="android:textColor">@color/colorPrimaryDark</item>
     </style>
 
-    <style name="CardViewTheme">
-        <item name="cardBackgroundColor">@color/colorAppTheme</item>
-        <item name="cardCornerRadius">23dp</item>
-        <item name="cardElevation">0dp</item>
+    <style name="MaterialCardViewTwoCornerTheme">
+        <item name="android:backgroundTint">@color/colorNull</item>
+        <item name="cardBackgroundColor">@color/colorNull</item>
     </style>
 
-    <style name="LinearLayoutTheme">
-        <item name="android:background">@color/colorNull</item>
+    <style name="MaterialCardViewPrimaryTheme">
+        <item name="cardBackgroundColor">@color/colorNull</item>
+        <item name="cardElevation">8dp</item>
+    </style>
+
+    <style name="MaterialCardViewSecondaryTheme">
+        <item name="cardBackgroundColor">@color/colorAppTheme</item>
     </style>
 
     <style name="EditTextTheme">
@@ -59,10 +64,35 @@
         <item name="android:textSize">16sp</item>
     </style>
 
-    <style name="TextViewTheme">
-        <item name="android:textColor">@color/colorPrimaryDark</item>
-        <item name="android:textSize">16sp</item>
+    <style name="ShapeAppearanceOverlay.MaterialCardViewOneCornerTheme.MaterialCardView.Rounded" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSizeTopLeft">16dp</item>
+        <item name="cornerSizeTopRight">0dp</item>
+        <item name="cornerSizeBottomLeft">0dp</item>
+        <item name="cornerSizeBottomRight">0dp</item>
     </style>
 
-    <style name="AppCompatImageViewTheme" parent="AppTheme" />
+    <style name="ShapeAppearanceOverlay.MaterialCardViewTwoCornerTheme.MaterialCardView.Rounded" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSizeTopLeft">16dp</item>
+        <item name="cornerSizeTopRight">16dp</item>
+        <item name="cornerSizeBottomLeft">0dp</item>
+        <item name="cornerSizeBottomRight">0dp</item>
+    </style>
+
+    <style name="ShapeAppearanceOverlay.MaterialCardViewTheme.MaterialCardView.Rounded" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSizeTopLeft">16dp</item>
+        <item name="cornerSizeTopRight">16dp</item>
+        <item name="cornerSizeBottomLeft">16dp</item>
+        <item name="cornerSizeBottomRight">16dp</item>
+    </style>
+
+    <style name="BottomSheetDialogTheme" parent="Theme.MaterialComponents.Light.BottomSheetDialog">
+        <item name="colorAccent">@color/colorPrimaryDark</item>
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:statusBarColor">@color/colorTransparent</item>
+        <item name="android:navigationBarColor">@color/colorNull</item>
+        <item name="android:colorBackground">@color/colorTransparent</item>
+    </style>
 </resources>
