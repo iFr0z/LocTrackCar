@@ -94,7 +94,7 @@
         <item name="colorAccent">@color/colorPrimaryDark</item>
         <item name="android:windowIsFloating">false</item>
         <item name="android:statusBarColor">@color/colorTransparent</item>
-        <item name="android:navigationBarColor">@color/colorNull</item>
+        <item name="android:navigationBarColor">@color/colorPrimaryDark</item>
         <item name="android:colorBackground">@color/colorTransparent</item>
     </style>
 </resources>
