@@ -47,6 +47,7 @@
     <style name="MaterialCardViewTwoCornerTheme">
         <item name="android:backgroundTint">@color/colorNull</item>
         <item name="cardBackgroundColor">@color/colorNull</item>
+        <item name="cardElevation">8dp</item>
     </style>
 
     <style name="MaterialCardViewPrimaryTheme">
@@ -56,6 +57,7 @@
 
     <style name="MaterialCardViewSecondaryTheme">
         <item name="cardBackgroundColor">@color/colorAppTheme</item>
+        <item name="cardElevation">0dp</item>
     </style>
 
     <style name="EditTextTheme">

@@ -110,10 +110,7 @@ class MainActivity : AppCompatActivity(), UserLocationObjectListener, CameraList
     private fun checkPermission() {
         val permissionLocation = checkSelfPermission(this, ACCESS_FINE_LOCATION)
         if (permissionLocation != PERMISSION_GRANTED) {
-            requestPermissions(
-                this, arrayOf(ACCESS_FINE_LOCATION),
-                requestPermissionLocation
-            )
+            requestPermissions(this, arrayOf(ACCESS_FINE_LOCATION), requestPermissionLocation)
         } else {
             onMapReady()
         }

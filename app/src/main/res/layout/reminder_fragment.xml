@@ -9,8 +9,8 @@
         android:id="@+id/app_bar_l"
         android:layout_width="match_parent"
         android:layout_height="192dp"
-        app:theme="@style/AppbarPrimaryTheme"
-        android:background="@color/colorTransparent">
+        android:background="@color/colorTransparent"
+        app:theme="@style/AppbarPrimaryTheme">
 
         <com.google.android.material.appbar.CollapsingToolbarLayout
             android:id="@+id/collapsing_toolbar_l"
@@ -22,9 +22,10 @@
             app:layout_scrollFlags="scroll|exitUntilCollapsed">
 
             <com.google.android.material.card.MaterialCardView
-                app:cardBackgroundColor="@color/colorPrimary"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                app:cardBackgroundColor="@color/colorPrimary"
+                app:cardElevation="8dp"
                 app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.MaterialCardViewTwoCornerTheme.MaterialCardView.Rounded">
 
                 <androidx.appcompat.widget.AppCompatImageView
