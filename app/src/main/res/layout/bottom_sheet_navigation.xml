@@ -10,57 +10,44 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
-        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-            android:id="@+id/pedestrian_fab"
-            style="@style/FloatingActionButtonPrimaryTheme"
+        <com.google.android.material.chip.ChipGroup
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginBottom="16dp"
-            android:stateListAnimator="@null"
-            android:text="@string/pedestrian_title"
-            app:elevation="0dp"
-            app:icon="@drawable/ic_directions_walk_black_24dp" />
+            android:layout_margin="16dp">
 
-        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-            android:id="@+id/reminder_fab"
-            style="@style/FloatingActionButtonSecondaryTheme"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginBottom="16dp"
-            android:stateListAnimator="@null"
-            android:text="@string/notification_title"
-            app:elevation="0dp"
-            app:icon="@drawable/ic_schedule_black_24dp"
-            app:strokeWidth="1dp" />
+            <com.google.android.material.chip.Chip
+                android:id="@+id/pedestrian_c"
+                style="@style/ChipPrimaryTheme"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/pedestrian_title"
+                app:chipIcon="@drawable/ic_directions_walk_black_24dp" />
 
-        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-            android:id="@+id/share_fab"
-            style="@style/FloatingActionButtonSecondaryTheme"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginBottom="16dp"
-            android:stateListAnimator="@null"
-            android:text="@string/share_title"
-            app:elevation="0dp"
-            app:icon="@drawable/ic_share_black_24dp"
-            app:strokeWidth="1dp" />
+            <com.google.android.material.chip.Chip
+                android:id="@+id/reminder_c"
+                style="@style/ChipSecondaryTheme"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/notification_title"
+                app:chipIcon="@drawable/ic_schedule_black_24dp" />
 
-        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-            android:id="@+id/delete_fab"
-            style="@style/FloatingActionButtonSecondaryTheme"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginBottom="16dp"
-            android:stateListAnimator="@null"
-            android:text="@string/dialog_menu_title"
-            app:elevation="0dp"
-            app:icon="@drawable/ic_delete_forever_black_24dp"
-            app:strokeWidth="1dp" />
+            <com.google.android.material.chip.Chip
+                android:id="@+id/share_c"
+                style="@style/ChipSecondaryTheme"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/share_title"
+                app:chipIcon="@drawable/ic_share_black_24dp" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/delete_c"
+                style="@style/ChipSecondaryTheme"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/dialog_menu_title"
+                app:chipIcon="@drawable/ic_delete_forever_black_24dp" />
+
+        </com.google.android.material.chip.ChipGroup>
 
     </androidx.appcompat.widget.LinearLayoutCompat>
 

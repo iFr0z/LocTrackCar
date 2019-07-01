@@ -23,25 +23,43 @@
         <item name="android:scrollbars">none</item>
     </style>
 
-    <style name="FloatingActionButtonTheme">
+    <style name="ExtendedFloatingActionButtonTheme">
         <item name="backgroundTint">@color/colorNull</item>
         <item name="iconTint">@color/colorPrimaryDark</item>
         <item name="rippleColor">@color/colorGreyRipple</item>
         <item name="android:textColor">@color/colorPrimaryDark</item>
+        <item name="elevation">8dp</item>
     </style>
 
     <style name="FloatingActionButtonPrimaryTheme">
         <item name="backgroundTint">@color/colorPrimaryDark</item>
-        <item name="iconTint">@color/colorNull</item>
+        <item name="tint">@color/colorNull</item>
         <item name="rippleColor">@color/colorGreyRipple</item>
-        <item name="android:textColor">@color/colorNull</item>
+        <item name="elevation">8dp</item>
     </style>
 
     <style name="FloatingActionButtonSecondaryTheme">
         <item name="backgroundTint">@color/colorNull</item>
-        <item name="iconTint">@color/colorPrimaryDark</item>
+        <item name="tint">@color/colorPrimaryDark</item>
         <item name="rippleColor">@color/colorGreyRipple</item>
         <item name="android:textColor">@color/colorPrimaryDark</item>
+        <item name="elevation">8dp</item>
+    </style>
+
+    <style name="ChipPrimaryTheme" parent="Widget.MaterialComponents.Chip.Action">
+        <item name="chipIconTint">@color/colorNull</item>
+        <item name="rippleColor">@color/colorNull</item>
+        <item name="chipBackgroundColor">@color/colorPrimaryDark</item>
+        <item name="android:textColor">@color/colorNull</item>
+    </style>
+
+    <style name="ChipSecondaryTheme" parent="Widget.MaterialComponents.Chip.Action">
+        <item name="chipIconTint">@color/colorPrimaryDark</item>
+        <item name="rippleColor">@color/colorGreyRipple</item>
+        <item name="chipBackgroundColor">@color/colorNull</item>
+        <item name="android:textColor">@color/colorPrimaryDark</item>
+        <item name="chipStrokeColor">@color/colorPrimaryDark</item>
+        <item name="chipStrokeWidth">1dp</item>
     </style>
 
     <style name="MaterialCardViewTwoCornerTheme">

@@ -47,16 +47,15 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/done_fab"
         style="@style/FloatingActionButtonPrimaryTheme"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
-        app:elevation="8dp"
-        app:icon="@drawable/ic_done_black_24dp"
         app:layout_anchor="@id/app_bar_l"
-        app:layout_anchorGravity="bottom|right" />
+        app:layout_anchorGravity="bottom|right"
+        app:srcCompat="@drawable/ic_done_black_24dp" />
 
     <androidx.core.widget.NestedScrollView
         style="@style/NestedScrollViewTheme"

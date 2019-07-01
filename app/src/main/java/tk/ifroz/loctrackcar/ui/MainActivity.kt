@@ -415,17 +415,17 @@ class MainActivity : AppCompatActivity(), UserLocationObjectListener, CameraList
             }
         }
 
-        pedestrian_fab.setOnClickListener {
+        pedestrian_c.setOnClickListener {
             drawPedestrian()
         }
-        reminder_fab.setOnClickListener {
+        reminder_c.setOnClickListener {
             val reminderFragment = ReminderFragment.newInstance()
             reminderFragment.show(supportFragmentManager, reminderFragments)
         }
-        share_fab.setOnClickListener {
+        share_c.setOnClickListener {
             share("${routeEnd.latitude},${routeEnd.longitude}")
         }
-        delete_fab.setOnClickListener {
+        delete_c.setOnClickListener {
             dialogMenuCar()
         }
     }

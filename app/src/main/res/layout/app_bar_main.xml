@@ -10,12 +10,11 @@
 
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
         android:id="@+id/search_place_fab"
-        style="@style/FloatingActionButtonTheme"
+        style="@style/ExtendedFloatingActionButtonTheme"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:text="@string/search_place_title"
-        app:elevation="8dp"
         app:icon="@drawable/ic_search_grey_24dp"
         app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.MaterialCardViewOneCornerTheme.MaterialCardView.Rounded" />
 
