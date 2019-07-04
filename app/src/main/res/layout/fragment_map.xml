@@ -3,9 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <FrameLayout
-        android:id="@+id/map_f"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+    <include layout="@layout/bottom_sheet_backend" />
+
+    <include layout="@layout/bottom_sheet_frontend" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

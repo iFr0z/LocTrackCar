@@ -55,7 +55,7 @@ class ReminderFragment : BottomSheetDialogFragment() {
                 customCalendar, data, coordinator_l, errorReminder
             )
             reminderViewModel.outputStatus.observe(
-                viewLifecycleOwner, Observer<List<WorkInfo>> { listOfWorkInfo ->
+                this, Observer<List<WorkInfo>> { listOfWorkInfo ->
                     listOfWorkInfo?.let {
                         if (listOfWorkInfo.isNullOrEmpty()) {
                             return@Observer
