@@ -31,12 +31,15 @@ class ReminderWork(context: Context, params: WorkerParameters) : Worker(context,
 
     override fun doWork(): Result {
         val id = inputData.getLong(NOTIFICATION_ID, 0).toInt()
-        showNotification(id)
+        val addressName = inputData.getString(NOTIFICATION_ADDRESS)
+        addressName?.let {
+            showNotification(id, it)
+        }
 
         return success()
     }
 
-    private fun showNotification(id: Int) {
+    private fun showNotification(id: Int, addressName: String) {
         val intent = Intent(applicationContext, MainActivity::class.java)
         intent.flags = FLAG_ACTIVITY_NEW_TASK or FLAG_ACTIVITY_CLEAR_TASK
         intent.putExtra(NOTIFICATION_ID, id)
@@ -44,13 +47,12 @@ class ReminderWork(context: Context, params: WorkerParameters) : Worker(context,
         val notificationManager =
             applicationContext.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
 
-        val bitmap = applicationContext.vectorDrawableToBitmap(R.drawable.ic_marker_black_24dp)
+        val bitmap = applicationContext.vectorDrawableToBitmap(R.drawable.ic_marker_black_45dp)
         val titleNotification = applicationContext.getString(R.string.notification_title)
-        val subtitleNotification = applicationContext.getString(R.string.notification_subtitle)
         val pendingIntent = getActivity(applicationContext, 0, intent, 0)
         val notification = NotificationCompat.Builder(applicationContext, NOTIFICATION_CHANNEL)
             .setLargeIcon(bitmap).setSmallIcon(R.drawable.ic_marker_notification_white)
-            .setContentTitle(titleNotification).setContentText(subtitleNotification)
+            .setContentTitle(titleNotification).setContentText(addressName)
             .setDefaults(DEFAULT_ALL).setContentIntent(pendingIntent).setAutoCancel(true)
 
         notification.priority = PRIORITY_MAX
@@ -81,5 +83,6 @@ class ReminderWork(context: Context, params: WorkerParameters) : Worker(context,
         const val NOTIFICATION_NAME = "LocTrackCar"
         const val NOTIFICATION_CHANNEL = "LocTrackCar_channel_01"
         const val NOTIFICATION_WORK = "LocTrackCar_notification_work"
+        const val NOTIFICATION_ADDRESS = "LocTrackCar_address"
     }
 }

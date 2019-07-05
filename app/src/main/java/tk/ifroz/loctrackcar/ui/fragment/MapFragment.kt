@@ -56,10 +56,7 @@ import ru.ifr0z.core.interfaces.OnBackClick
 import ru.ifr0z.core.livedata.ConnectivityLiveData
 import tk.ifroz.loctrackcar.R
 import tk.ifroz.loctrackcar.db.entity.Target
-import tk.ifroz.loctrackcar.viewmodel.CarViewModel
-import tk.ifroz.loctrackcar.viewmodel.GeocoderViewModel
-import tk.ifroz.loctrackcar.viewmodel.ReminderViewModel
-import tk.ifroz.loctrackcar.viewmodel.SearchPlaceViewModel
+import tk.ifroz.loctrackcar.viewmodel.*
 import tk.ifroz.loctrackcar.work.GeocoderWork.Companion.FORMAT_DATA
 import tk.ifroz.loctrackcar.work.GeocoderWork.Companion.GEOCODE_DATA
 import tk.ifroz.loctrackcar.work.GeocoderWork.Companion.OUTPUT_DATA
@@ -92,6 +89,7 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
     private lateinit var geocoderViewModel: GeocoderViewModel
     private lateinit var reminderViewModel: ReminderViewModel
     private lateinit var searchPlaceViewModel: SearchPlaceViewModel
+    private lateinit var addressViewModel: AddressViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         MapKitFactory.setApiKey(mapKitApiKey)
@@ -362,7 +360,7 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
     override fun onMasstransitRoutesError(error: Error) {}
 
     private fun dialogMenuCar(view: View) {
-        val deleteReminder = getString(R.string.notification_title)
+        val deleteReminder = getString(R.string.notification)
         val deletePedestrian = getString(R.string.dialog_menu_item_delete_pedestrian)
         val deleteCar = getString(R.string.dialog_menu_item_delete_car)
         val menuTitle = getString(R.string.dialog_menu_title)
@@ -396,6 +394,7 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
             carViewModel.deleteReminder()
             geocoderViewModel.cancel()
             reminderViewModel.cancel()
+            addressViewModel.clear()
 
             isPanorama = false
             isCar = false
@@ -444,6 +443,7 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
             }
         })
 
+        addressViewModel = of(this.activity!!).get(AddressViewModel::class.java)
         geocoderViewModel = of(this.activity!!).get(GeocoderViewModel::class.java)
         val geocode = "$longitude,$latitude"
         val format = "json"
@@ -461,6 +461,10 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
                 if (workInfo.state.isFinished) {
                     val addressName = workInfo.outputData.getString(OUTPUT_DATA)
                     view.address_tv.text = addressName
+                    addressViewModel.update(addressName)
+                } else {
+                    val addressErrorNotification = getString(R.string.notification_address_error)
+                    addressViewModel.update(addressErrorNotification)
                 }
             }
         })

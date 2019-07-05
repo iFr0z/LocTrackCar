@@ -15,7 +15,7 @@
     <string name="dialog_menu_title">Удалить</string>
     <string name="dialog_menu_item_delete_pedestrian">Проложенный путь</string>
     <string name="dialog_menu_item_delete_car">Маркер</string>
-    <string name="notification_title">Напоминание</string>
-    <string name="notification_subtitle">Пора забрать машину</string>
-    <string name="reminder_error">Неправильное время и дата</string>
+    <string name="notification">Напоминание</string>
+    <string name="notification_title">Пора забрать машину</string>
+    <string name="notification_address_error">Не удалось отобразить адрес</string>
 </resources>

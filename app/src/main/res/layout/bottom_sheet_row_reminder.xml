@@ -32,7 +32,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ellipsize="end"
-            android:text="@string/notification_title"
+            android:text="@string/notification"
             android:textColor="@color/colorNull"
             android:textSize="14sp" />
 

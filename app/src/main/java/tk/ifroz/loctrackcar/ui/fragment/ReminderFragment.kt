@@ -9,19 +9,21 @@ import androidx.lifecycle.ViewModelProviders.of
 import androidx.work.Data
 import androidx.work.WorkInfo
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import kotlinx.android.synthetic.main.reminder_fragment.*
 import kotlinx.android.synthetic.main.reminder_fragment.view.*
 import tk.ifroz.loctrackcar.R
 import tk.ifroz.loctrackcar.db.entity.Reminder
+import tk.ifroz.loctrackcar.viewmodel.AddressViewModel
 import tk.ifroz.loctrackcar.viewmodel.CarViewModel
 import tk.ifroz.loctrackcar.viewmodel.ReminderViewModel
-import tk.ifroz.loctrackcar.work.ReminderWork
+import tk.ifroz.loctrackcar.work.ReminderWork.Companion.NOTIFICATION_ADDRESS
+import tk.ifroz.loctrackcar.work.ReminderWork.Companion.NOTIFICATION_ID
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.Locale.getDefault
 
 class ReminderFragment : BottomSheetDialogFragment() {
 
+    private lateinit var addressViewModel: AddressViewModel
     private lateinit var reminderViewModel: ReminderViewModel
     private lateinit var carViewModel: CarViewModel
 
@@ -40,20 +42,28 @@ class ReminderFragment : BottomSheetDialogFragment() {
     }
 
     private fun userInterface(view: View) {
-        val titleNotification = getString(R.string.notification_title)
+        val titleNotification = getString(R.string.notification)
         view.collapsing_toolbar_l.title = titleNotification
 
         view.done_fab.setOnClickListener {
-            reminderViewModel = of(this.activity!!).get(ReminderViewModel::class.java)
             val customCalendar = Calendar.getInstance()
             customCalendar.set(
-                date_p.year, date_p.month, date_p.dayOfMonth, time_p.hour, time_p.minute, 0
+                view.date_p.year,
+                view.date_p.month,
+                view.date_p.dayOfMonth,
+                view.time_p.hour,
+                view.time_p.minute,
+                0
             )
-            val data = Data.Builder().putInt(ReminderWork.NOTIFICATION_ID, 0).build()
-            val errorReminder = getString(R.string.reminder_error)
-            reminderViewModel.scheduleNotification(
-                customCalendar, data, coordinator_l, errorReminder
-            )
+            addressViewModel = of(this.activity!!).get(AddressViewModel::class.java)
+            reminderViewModel = of(this.activity!!).get(ReminderViewModel::class.java)
+            carViewModel = of(this.activity!!).get(CarViewModel::class.java)
+            addressViewModel.addressName.observe(this, Observer { addressName ->
+                val data = Data.Builder().putInt(NOTIFICATION_ID, 0)
+                    .putString(NOTIFICATION_ADDRESS, addressName).build()
+
+                reminderViewModel.scheduleNotification(customCalendar, data)
+            })
             reminderViewModel.outputStatus.observe(
                 this, Observer<List<WorkInfo>> { listOfWorkInfo ->
                     listOfWorkInfo?.let {
@@ -62,7 +72,6 @@ class ReminderFragment : BottomSheetDialogFragment() {
                         }
                         val workInfo = listOfWorkInfo[0]
                         if (!workInfo.state.isFinished) {
-                            carViewModel = of(this.activity!!).get(CarViewModel::class.java)
                             val dateFormat = SimpleDateFormat(datePattern, getDefault())
                             carViewModel.upsertReminder(
                                 Reminder(dateFormat.format(customCalendar.time).toString())
