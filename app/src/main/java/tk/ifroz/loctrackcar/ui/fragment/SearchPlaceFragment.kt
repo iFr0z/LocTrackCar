@@ -19,8 +19,11 @@ class SearchPlaceFragment : BottomSheetDialogFragment() {
 
     private lateinit var searchPlaceViewModel: SearchPlaceViewModel
 
-    init {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         setStyle(STYLE_NORMAL, R.style.BottomSheetDialogTheme)
+
+        searchPlaceViewModel = of(this.activity!!).get(SearchPlaceViewModel::class.java)
     }
 
     override fun onCreateView(
@@ -35,8 +38,6 @@ class SearchPlaceFragment : BottomSheetDialogFragment() {
 
     private fun userInterface(view: View) {
         dialog?.window?.setSoftInputMode(SOFT_INPUT_STATE_VISIBLE)
-
-        searchPlaceViewModel = of(this.activity!!).get(SearchPlaceViewModel::class.java)
 
         val requestStart = getString(R.string.search_place_request_start)
         val requestEnd = getString(R.string.search_place_request_end)
@@ -73,7 +74,6 @@ class SearchPlaceFragment : BottomSheetDialogFragment() {
     }
 
     companion object {
-        fun newInstance() = SearchPlaceFragment()
         const val coordinatesPattern = "(^[-+]?(?:[1-8]?\\d(?:\\.\\d+)?|90(?:\\.0+)?))," +
                 "\\s*([-+]?(?:180(?:\\.0+)?|(?:(?:1[0-7]\\d)|(?:[1-9]?\\d))(?:\\.\\d+)?))\$"
     }

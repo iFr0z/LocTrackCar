@@ -24,6 +24,10 @@ android {
         sourceCompatibility = "8"
         targetCompatibility = "8"
     }
+
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
 }
 
 dependencies {

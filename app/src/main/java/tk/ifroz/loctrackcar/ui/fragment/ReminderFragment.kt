@@ -27,8 +27,13 @@ class ReminderFragment : BottomSheetDialogFragment() {
     private lateinit var reminderViewModel: ReminderViewModel
     private lateinit var carViewModel: CarViewModel
 
-    init {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         setStyle(STYLE_NORMAL, R.style.BottomSheetDialogTheme)
+
+        addressViewModel = of(this.activity!!).get(AddressViewModel::class.java)
+        reminderViewModel = of(this.activity!!).get(ReminderViewModel::class.java)
+        carViewModel = of(this.activity!!).get(CarViewModel::class.java)
     }
 
     override fun onCreateView(
@@ -55,9 +60,7 @@ class ReminderFragment : BottomSheetDialogFragment() {
                 view.time_p.minute,
                 0
             )
-            addressViewModel = of(this.activity!!).get(AddressViewModel::class.java)
-            reminderViewModel = of(this.activity!!).get(ReminderViewModel::class.java)
-            carViewModel = of(this.activity!!).get(CarViewModel::class.java)
+
             addressViewModel.addressName.observe(this, Observer { addressName ->
                 val data = Data.Builder().putInt(NOTIFICATION_ID, 0)
                     .putString(NOTIFICATION_ADDRESS, addressName).build()
@@ -86,7 +89,6 @@ class ReminderFragment : BottomSheetDialogFragment() {
     }
 
     companion object {
-        fun newInstance() = ReminderFragment()
         const val datePattern = "dd.MM.yy \u00B7 HH:mm"
     }
 }

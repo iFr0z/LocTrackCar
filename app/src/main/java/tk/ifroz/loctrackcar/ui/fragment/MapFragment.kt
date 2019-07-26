@@ -1,5 +1,7 @@
 package tk.ifroz.loctrackcar.ui.fragment
 
+import android.Manifest.permission.ACCESS_FINE_LOCATION
+import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.content.res.Configuration.*
 import android.graphics.PointF
 import android.os.Bundle
@@ -7,10 +9,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.View.*
 import android.view.ViewGroup
+import androidx.core.app.ActivityCompat.checkSelfPermission
 import androidx.core.app.ActivityCompat.getColor
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders.of
+import androidx.navigation.fragment.findNavController
 import androidx.work.Data
 import androidx.work.WorkInfo
 import com.google.android.material.bottomsheet.BottomSheetBehavior.*
@@ -52,7 +56,6 @@ import org.jetbrains.anko.selector
 import org.jetbrains.anko.share
 import ru.ifr0z.core.custom.ImageProviderCustom
 import ru.ifr0z.core.extension.bottomSheetStateCallback
-import ru.ifr0z.core.interfaces.OnBackClick
 import ru.ifr0z.core.livedata.ConnectivityLiveData
 import tk.ifroz.loctrackcar.R
 import tk.ifroz.loctrackcar.db.entity.Target
@@ -63,8 +66,9 @@ import tk.ifroz.loctrackcar.work.GeocoderWork.Companion.OUTPUT_DATA
 import tk.ifroz.loctrackcar.work.GeocoderWork.Companion.RESULTS_DATA
 
 class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, RouteListener,
-    SearchListener, OnBackClick {
+    SearchListener {
 
+    private var isPermission = false
     private var isFollowUser = false
     private var isCar = false
     private var isPanorama = false
@@ -97,16 +101,48 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
         PlacesFactory.initialize(this.activity!!)
         TransportFactory.initialize(this.activity!!)
         super.onCreate(savedInstanceState)
+
+        carViewModel = of(this.activity!!).get(CarViewModel::class.java)
+        geocoderViewModel = of(this.activity!!).get(GeocoderViewModel::class.java)
+        reminderViewModel = of(this.activity!!).get(ReminderViewModel::class.java)
+        searchPlaceViewModel = of(this.activity!!).get(SearchPlaceViewModel::class.java)
+        addressViewModel = of(this.activity!!).get(AddressViewModel::class.java)
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_map, container, false)
+        return inflater.inflate(R.layout.map_fragment, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        onMapReady(view)
+        userInterface(view)
+
+        checkPermission(view)
+    }
+
+    private fun checkPermission(view: View) {
+        val permissionLocation = checkSelfPermission(view.context, ACCESS_FINE_LOCATION)
+        if (permissionLocation != PERMISSION_GRANTED) {
+            requestPermissions(arrayOf(ACCESS_FINE_LOCATION), requestPermissionLocation)
+        } else {
+            onMapReady(view)
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int, permissions: Array<String>, grantResults: IntArray
+    ) {
+        when (requestCode) {
+            requestPermissionLocation -> {
+                if (grantResults.isNotEmpty() && grantResults[0] == PERMISSION_GRANTED) {
+                    view?.let { view ->
+                        onMapReady(view)
+                    }
+                }
+                return
+            }
+        }
     }
 
     private fun onMapReady(view: View) {
@@ -121,6 +157,8 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
         cameraPositionUser()
 
         userInterface(view)
+
+        isPermission = true
     }
 
     private fun cameraPositionUser() {
@@ -209,24 +247,32 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
         bottomSheetCar(view)
 
         view.car_fab.setOnClickListener {
-            noAnchor()
+            if (isPermission) {
+                noAnchor()
 
-            if (isCar) {
-                view.map_v.map.move(
-                    CameraPosition(routeEnd, 16f, 0f, 0f), Animation(SMOOTH, 1f), null
-                )
+                if (isCar) {
+                    view.map_v.map.move(
+                        CameraPosition(routeEnd, 16f, 0f, 0f), Animation(SMOOTH, 1f), null
+                    )
+                } else {
+                    insertCar()
+                }
+
+                from(view.bottom_sheet).state = STATE_EXPANDED
             } else {
-                insertCar()
+                checkPermission(view)
             }
-
-            from(view.bottom_sheet).state = STATE_EXPANDED
         }
         view.location_fab.setOnClickListener {
-            from(view.bottom_sheet).state = STATE_HIDDEN
+            if (isPermission) {
+                from(view.bottom_sheet).state = STATE_HIDDEN
 
-            cameraPositionUser()
+                cameraPositionUser()
 
-            isFollowUser = true
+                isFollowUser = true
+            } else {
+                checkPermission(view)
+            }
         }
 
         retrieveCar(view)
@@ -234,13 +280,13 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
 
     private fun searchPlace(view: View) {
         view.search_place_fab.setOnClickListener {
-            noAnchor()
+            if (isPermission) {
+                noAnchor()
+            }
 
-            val searchPlaceFragment = SearchPlaceFragment.newInstance()
-            searchPlaceFragment.show(this.activity!!.supportFragmentManager, searchPlaceFragments)
+            findNavController().navigate(R.id.search_place_dest, null)
         }
 
-        searchPlaceViewModel = of(this.activity!!).get(SearchPlaceViewModel::class.java)
         searchPlaceViewModel.searchPlaceResult.observe(this, Observer { searchPlaceResult ->
             if (isMarker) {
                 markerObject.clear()
@@ -297,8 +343,7 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
             drawPedestrian(view)
         }
         reminder_c.setOnClickListener {
-            val reminderFragment = ReminderFragment.newInstance()
-            reminderFragment.show(this.activity!!.supportFragmentManager, reminderFragments)
+            findNavController().navigate(R.id.reminder_dest, null)
         }
         share_c.setOnClickListener {
             view.context.share("${routeEnd.latitude},${routeEnd.longitude}")
@@ -410,7 +455,6 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
     }
 
     private fun retrieveCar(view: View) {
-        carViewModel = of(this.activity!!).get(CarViewModel::class.java)
         carViewModel.targets.observe(this, Observer { target ->
             target?.let {
                 routeEnd = Point(target.latitude, target.longitude)
@@ -443,8 +487,6 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
             }
         })
 
-        addressViewModel = of(this.activity!!).get(AddressViewModel::class.java)
-        geocoderViewModel = of(this.activity!!).get(GeocoderViewModel::class.java)
         val geocode = "$longitude,$latitude"
         val format = "json"
         val results = "1"
@@ -475,7 +517,6 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
             }
         })
 
-        reminderViewModel = of(this.activity!!).get(ReminderViewModel::class.java)
         reminderViewModel.outputStatus.observe(this, Observer<List<WorkInfo>> { listOfWorkInfo ->
             listOfWorkInfo?.let {
                 if (listOfWorkInfo.isNullOrEmpty()) {
@@ -508,17 +549,6 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
 
     override fun onPanoramaSearchError(error: Error) {}
 
-    override fun onBackClick(): Boolean {
-        val stateExpanded = from(view!!.bottom_sheet).state == STATE_EXPANDED
-        return when {
-            stateExpanded -> {
-                from(view!!.bottom_sheet).state = STATE_HIDDEN
-                true
-            }
-            else -> false
-        }
-    }
-
     override fun onStop() {
         view?.let { view ->
             view.map_v.onStop()
@@ -538,9 +568,7 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
     }
 
     companion object {
-        fun newInstance() = MapFragment()
         const val mapKitApiKey = "e4b59fa0-e067-42ae-9044-5c6a038503e9"
-        const val searchPlaceFragments = "search_place_fragment"
-        const val reminderFragments = "reminder_fragment"
+        const val requestPermissionLocation = 1
     }
 }

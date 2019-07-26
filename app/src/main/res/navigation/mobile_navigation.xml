@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:startDestination="@+id/map_dest">
+
+    <fragment
+        android:id="@+id/map_dest"
+        android:name="tk.ifroz.loctrackcar.ui.fragment.MapFragment"
+        android:label="MapFragment">
+        <action
+            android:id="@+id/action_mapFragment_to_reminderFragment"
+            app:destination="@id/reminder_dest" />
+        <action
+            android:id="@+id/action_mapFragment_to_searchPlaceFragment"
+            app:destination="@id/search_place_dest" />
+    </fragment>
+
+    <dialog
+        android:id="@+id/reminder_dest"
+        android:name="tk.ifroz.loctrackcar.ui.fragment.ReminderFragment"
+        android:label="ReminderFragment" />
+
+    <dialog
+        android:id="@+id/search_place_dest"
+        android:name="tk.ifroz.loctrackcar.ui.fragment.SearchPlaceFragment"
+        android:label="SearchPlaceFragment" />
+
+</navigation>
