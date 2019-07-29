@@ -9,6 +9,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.View.*
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
+import androidx.activity.addCallback
 import androidx.core.app.ActivityCompat.checkSelfPermission
 import androidx.core.app.ActivityCompat.getColor
 import androidx.fragment.app.Fragment
@@ -95,6 +97,8 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
     private lateinit var searchPlaceViewModel: SearchPlaceViewModel
     private lateinit var addressViewModel: AddressViewModel
 
+    private lateinit var customBack: OnBackPressedCallback
+
     override fun onCreate(savedInstanceState: Bundle?) {
         MapKitFactory.setApiKey(mapKitApiKey)
         MapKitFactory.initialize(this.activity!!)
@@ -155,8 +159,6 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
         view.map_v.map.logo.setAlignment(Alignment(LEFT, BOTTOM))
 
         cameraPositionUser()
-
-        userInterface(view)
 
         isPermission = true
     }
@@ -331,10 +333,16 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
                 STATE_EXPANDED -> {
                     view.car_fab.hide()
                     view.search_place_fab.hide()
+
+                    customBack = requireActivity().onBackPressedDispatcher.addCallback(this) {
+                        from(view.bottom_sheet).state = STATE_HIDDEN
+                    }
                 }
                 STATE_HIDDEN -> {
                     view.car_fab.show()
                     view.search_place_fab.show()
+
+                    customBack.remove()
                 }
             }
         }
