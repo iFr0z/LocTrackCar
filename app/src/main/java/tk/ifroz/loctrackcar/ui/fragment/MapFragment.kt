@@ -150,8 +150,9 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
     }
 
     private fun onMapReady(view: View) {
-        userLocationLayer = view.map_v.map.userLocationLayer
-        userLocationLayer.isEnabled = true
+        val mapKit = MapKitFactory.getInstance()
+        userLocationLayer = mapKit.createUserLocationLayer(view.map_v.mapWindow)
+        userLocationLayer.isVisible = true
         userLocationLayer.isHeadingEnabled = false
         userLocationLayer.setObjectListener(this)
 

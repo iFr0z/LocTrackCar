@@ -23,7 +23,7 @@ buildscript {
         moshiVersion = '1.8.0'
 
         firebaseCoreVersion = '17.0.1'
-        yandexMapKitVersion = '3.3.1'
+        yandexMapKitVersion = '3.4.0'
         playServicesLocationVersion = '17.0.0'
 
         kotlinDependencies = [
