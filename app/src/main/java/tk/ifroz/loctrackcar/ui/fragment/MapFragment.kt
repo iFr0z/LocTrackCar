@@ -169,7 +169,7 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
             if (userLocationLayer.cameraPosition() != null) {
                 routeStart = userLocationLayer.cameraPosition()!!.target
                 view.map_v.map.move(
-                    CameraPosition(routeStart, 16f, 0f, 0f), Animation(SMOOTH, 1f), null
+                    CameraPosition(routeStart, 18f, 0f, 0f), Animation(SMOOTH, 1f), null
                 )
             } else {
                 view.map_v.map.move(CameraPosition(Point(0.0, 0.0), 16f, 0f, 0f))
@@ -255,7 +255,7 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
 
                 if (isCar) {
                     view.map_v.map.move(
-                        CameraPosition(routeEnd, 16f, 0f, 0f), Animation(SMOOTH, 1f), null
+                        CameraPosition(routeEnd, 18f, 0f, 0f), Animation(SMOOTH, 1f), null
                     )
                 } else {
                     insertCar()
@@ -321,7 +321,7 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
         markerPlacemark.setIcon(fromBitmap(bitmap))
         markerPlacemark.setIconStyle(IconStyle().setAnchor(PointF(0.5f, 1f)))
 
-        view.map_v.map.move(CameraPosition(point, 16f, 0f, 0f), Animation(SMOOTH, 1f), null)
+        view.map_v.map.move(CameraPosition(point, 18f, 0f, 0f), Animation(SMOOTH, 1f), null)
 
         isMarker = true
     }
@@ -383,7 +383,7 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
                 (routeStart.longitude + routeEnd.longitude) / 2
             )
             view.map_v.map.move(
-                CameraPosition(screenCenter, 14f, 0f, 0f), Animation(SMOOTH, 1f), null
+                CameraPosition(screenCenter, 16f, 0f, 0f), Animation(SMOOTH, 1f), null
             )
         }
     }
