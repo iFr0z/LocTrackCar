@@ -5,7 +5,7 @@
     style="@style/MaterialCardViewTwoCornerTheme"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.MaterialCardViewTwoCornerTheme.MaterialCardView.Rounded">
+    app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.MaterialCardViewOneCornerTheme.MaterialCardView.Rounded">
 
     <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"

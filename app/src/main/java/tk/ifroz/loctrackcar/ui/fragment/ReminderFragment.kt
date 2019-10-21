@@ -4,8 +4,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders.of
 import androidx.work.Data
 import androidx.work.WorkInfo
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
@@ -23,17 +23,13 @@ import java.util.Locale.getDefault
 
 class ReminderFragment : BottomSheetDialogFragment() {
 
-    private lateinit var addressViewModel: AddressViewModel
-    private lateinit var reminderViewModel: ReminderViewModel
-    private lateinit var carViewModel: CarViewModel
+    private val addressViewModel: AddressViewModel by activityViewModels()
+    private val reminderViewModel: ReminderViewModel by activityViewModels()
+    private val carViewModel: CarViewModel by activityViewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setStyle(STYLE_NORMAL, R.style.BottomSheetDialogTheme)
-
-        addressViewModel = of(this.activity!!).get(AddressViewModel::class.java)
-        reminderViewModel = of(this.activity!!).get(ReminderViewModel::class.java)
-        carViewModel = of(this.activity!!).get(CarViewModel::class.java)
     }
 
     override fun onCreateView(

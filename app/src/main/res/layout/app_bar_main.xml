@@ -16,6 +16,6 @@
         android:layout_gravity="bottom|end"
         android:text="@string/search_place_title"
         app:icon="@drawable/ic_search_grey_24dp"
-        app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.MaterialCardViewOneCornerTheme.MaterialCardView.Rounded" />
+        app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.ExtendedFloatingActionButtonOneCornerTheme.ExtendedFloatingActionButton.Rounded" />
 
 </com.google.android.material.appbar.AppBarLayout>

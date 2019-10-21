@@ -14,8 +14,8 @@ import androidx.activity.addCallback
 import androidx.core.app.ActivityCompat.checkSelfPermission
 import androidx.core.app.ActivityCompat.getColor
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders.of
 import androidx.navigation.fragment.findNavController
 import androidx.work.Data
 import androidx.work.WorkInfo
@@ -91,11 +91,11 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
     private lateinit var markerObject: MapObjectCollection
     private lateinit var markerPlacemark: PlacemarkMapObject
 
-    private lateinit var carViewModel: CarViewModel
-    private lateinit var geocoderViewModel: GeocoderViewModel
-    private lateinit var reminderViewModel: ReminderViewModel
-    private lateinit var searchPlaceViewModel: SearchPlaceViewModel
-    private lateinit var addressViewModel: AddressViewModel
+    private val carViewModel: CarViewModel by activityViewModels()
+    private val geocoderViewModel: GeocoderViewModel by activityViewModels()
+    private val reminderViewModel: ReminderViewModel by activityViewModels()
+    private val searchPlaceViewModel: SearchPlaceViewModel by activityViewModels()
+    private val addressViewModel: AddressViewModel by activityViewModels()
 
     private lateinit var customBack: OnBackPressedCallback
 
@@ -105,12 +105,6 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
         PlacesFactory.initialize(this.activity!!)
         TransportFactory.initialize(this.activity!!)
         super.onCreate(savedInstanceState)
-
-        carViewModel = of(this.activity!!).get(CarViewModel::class.java)
-        geocoderViewModel = of(this.activity!!).get(GeocoderViewModel::class.java)
-        reminderViewModel = of(this.activity!!).get(ReminderViewModel::class.java)
-        searchPlaceViewModel = of(this.activity!!).get(SearchPlaceViewModel::class.java)
-        addressViewModel = of(this.activity!!).get(AddressViewModel::class.java)
     }
 
     override fun onCreateView(

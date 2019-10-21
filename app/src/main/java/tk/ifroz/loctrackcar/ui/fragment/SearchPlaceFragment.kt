@@ -6,8 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE
 import android.view.inputmethod.EditorInfo.IME_ACTION_SEARCH
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders.of
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import kotlinx.android.synthetic.main.search_place_fragment.view.*
 import ru.ifr0z.core.extension.onEditorAction
@@ -17,13 +17,11 @@ import tk.ifroz.loctrackcar.viewmodel.SearchPlaceViewModel
 
 class SearchPlaceFragment : BottomSheetDialogFragment() {
 
-    private lateinit var searchPlaceViewModel: SearchPlaceViewModel
+    private val searchPlaceViewModel: SearchPlaceViewModel by activityViewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setStyle(STYLE_NORMAL, R.style.BottomSheetDialogTheme)
-
-        searchPlaceViewModel = of(this.activity!!).get(SearchPlaceViewModel::class.java)
     }
 
     override fun onCreateView(
@@ -60,12 +58,9 @@ class SearchPlaceFragment : BottomSheetDialogFragment() {
             if (!searchPlaceResult.isNullOrEmpty()) {
                 val searchPlaceLatitude = searchPlaceResult[0]
                 val searchPlaceLongitude = searchPlaceResult[1]
-                val searchPlaceFormatResult =
-                    getString(
-                        R.string.search_place_format,
-                        searchPlaceLatitude,
-                        searchPlaceLongitude
-                    )
+                val searchPlaceFormatResult = getString(
+                    R.string.search_place_format, searchPlaceLatitude, searchPlaceLongitude
+                )
 
                 view.search_place_et.setText(searchPlaceFormatResult)
                 view.search_place_et.setSelection(view.search_place_et.text?.length!!)
