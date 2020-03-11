@@ -54,18 +54,20 @@ class SearchPlaceFragment : BottomSheetDialogFragment() {
             searchPlaceViewModel.clear()
         }
 
-        searchPlaceViewModel.searchPlaceResult.observe(this, Observer { searchPlaceResult ->
-            if (!searchPlaceResult.isNullOrEmpty()) {
-                val searchPlaceLatitude = searchPlaceResult[0]
-                val searchPlaceLongitude = searchPlaceResult[1]
-                val searchPlaceFormatResult = getString(
-                    R.string.search_place_format, searchPlaceLatitude, searchPlaceLongitude
-                )
+        searchPlaceViewModel.searchPlaceResult.observe(
+            viewLifecycleOwner, Observer { searchPlaceResult ->
+                if (!searchPlaceResult.isNullOrEmpty()) {
+                    val searchPlaceLatitude = searchPlaceResult[0]
+                    val searchPlaceLongitude = searchPlaceResult[1]
+                    val searchPlaceFormatResult = getString(
+                        R.string.search_place_format, searchPlaceLatitude, searchPlaceLongitude
+                    )
 
-                view.search_place_et.setText(searchPlaceFormatResult)
-                view.search_place_et.setSelection(view.search_place_et.text?.length!!)
+                    view.search_place_et.setText(searchPlaceFormatResult)
+                    view.search_place_et.setSelection(view.search_place_et.text?.length!!)
+                }
             }
-        })
+        )
     }
 
     companion object {

@@ -1,6 +1,7 @@
 package tk.ifroz.loctrackcar.ui.fragment
 
 import android.Manifest.permission.ACCESS_FINE_LOCATION
+import android.content.Intent
 import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.content.res.Configuration.*
 import android.graphics.PointF
@@ -11,6 +12,7 @@ import android.view.View.*
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.addCallback
+import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat.checkSelfPermission
 import androidx.core.app.ActivityCompat.getColor
 import androidx.fragment.app.Fragment
@@ -18,7 +20,6 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.work.Data
-import androidx.work.WorkInfo
 import com.google.android.material.bottomsheet.BottomSheetBehavior.*
 import com.yandex.mapkit.Animation
 import com.yandex.mapkit.Animation.Type.SMOOTH
@@ -53,9 +54,6 @@ import kotlinx.android.synthetic.main.bottom_sheet_navigation.*
 import kotlinx.android.synthetic.main.bottom_sheet_row_distance.view.*
 import kotlinx.android.synthetic.main.bottom_sheet_row_location.view.*
 import kotlinx.android.synthetic.main.bottom_sheet_row_reminder.view.*
-import org.jetbrains.anko.configuration
-import org.jetbrains.anko.selector
-import org.jetbrains.anko.share
 import ru.ifr0z.core.custom.ImageProviderCustom
 import ru.ifr0z.core.extension.bottomSheetStateCallback
 import ru.ifr0z.core.livedata.ConnectivityLiveData
@@ -101,9 +99,9 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         MapKitFactory.setApiKey(mapKitApiKey)
-        MapKitFactory.initialize(this.activity!!)
-        PlacesFactory.initialize(this.activity!!)
-        TransportFactory.initialize(this.activity!!)
+        MapKitFactory.initialize(this.requireActivity())
+        PlacesFactory.initialize(this.requireActivity())
+        TransportFactory.initialize(this.requireActivity())
         super.onCreate(savedInstanceState)
     }
 
@@ -234,7 +232,7 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
             insets
         }
 
-        when (view.context.configuration.uiMode and UI_MODE_NIGHT_MASK) {
+        when (resources.configuration.uiMode and UI_MODE_NIGHT_MASK) {
             UI_MODE_NIGHT_NO -> view.map_v.map.isNightModeEnabled = false
             UI_MODE_NIGHT_YES -> view.map_v.map.isNightModeEnabled = true
         }
@@ -284,27 +282,29 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
             findNavController().navigate(R.id.search_place_dest, null)
         }
 
-        searchPlaceViewModel.searchPlaceResult.observe(this, Observer { searchPlaceResult ->
-            if (isMarker) {
-                markerObject.clear()
+        searchPlaceViewModel.searchPlaceResult.observe(
+            viewLifecycleOwner, Observer { searchPlaceResult ->
+                if (isMarker) {
+                    markerObject.clear()
 
-                isMarker = false
+                    isMarker = false
+                }
+
+                val searchPlaceTitle = getString(R.string.search_place_title)
+                if (!searchPlaceResult.isNullOrEmpty()) {
+                    val markerLatitude = searchPlaceResult[0]
+                    val markerLongitude = searchPlaceResult[1]
+                    drawMarker(markerLatitude.toDouble(), markerLongitude.toDouble(), view)
+
+                    val searchPlaceTitleFormat =
+                        getString(R.string.search_place_title_format, searchPlaceTitle)
+
+                    view.search_place_fab.text = searchPlaceTitleFormat
+                } else {
+                    view.search_place_fab.text = searchPlaceTitle
+                }
             }
-
-            val searchPlaceTitle = getString(R.string.search_place_title)
-            if (!searchPlaceResult.isNullOrEmpty()) {
-                val markerLatitude = searchPlaceResult[0]
-                val markerLongitude = searchPlaceResult[1]
-                drawMarker(markerLatitude.toDouble(), markerLongitude.toDouble(), view)
-
-                val searchPlaceTitleFormat =
-                    getString(R.string.search_place_title_format, searchPlaceTitle)
-
-                view.search_place_fab.text = searchPlaceTitleFormat
-            } else {
-                view.search_place_fab.text = searchPlaceTitle
-            }
-        })
+        )
     }
 
     private fun drawMarker(markerLatitude: Double, markerLongitude: Double, view: View) {
@@ -349,7 +349,12 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
             findNavController().navigate(R.id.reminder_dest, null)
         }
         share_c.setOnClickListener {
-            view.context.share("${routeEnd.latitude},${routeEnd.longitude}")
+            val sendIntent: Intent = Intent().apply {
+                action = Intent.ACTION_SEND
+                putExtra(Intent.EXTRA_TEXT, "${routeEnd.latitude},${routeEnd.longitude}")
+                type = "text/plain"
+            }
+            startActivity(Intent.createChooser(sendIntent, null))
         }
         delete_c.setOnClickListener {
             dialogMenuCar(view)
@@ -408,18 +413,18 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
     override fun onMasstransitRoutesError(error: Error) {}
 
     private fun dialogMenuCar(view: View) {
+        val menuTitle = getString(R.string.dialog_menu_title)
         val deleteReminder = getString(R.string.notification)
         val deletePedestrian = getString(R.string.dialog_menu_item_delete_pedestrian)
         val deleteCar = getString(R.string.dialog_menu_item_delete_car)
-        val menuTitle = getString(R.string.dialog_menu_title)
-        val listItem = listOf(deleteReminder, deletePedestrian, deleteCar)
-        view.context.selector(menuTitle, listItem) { _, itemId ->
-            when (itemId) {
+        val listItem = arrayOf(deleteReminder, deletePedestrian, deleteCar)
+        AlertDialog.Builder(view.context).setTitle(menuTitle).setItems(listItem) { _, which ->
+            when (which) {
                 0 -> reminderViewModel.cancel()
                 1 -> deletePedestrian(view)
                 2 -> deleteCar(view)
             }
-        }
+        }.create().show()
     }
 
     private fun deletePedestrian(view: View) {
@@ -458,7 +463,7 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
     }
 
     private fun retrieveCar(view: View) {
-        carViewModel.targets.observe(this, Observer { target ->
+        carViewModel.targets.observe(viewLifecycleOwner, Observer { target ->
             target?.let {
                 routeEnd = Point(target.latitude, target.longitude)
                 drawCar(routeEnd, view)
@@ -484,11 +489,13 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
         val coordinates = "$subtitleLatitude $latitude\n$subtitleLongitude $longitude"
         view.coordinates_tv.text = coordinates
 
-        ConnectivityLiveData(view.context).observe(this, Observer { isNetworkAvailable ->
-            if (isNetworkAvailable && !isPanorama) {
-                showPanorama(routeEnd)
+        ConnectivityLiveData(view.context).observe(
+            viewLifecycleOwner, Observer { isNetworkAvailable ->
+                if (isNetworkAvailable && !isPanorama) {
+                    showPanorama(routeEnd)
+                }
             }
-        })
+        )
 
         val geocode = "$longitude,$latitude"
         val format = "json"
@@ -497,7 +504,7 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
             .putString(RESULTS_DATA, results).build()
 
         geocoderViewModel.getStreetName(data)
-        geocoderViewModel.outputStatus.observe(this, Observer<List<WorkInfo>> { listOfWorkInfo ->
+        geocoderViewModel.outputStatus.observe(viewLifecycleOwner, Observer { listOfWorkInfo ->
             listOfWorkInfo?.let {
                 if (listOfWorkInfo.isNullOrEmpty()) {
                     return@Observer
@@ -514,13 +521,13 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
             }
         })
 
-        carViewModel.reminders.observe(this, Observer { reminder ->
+        carViewModel.reminders.observe(viewLifecycleOwner, Observer { reminder ->
             reminder?.let {
                 view.reminder_tv.text = reminder.reminder
             }
         })
 
-        reminderViewModel.outputStatus.observe(this, Observer<List<WorkInfo>> { listOfWorkInfo ->
+        reminderViewModel.outputStatus.observe(viewLifecycleOwner, Observer { listOfWorkInfo ->
             listOfWorkInfo?.let {
                 if (listOfWorkInfo.isNullOrEmpty()) {
                     return@Observer

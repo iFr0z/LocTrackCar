@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.work.Data
-import androidx.work.WorkInfo
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import kotlinx.android.synthetic.main.reminder_fragment.view.*
 import tk.ifroz.loctrackcar.R
@@ -57,14 +56,14 @@ class ReminderFragment : BottomSheetDialogFragment() {
                 0
             )
 
-            addressViewModel.addressName.observe(this, Observer { addressName ->
+            addressViewModel.addressName.observe(viewLifecycleOwner, Observer { addressName ->
                 val data = Data.Builder().putInt(NOTIFICATION_ID, 0)
                     .putString(NOTIFICATION_ADDRESS, addressName).build()
 
                 reminderViewModel.scheduleNotification(customCalendar, data)
             })
             reminderViewModel.outputStatus.observe(
-                this, Observer<List<WorkInfo>> { listOfWorkInfo ->
+                viewLifecycleOwner, Observer { listOfWorkInfo ->
                     listOfWorkInfo?.let {
                         if (listOfWorkInfo.isNullOrEmpty()) {
                             return@Observer
