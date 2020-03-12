@@ -8,9 +8,10 @@ android {
     compileSdkVersion rootProject.compileSdkVersion
 
     defaultConfig {
-        applicationId "tk.ifroz.LocTrackCar"
+        applicationId rootProject.applicationId
         minSdkVersion rootProject.minSdkVersion
-        targetSdkVersion rootProject.compileSdkVersion
+        buildToolsVersion rootProject.buildToolsVersion
+        targetSdkVersion rootProject.targetSdkVersion
         versionCode rootProject.codeVersion
         versionName rootProject.nameVersion
     }
@@ -31,12 +32,12 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = "8"
-        targetCompatibility = "8"
+        sourceCompatibility = '8'
+        targetCompatibility = '8'
     }
 
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = '1.8'
     }
 }
 
@@ -45,30 +46,30 @@ dependencies {
     implementation project(':core')
 
     rootProject.kotlinDependencies.each { name, dependency ->
-        add("implementation", dependency)
+        add('implementation', dependency)
     }
 
     rootProject.androidxDependencies.each { name, dependency ->
-        add("implementation", dependency)
+        add('implementation', dependency)
     }
 
     rootProject.androidxKaptDependencies.each { name, dependency ->
-        add("kapt", dependency)
+        add('kapt', dependency)
     }
 
     rootProject.RetrofitDependencies.each { name, dependency ->
-        add("implementation", dependency)
+        add('implementation', dependency)
     }
 
     rootProject.RetrofitKaptDependencies.each { name, dependency ->
-        add("kapt", dependency)
+        add('kapt', dependency)
     }
 
     rootProject.googleDependencies.each { name, dependency ->
-        add("implementation", dependency)
+        add('implementation', dependency)
     }
 
     rootProject.yandexMapKitDependencies.each { name, dependency ->
-        add("implementation", dependency)
+        add('implementation', dependency)
     }
 }

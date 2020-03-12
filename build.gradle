@@ -1,6 +1,9 @@
 buildscript {
     ext {
-        compileSdkVersion = 29
+        applicationId = 'tk.ifroz.LocTrackCar'
+        compileSdkVersion = 'android-R'
+        buildToolsVersion = '30.0.0 rc1'
+        targetSdkVersion = 'R'
         minSdkVersion = 21
         codeVersion = 72
         nameVersion = '8.0.0'
