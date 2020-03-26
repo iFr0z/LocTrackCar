@@ -42,44 +42,41 @@ class ReminderFragment : BottomSheetDialogFragment() {
     }
 
     private fun userInterface(view: View) {
-        val titleNotification = getString(R.string.notification)
-        view.collapsing_toolbar_l.title = titleNotification
+        view.apply {
+            val titleNotification = getString(R.string.notification)
+            collapsing_toolbar_l.title = titleNotification
 
-        view.done_fab.setOnClickListener {
-            val customCalendar = Calendar.getInstance()
-            customCalendar.set(
-                view.date_p.year,
-                view.date_p.month,
-                view.date_p.dayOfMonth,
-                view.time_p.hour,
-                view.time_p.minute,
-                0
-            )
+            done_fab.setOnClickListener {
+                val customCalendar = Calendar.getInstance().apply {
+                    set(date_p.year, date_p.month, date_p.dayOfMonth, time_p.hour, time_p.minute, 0)
+                }
 
-            addressViewModel.addressName.observe(viewLifecycleOwner, Observer { addressName ->
-                val data = Data.Builder().putInt(NOTIFICATION_ID, 0)
-                    .putString(NOTIFICATION_ADDRESS, addressName).build()
+                addressViewModel.addressName.observe(viewLifecycleOwner, Observer { addressName ->
+                    val data = Data.Builder().putInt(NOTIFICATION_ID, 0)
+                        .putString(NOTIFICATION_ADDRESS, addressName).build()
 
-                reminderViewModel.scheduleNotification(customCalendar, data)
-            })
-            reminderViewModel.outputStatus.observe(
-                viewLifecycleOwner, Observer { listOfWorkInfo ->
-                    listOfWorkInfo?.let {
-                        if (listOfWorkInfo.isNullOrEmpty()) {
-                            return@Observer
-                        }
-                        val workInfo = listOfWorkInfo[0]
-                        if (!workInfo.state.isFinished) {
-                            val dateFormat = SimpleDateFormat(datePattern, getDefault())
-                            carViewModel.upsertReminder(
-                                Reminder(dateFormat.format(customCalendar.time).toString())
-                            )
+                    reminderViewModel.scheduleNotification(customCalendar, data)
+                })
 
-                            dialog?.onBackPressed()
+                reminderViewModel.outputStatus.observe(
+                    viewLifecycleOwner, Observer { listOfWorkInfo ->
+                        listOfWorkInfo?.let {
+                            if (listOfWorkInfo.isNullOrEmpty()) {
+                                return@Observer
+                            }
+                            val workInfo = listOfWorkInfo[0]
+                            if (!workInfo.state.isFinished) {
+                                val dateFormat = SimpleDateFormat(datePattern, getDefault())
+                                carViewModel.upsertReminder(
+                                    Reminder(dateFormat.format(customCalendar.time).toString())
+                                )
+
+                                dialog?.onBackPressed()
+                            }
                         }
                     }
-                }
-            )
+                )
+            }
         }
     }
 

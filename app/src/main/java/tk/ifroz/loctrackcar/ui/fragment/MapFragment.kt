@@ -47,13 +47,13 @@ import com.yandex.mapkit.user_location.UserLocationObjectListener
 import com.yandex.mapkit.user_location.UserLocationView
 import com.yandex.runtime.Error
 import com.yandex.runtime.image.ImageProvider.fromBitmap
-import kotlinx.android.synthetic.main.app_bar_main.view.*
 import kotlinx.android.synthetic.main.bottom_sheet_backend.view.*
 import kotlinx.android.synthetic.main.bottom_sheet_frontend.view.*
-import kotlinx.android.synthetic.main.bottom_sheet_navigation.*
+import kotlinx.android.synthetic.main.bottom_sheet_navigation.view.*
 import kotlinx.android.synthetic.main.bottom_sheet_row_distance.view.*
 import kotlinx.android.synthetic.main.bottom_sheet_row_location.view.*
 import kotlinx.android.synthetic.main.bottom_sheet_row_reminder.view.*
+import kotlinx.android.synthetic.main.map_fragment.view.*
 import ru.ifr0z.core.custom.ImageProviderCustom
 import ru.ifr0z.core.extension.bottomSheetStateCallback
 import ru.ifr0z.core.livedata.ConnectivityLiveData
@@ -209,12 +209,13 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
 
         view?.context?.let { context ->
             val bitmap = ImageProviderCustom(context, R.drawable.ic_dot_rose_24dp).image
-            userLocationView.pin.setIcon(fromBitmap(bitmap))
-            userLocationView.pin.setIconStyle(IconStyle().setFlat(true))
-            userLocationView.arrow.setIcon(fromBitmap(bitmap))
-            userLocationView.arrow.setIconStyle(IconStyle().setFlat(true))
-            userLocationView.accuracyCircle.fillColor =
-                getColor(context, R.color.colorAccuracyCircle)
+            userLocationView.apply {
+                pin.setIcon(fromBitmap(bitmap))
+                pin.setIconStyle(IconStyle().setFlat(true))
+                arrow.setIcon(fromBitmap(bitmap))
+                arrow.setIconStyle(IconStyle().setFlat(true))
+                accuracyCircle.fillColor = getColor(context, R.color.colorAccuracyCircle)
+            }
         }
     }
 
@@ -223,13 +224,13 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
     override fun onObjectUpdated(userLocationView: UserLocationView, event: ObjectEvent) {}
 
     private fun userInterface(view: View) {
-        view.app_bar_l.systemUiVisibility =
-            SYSTEM_UI_FLAG_LAYOUT_STABLE or SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-
-        view.app_bar_l.setOnApplyWindowInsetsListener { _, insets ->
-            val statusBarSize = insets.systemWindowInsetTop
-            view.app_bar_l.setPadding(0, statusBarSize, 0, 0)
-            insets
+        @Suppress("DEPRECATION") view.apply {
+            setOnApplyWindowInsetsListener { view, insets ->
+                val navigationBarSize = insets.systemWindowInsetBottom
+                view.map_v.setPadding(0, 0, 0, navigationBarSize)
+                insets
+            }
+            systemUiVisibility = SYSTEM_UI_FLAG_LAYOUT_STABLE or SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
         }
 
         when (resources.configuration.uiMode and UI_MODE_NIGHT_MASK) {
@@ -310,10 +311,11 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
     private fun drawMarker(markerLatitude: Double, markerLongitude: Double, view: View) {
         markerObject = view.map_v.map.mapObjects.addCollection()
         val point = Point(markerLatitude, markerLongitude)
-        markerPlacemark = markerObject.addPlacemark(point)
         val bitmap = ImageProviderCustom(view.context, R.drawable.ic_place_black_45dp).image
-        markerPlacemark.setIcon(fromBitmap(bitmap))
-        markerPlacemark.setIconStyle(IconStyle().setAnchor(PointF(0.5f, 1f)))
+        markerPlacemark = markerObject.addPlacemark(point).apply {
+            setIcon(fromBitmap(bitmap))
+            setIconStyle(IconStyle().setAnchor(PointF(0.5f, 1f)))
+        }
 
         view.map_v.map.move(CameraPosition(point, 18f, 0f, 0f), Animation(SMOOTH, 1f), null)
 
@@ -342,21 +344,24 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
             }
         }
 
-        pedestrian_c.setOnClickListener {
+        view.pedestrian_c.setOnClickListener {
             drawPedestrian(view)
         }
-        reminder_c.setOnClickListener {
+
+        view.reminder_c.setOnClickListener {
             findNavController().navigate(R.id.reminder_dest, null)
         }
-        share_c.setOnClickListener {
-            val sendIntent: Intent = Intent().apply {
+
+        view.share_c.setOnClickListener {
+            val sendIntent = Intent().apply {
                 action = Intent.ACTION_SEND
                 putExtra(Intent.EXTRA_TEXT, "${routeEnd.latitude},${routeEnd.longitude}")
                 type = "text/plain"
             }
             startActivity(Intent.createChooser(sendIntent, null))
         }
-        delete_c.setOnClickListener {
+
+        view.delete_c.setOnClickListener {
             dialogMenuCar(view)
         }
     }
@@ -365,9 +370,10 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
         routeStart = userLocationLayer.cameraPosition()!!.target
         if (!isPedestrian) {
             carPedestrianObject = view.map_v.map.mapObjects.addCollection()
-            val points = ArrayList<RequestPoint>()
-            points.add(RequestPoint(routeStart, WAYPOINT, null))
-            points.add(RequestPoint(routeEnd, WAYPOINT, null))
+            val points = ArrayList<RequestPoint>().apply {
+                add(RequestPoint(routeStart, WAYPOINT, null))
+                add(RequestPoint(routeEnd, WAYPOINT, null))
+            }
             carPedestrianRouter = TransportFactory.getInstance().createPedestrianRouter()
             carPedestrianRouter.requestRoutes(points, TimeOptions(), this)
         } else {
@@ -390,10 +396,11 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
     override fun onMasstransitRoutes(routes: List<Route>) {
         if (routes.isNotEmpty()) {
             view?.context?.let { context ->
-                val pedestrianMapObject = carPedestrianObject.addPolyline(routes[0].geometry)
-                pedestrianMapObject.strokeColor = getColor(context, R.color.colorDot)
-                pedestrianMapObject.outlineColor = getColor(context, R.color.colorWayOutline)
-                pedestrianMapObject.outlineWidth = 1f
+                carPedestrianObject.addPolyline(routes[0].geometry).apply {
+                    strokeColor = getColor(context, R.color.colorDot)
+                    outlineColor = getColor(context, R.color.colorWayOutline)
+                    outlineWidth = 10f
+                }
             }
 
             cameraPositionPedestrian()
@@ -472,11 +479,12 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
     }
 
     private fun drawCar(routeEnd: Point, view: View) {
-        carObject = view.map_v.map.mapObjects.addCollection()
-        carPlacemark = carObject.addPlacemark(routeEnd)
         val bitmap = ImageProviderCustom(view.context, R.drawable.ic_marker_black_45dp).image
-        carPlacemark.setIcon(fromBitmap(bitmap))
-        carPlacemark.setIconStyle(IconStyle().setAnchor(PointF(0.5f, 1f)))
+        carObject = view.map_v.map.mapObjects.addCollection()
+        carPlacemark = carObject.addPlacemark(routeEnd).apply {
+            setIcon(fromBitmap(bitmap))
+            setIconStyle(IconStyle().setAnchor(PointF(0.5f, 1f)))
+        }
 
         dataCar(routeEnd.latitude, routeEnd.longitude, view)
 

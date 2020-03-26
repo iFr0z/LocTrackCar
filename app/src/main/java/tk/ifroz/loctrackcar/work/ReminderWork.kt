@@ -40,9 +40,10 @@ class ReminderWork(context: Context, params: WorkerParameters) : Worker(context,
     }
 
     private fun showNotification(id: Int, addressName: String) {
-        val intent = Intent(applicationContext, MainActivity::class.java)
-        intent.flags = FLAG_ACTIVITY_NEW_TASK or FLAG_ACTIVITY_CLEAR_TASK
-        intent.putExtra(NOTIFICATION_ID, id)
+        val intent = Intent(applicationContext, MainActivity::class.java).apply {
+            flags = FLAG_ACTIVITY_NEW_TASK or FLAG_ACTIVITY_CLEAR_TASK
+            putExtra(NOTIFICATION_ID, id)
+        }
 
         val notificationManager =
             applicationContext.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
@@ -64,14 +65,15 @@ class ReminderWork(context: Context, params: WorkerParameters) : Worker(context,
             val audioAttributes = AudioAttributes.Builder().setUsage(USAGE_NOTIFICATION_RINGTONE)
                 .setContentType(CONTENT_TYPE_SONIFICATION).build()
 
-            val channel =
-                NotificationChannel(NOTIFICATION_CHANNEL, NOTIFICATION_NAME, IMPORTANCE_HIGH)
-
-            channel.enableLights(true)
-            channel.lightColor = RED
-            channel.enableVibration(true)
-            channel.vibrationPattern = longArrayOf(100, 200, 300, 400, 500, 400, 300, 200, 400)
-            channel.setSound(ringtoneManager, audioAttributes)
+            val channel = NotificationChannel(
+                NOTIFICATION_CHANNEL, NOTIFICATION_NAME, IMPORTANCE_HIGH
+            ).apply {
+                enableLights(true)
+                lightColor = RED
+                enableVibration(true)
+                vibrationPattern = longArrayOf(100, 200, 300, 400, 500, 400, 300, 200, 400)
+                setSound(ringtoneManager, audioAttributes)
+            }
             notificationManager.createNotificationChannel(channel)
         }
 

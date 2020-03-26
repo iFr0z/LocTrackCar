@@ -2,12 +2,8 @@
 <com.google.android.material.circularreveal.CircularRevealFrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
-    <com.yandex.mapkit.mapview.MapView
-        android:id="@+id/map_v"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true">
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/car_fab"
@@ -28,6 +24,14 @@
         android:layout_marginEnd="16dp"
         app:srcCompat="@drawable/ic_gps_off_black_24dp" />
 
-    <include layout="@layout/app_bar_main" />
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/search_place_fab"
+        style="@style/ExtendedFloatingActionButtonTheme"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:text="@string/search_place_title"
+        app:icon="@drawable/ic_search_grey_24dp"
+        app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.ExtendedFloatingActionButtonOneCornerTheme.ExtendedFloatingActionButton.Rounded" />
 
 </com.google.android.material.circularreveal.CircularRevealFrameLayout>

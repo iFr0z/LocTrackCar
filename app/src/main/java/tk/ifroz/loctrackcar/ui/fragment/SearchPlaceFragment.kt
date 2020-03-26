@@ -35,39 +35,41 @@ class SearchPlaceFragment : BottomSheetDialogFragment() {
     }
 
     private fun userInterface(view: View) {
-        dialog?.window?.setSoftInputMode(SOFT_INPUT_STATE_VISIBLE)
+        view.apply {
+            dialog?.window?.setSoftInputMode(SOFT_INPUT_STATE_VISIBLE)
 
-        val requestStart = getString(R.string.search_place_request_start)
-        val requestEnd = getString(R.string.search_place_request_end)
-        view.search_place_et.onEditorAction(
-            IME_ACTION_SEARCH, coordinatesPattern, requestStart, requestEnd
-        ) { arrayLatLng ->
-            searchPlaceViewModel.update(arrayLatLng)
+            val requestStart = getString(R.string.search_place_request_start)
+            val requestEnd = getString(R.string.search_place_request_end)
+            search_place_et.onEditorAction(
+                IME_ACTION_SEARCH, coordinatesPattern, requestStart, requestEnd
+            ) { arrayLatLng ->
+                searchPlaceViewModel.update(arrayLatLng)
 
-            dialog?.onBackPressed()
-        }
-        view.search_place_et.onTextChanges(view.clear_search_iv)
-
-        view.clear_search_iv.setOnClickListener {
-            view.search_place_et.text?.clear()
-
-            searchPlaceViewModel.clear()
-        }
-
-        searchPlaceViewModel.searchPlaceResult.observe(
-            viewLifecycleOwner, Observer { searchPlaceResult ->
-                if (!searchPlaceResult.isNullOrEmpty()) {
-                    val searchPlaceLatitude = searchPlaceResult[0]
-                    val searchPlaceLongitude = searchPlaceResult[1]
-                    val searchPlaceFormatResult = getString(
-                        R.string.search_place_format, searchPlaceLatitude, searchPlaceLongitude
-                    )
-
-                    view.search_place_et.setText(searchPlaceFormatResult)
-                    view.search_place_et.setSelection(view.search_place_et.text?.length!!)
-                }
+                dialog?.onBackPressed()
             }
-        )
+            search_place_et.onTextChanges(clear_search_iv)
+
+            clear_search_iv.setOnClickListener {
+                search_place_et.text?.clear()
+
+                searchPlaceViewModel.clear()
+            }
+
+            searchPlaceViewModel.searchPlaceResult.observe(
+                viewLifecycleOwner, Observer { searchPlaceResult ->
+                    if (!searchPlaceResult.isNullOrEmpty()) {
+                        val searchPlaceLatitude = searchPlaceResult[0]
+                        val searchPlaceLongitude = searchPlaceResult[1]
+                        val searchPlaceFormatResult = getString(
+                            R.string.search_place_format, searchPlaceLatitude, searchPlaceLongitude
+                        )
+
+                        search_place_et.setText(searchPlaceFormatResult)
+                        search_place_et.setSelection(search_place_et.text?.length!!)
+                    }
+                }
+            )
+        }
     }
 
     companion object {

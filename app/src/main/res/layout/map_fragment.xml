@@ -3,6 +3,11 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <com.yandex.mapkit.mapview.MapView
+        android:id="@+id/map_v"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
     <include layout="@layout/bottom_sheet_backend" />
 
     <include layout="@layout/bottom_sheet_frontend" />

@@ -2,26 +2,26 @@ buildscript {
     ext {
         applicationId = 'tk.ifroz.LocTrackCar'
         compileSdkVersion = 'android-R'
-        buildToolsVersion = '30.0.0 rc1'
+        buildToolsVersion = '30.0.0 rc2'
         targetSdkVersion = 'R'
         minSdkVersion = 21
         codeVersion = 72
         nameVersion = '8.0.0'
 
-        kotlinVersion = '1.3.70'
-        сoroutinesVersion = '1.3.4'
+        kotlinVersion = '1.3.71'
+        сoroutinesVersion = '1.3.5'
 
         materialVersion = '1.1.0'
         appCompatVersion = '1.1.0'
-        roomVersion = '2.2.4'
+        roomVersion = '2.2.5'
         lifeCycleVersion = '2.2.0'
-        fragmentVersion = '1.2.2'
-        workVersion = '2.3.3'
+        fragmentVersion = '1.2.3'
+        workVersion = '2.3.4'
         navigationVersion = '2.2.1'
 
-        retrofitVersion = '2.7.2'
+        retrofitVersion = '2.8.1'
         okHttpVersion = '4.4.0'
-        okioVersion = '2.4.3'
+        okioVersion = '2.5.0'
         moshiVersion = '1.9.2'
 
         firebaseCoreVersion = '17.2.3'
