@@ -80,7 +80,7 @@
                 android:paddingStart="8dp"
                 android:paddingEnd="0dp" />
 
-            <ru.ifr0z.core.custom.TimePickerCustom
+            <ru.ifr0z.timepickercompact.TimePickerCompact
                 android:id="@+id/time_p"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

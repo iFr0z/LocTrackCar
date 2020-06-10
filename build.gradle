@@ -27,6 +27,7 @@ buildscript {
         firebaseCoreVersion = '17.4.3'
         yandexMapKitVersion = '3.5.0'
         playServicesLocationVersion = '17.0.0'
+        timePickerVersion = '1.0'
 
         kotlinDependencies = [
                 kotlin: 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:' + rootProject.kotlinVersion,
@@ -83,6 +84,10 @@ buildscript {
                 mapkit: 'com.yandex.android:mapkit:' + rootProject.yandexMapKitVersion,
                 places: 'com.yandex.android:places:' + rootProject.yandexMapKitVersion,
                 transport: 'com.yandex.android:transport:' + rootProject.yandexMapKitVersion
+        ]
+
+        ifr0zDependencies = [
+                timePicker: 'com.github.ifr0z:timepickercompact:' + rootProject.timePickerVersion
         ]
     }
 
