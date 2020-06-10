@@ -225,11 +225,6 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
 
     private fun userInterface(view: View) {
         @Suppress("DEPRECATION") view.apply {
-            setOnApplyWindowInsetsListener { view, insets ->
-                val navigationBarSize = insets.systemWindowInsetBottom
-                view.map_v.setPadding(0, 0, 0, navigationBarSize)
-                insets
-            }
             systemUiVisibility = SYSTEM_UI_FLAG_LAYOUT_STABLE or SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
         }
 

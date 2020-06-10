@@ -2,29 +2,29 @@ buildscript {
     ext {
         applicationId = 'tk.ifroz.LocTrackCar'
         compileSdkVersion = 'android-R'
-        buildToolsVersion = '30.0.0 rc2'
-        targetSdkVersion = 'R'
+        buildToolsVersion = '30.0.0 rc4'
+        targetSdkVersion = 30
         minSdkVersion = 21
         codeVersion = 72
         nameVersion = '8.0.0'
 
-        kotlinVersion = '1.3.71'
-        сoroutinesVersion = '1.3.5'
+        kotlinVersion = '1.3.72'
+        сoroutinesVersion = '1.3.7'
 
         materialVersion = '1.1.0'
         appCompatVersion = '1.1.0'
         roomVersion = '2.2.5'
         lifeCycleVersion = '2.2.0'
-        fragmentVersion = '1.2.3'
+        fragmentVersion = '1.2.4'
         workVersion = '2.3.4'
-        navigationVersion = '2.2.1'
+        navigationVersion = '2.2.2'
 
-        retrofitVersion = '2.8.1'
-        okHttpVersion = '4.4.0'
-        okioVersion = '2.5.0'
+        retrofitVersion = '2.9.0'
+        okHttpVersion = '4.7.2'
+        okioVersion = '2.6.0'
         moshiVersion = '1.9.2'
 
-        firebaseCoreVersion = '17.2.3'
+        firebaseCoreVersion = '17.4.3'
         yandexMapKitVersion = '3.5.0'
         playServicesLocationVersion = '17.0.0'
 
@@ -92,7 +92,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.6.1'
+        classpath 'com.android.tools.build:gradle:4.0.0'
         classpath 'com.google.gms:google-services:4.3.3'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
     }
@@ -100,6 +100,7 @@ buildscript {
 
 allprojects {
     repositories {
+        mavenCentral()
         google()
         jcenter()
     }
