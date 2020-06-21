@@ -2,7 +2,6 @@ buildscript {
     ext {
         applicationId = 'tk.ifroz.LocTrackCar'
         compileSdkVersion = 30
-        buildToolsVersion = '30.0.0'
         targetSdkVersion = 30
         minSdkVersion = 21
         codeVersion = 75
@@ -22,7 +21,7 @@ buildscript {
         retrofitVersion = '2.9.0'
         okHttpVersion = '4.7.2'
         okioVersion = '2.6.0'
-        moshiVersion = '1.9.2'
+        moshiVersion = '1.9.3'
 
         firebaseCoreVersion = '17.4.3'
         yandexMapKitVersion = '3.5.0'

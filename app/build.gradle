@@ -10,7 +10,6 @@ android {
     defaultConfig {
         applicationId rootProject.applicationId
         minSdkVersion rootProject.minSdkVersion
-        buildToolsVersion rootProject.buildToolsVersion
         targetSdkVersion rootProject.targetSdkVersion
         versionCode rootProject.codeVersion
         versionName rootProject.nameVersion
