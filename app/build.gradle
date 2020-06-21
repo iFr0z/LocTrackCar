@@ -9,6 +9,7 @@ android {
 
     defaultConfig {
         applicationId rootProject.applicationId
+        buildToolsVersion rootProject.buildToolsVersion
         minSdkVersion rootProject.minSdkVersion
         targetSdkVersion rootProject.targetSdkVersion
         versionCode rootProject.codeVersion
@@ -18,7 +19,7 @@ android {
     bundle {
         density.enableSplit = true
         abi.enableSplit = true
-        language.enableSplit = false
+        language.enableSplit = true
     }
 
     buildTypes {
