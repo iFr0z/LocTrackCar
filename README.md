@@ -1,4 +1,4 @@
 # LocTrackCar
 Android application
 
-Version: 8.1.3
+Version: 8.2.0
