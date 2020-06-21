@@ -4,8 +4,8 @@ buildscript {
         compileSdkVersion = 30
         targetSdkVersion = 30
         minSdkVersion = 21
-        codeVersion = 75
-        nameVersion = '8.1.2'
+        codeVersion = 76
+        nameVersion = '8.1.3'
 
         kotlinVersion = '1.3.72'
         сoroutinesVersion = '1.3.7'
