@@ -7,9 +7,18 @@
         <item name="colorPrimary">@color/colorPrimary</item>
     </style>
 
-    <style name="SplashTheme" parent="AppTheme">
-        <item name="android:windowBackground">@drawable/branded_logo</item>
+    <style name="Theme" parent="AppTheme">
+        <item name="android:windowBackground">@color/colorPrimaryDark</item>
         <item name="android:statusBarColor">@color/colorStatusBar</item>
+        <item name="android:windowAnimationStyle">@style/WindowAnimationStyle</item>
+    </style>
+
+    <style name="WindowAnimationStyle">
+        <item name="android:windowEnterAnimation">@android:anim/linear_interpolator</item>
+    </style>
+
+    <style name="SplashTheme" parent="Theme">
+        <item name="android:windowFullscreen">true</item>
     </style>
 
     <style name="AppbarPrimaryTheme">

@@ -2,24 +2,19 @@
 <resources>
 
     <style name="AppTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
-        <item name="android:navigationBarColor">@color/colorNull</item>
-        <item name="android:windowLightNavigationBar">true</item>
-        <item name="android:navigationBarDividerColor">@color/colorDividerNavigationBar</item>
-    </style>
-
-    <style name="SplashTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
-        <item name="android:windowBackground">@color/colorPrimaryDark</item>
-        <item name="android:windowFullscreen">true</item>
         <item name="android:navigationBarColor">@color/colorPrimaryDark</item>
         <item name="android:windowLightNavigationBar">false</item>
         <item name="android:navigationBarDividerColor">@color/colorPrimaryDark</item>
     </style>
 
     <style name="BottomSheetDialogTheme" parent="Theme.MaterialComponents.Light.BottomSheetDialog">
-        <item name="colorAccent">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorPurple</item>
+        <item name="android:textColorSecondary">@color/colorPurple</item>
+        <item name="android:textColorPrimary">@color/colorNull</item>
+        <item name="colorControlHighlight">@color/colorPurple</item>
         <item name="android:windowIsFloating">false</item>
         <item name="android:statusBarColor">@color/colorTransparent</item>
-        <item name="android:navigationBarColor">@color/colorNull</item>
+        <item name="android:navigationBarColor">@color/colorPrimaryDark</item>
         <item name="android:colorBackground">@color/colorTransparent</item>
     </style>
 </resources>

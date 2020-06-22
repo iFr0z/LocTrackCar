@@ -18,6 +18,7 @@ buildscript {
         fragmentVersion = '1.2.4'
         workVersion = '2.3.4'
         navigationVersion = '2.2.2'
+        constraintLayoutVersion = '2.0.0-beta3'
 
         retrofitVersion = '2.9.0'
         okHttpVersion = '4.7.2'
@@ -53,7 +54,9 @@ buildscript {
                 navigationFragmentKtx: 'androidx.navigation:navigation-fragment-ktx:'
                         + rootProject.navigationVersion,
                 navigationUiKtx: 'androidx.navigation:navigation-ui-ktx:'
-                        + rootProject.navigationVersion
+                        + rootProject.navigationVersion,
+                constraintLayout: 'androidx.constraintlayout:constraintlayout:'
+                        + rootProject.constraintLayoutVersion
         ]
         androidxKaptDependencies = [
                 roomCompiler: 'androidx.room:room-compiler:' + rootProject.roomVersion,

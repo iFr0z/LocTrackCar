@@ -1,4 +1,4 @@
-package tk.ifroz.loctrackcar.ui
+package tk.ifroz.loctrackcar.ui.activity
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
@@ -14,10 +14,10 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.navigation_activity)
 
-        initNavigation()
+        userInterface()
     }
 
-    private fun initNavigation() {
+    private fun userInterface() {
         val host: NavHostFragment = supportFragmentManager
             .findFragmentById(R.id.my_nav_host_fragment) as NavHostFragment? ?: return
 

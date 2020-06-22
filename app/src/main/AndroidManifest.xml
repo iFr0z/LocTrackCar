@@ -14,10 +14,11 @@
         android:largeHeap="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme"
-        tools:ignore="AllowBackup,GoogleAppIndexingWarning">
+        android:theme="@style/Theme"
+        tools:ignore="AllowBackup">
         <activity
-            android:name="tk.ifroz.loctrackcar.ui.MainActivity"
+            android:name=".ui.activity.SplashScreenActivity"
+            android:noHistory="true"
             android:screenOrientation="portrait"
             android:theme="@style/SplashTheme">
             <intent-filter>
@@ -26,6 +27,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
+        </activity>
+        <activity
+            android:name=".ui.activity.MainActivity"
+            android:screenOrientation="portrait">
             <nav-graph android:value="@navigation/mobile_navigation" />
 
         </activity>
