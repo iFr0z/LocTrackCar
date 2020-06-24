@@ -474,7 +474,7 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
     }
 
     private fun drawCar(routeEnd: Point, view: View) {
-        val bitmap = ImageProviderCustom(view.context, R.drawable.ic_marker_black_45dp).image
+        val bitmap = ImageProviderCustom(view.context, R.drawable.ic_marker_with_outline_45dp).image
         carObject = view.map_v.map.mapObjects.addCollection()
         carPlacemark = carObject.addPlacemark(routeEnd).apply {
             setIcon(fromBitmap(bitmap))

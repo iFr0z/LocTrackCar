@@ -13,7 +13,7 @@
         android:layout_gravity="center|end"
         android:layout_marginTop="70dp"
         android:layout_marginEnd="16dp"
-        app:srcCompat="@drawable/ic_marker_black_24dp" />
+        app:srcCompat="@drawable/ic_marker_with_outline_24dp" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/location_fab"

@@ -21,26 +21,14 @@
                 motion:motionTarget="@+id/imageView" />
 
             <KeyAttribute
-                android:scaleX="1.4"
-                android:scaleY="1.4"
+                android:scaleX="0.7"
+                android:scaleY="0.7"
                 motion:framePosition="40"
                 motion:motionTarget="@+id/imageView" />
 
             <KeyAttribute
-                android:scaleX="0.7"
-                android:scaleY="0.7"
-                motion:framePosition="60"
-                motion:motionTarget="@+id/imageView" />
-
-            <KeyAttribute
-                android:scaleX="1.4"
-                android:scaleY="1.4"
-                motion:framePosition="80"
-                motion:motionTarget="@+id/imageView" />
-
-            <KeyAttribute
-                android:scaleX="1.0"
-                android:scaleY="1.0"
+                android:scaleX="50.0"
+                android:scaleY="50.0"
                 motion:framePosition="100"
                 motion:motionTarget="@+id/imageView" />
         </KeyFrameSet>

@@ -48,7 +48,9 @@ class ReminderWork(context: Context, params: WorkerParameters) : Worker(context,
         val notificationManager =
             applicationContext.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
 
-        val bitmap = applicationContext.vectorDrawableToBitmap(R.drawable.ic_marker_black_45dp)
+        val bitmap =
+            applicationContext.vectorDrawableToBitmap(R.drawable.ic_marker_with_outline_45dp)
+
         val titleNotification = applicationContext.getString(R.string.notification_title)
         val pendingIntent = getActivity(applicationContext, 0, intent, 0)
         val notification = NotificationCompat.Builder(applicationContext, NOTIFICATION_CHANNEL)
