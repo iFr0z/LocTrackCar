@@ -41,7 +41,7 @@ class SearchPlaceFragment : BottomSheetDialogFragment() {
             val requestStart = getString(R.string.search_place_request_start)
             val requestEnd = getString(R.string.search_place_request_end)
             search_place_et.onEditorAction(
-                IME_ACTION_SEARCH, coordinatesPattern, requestStart, requestEnd
+                IME_ACTION_SEARCH, coordinatesPattern, view.context, requestStart, requestEnd
             ) { arrayLatLng ->
                 searchPlaceViewModel.update(arrayLatLng)
 

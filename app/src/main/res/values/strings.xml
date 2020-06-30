@@ -1,8 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">LocTrackCar</string>
-    <string name="shortest_way">Кратчайший путь</string>
+    <string name="location_detected">Местоположение установлено</string>
+    <string name="shortest_pedestrian">Кратчайший маршрут</string>
     <string name="pedestrian_title">Маршрут</string>
+    <string name="pedestrian_complete">Маршрут установлен</string>
+    <string name="pedestrian_is_already">Маршрут уже установлен</string>
+    <string name="pedestrian_is_not_already">Маршрут не установлен</string>
+    <string name="update">Обновить</string>
+    <string name="insert">Установить</string>
+    <string name="pedestrian_deleted">Маршрут удален</string>
+    <string name="marker_created">Маркер установлен</string>
+    <string name="marker_searched">Маркер найден</string>
+    <string name="marker_deleted">Маркер удален</string>
     <string name="share_title">Поделиться</string>
     <string name="latitude_subtitle">Широта:</string>
     <string name="longitude_subtitle">Долгота:</string>
@@ -13,9 +23,14 @@
     <string name="search_place_request_start">По запросу</string>
     <string name="search_place_request_end">ничего не найдено</string>
     <string name="dialog_menu_title">Удалить</string>
-    <string name="dialog_menu_item_delete_pedestrian">Проложенный путь</string>
     <string name="dialog_menu_item_delete_car">Маркер</string>
     <string name="notification">Напоминание</string>
     <string name="notification_title">Пора забрать машину</string>
     <string name="notification_address_error">Не удалось отобразить адрес</string>
+    <string name="notification_created">Напоминание установлено</string>
+    <string name="ok">Ок</string>
+    <string name="notification_is_already">Напоминание уже установлено</string>
+    <string name="notification_is_not_already">Напоминание не установлено</string>
+    <string name="notification_deleted">Напоминание удалено</string>
+    <string name="notification_error">Некорректные данные</string>
 </resources>

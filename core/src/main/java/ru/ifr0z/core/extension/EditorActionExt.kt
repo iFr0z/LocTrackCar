@@ -1,11 +1,13 @@
 package ru.ifr0z.core.extension
 
+import android.content.Context
 import android.widget.EditText
 import android.widget.Toast
 
 fun EditText.onEditorAction(
     action: Int,
     regex: String,
+    context: Context,
     requestStart: String,
     requestEnd: String,
     runAction: (List<String>?) -> Unit

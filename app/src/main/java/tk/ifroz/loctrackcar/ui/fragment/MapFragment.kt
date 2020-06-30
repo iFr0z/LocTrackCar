@@ -8,8 +8,8 @@ import android.graphics.PointF
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
-import android.view.View.*
 import android.view.ViewGroup
+import android.widget.FrameLayout.*
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.addCallback
 import androidx.appcompat.app.AlertDialog
@@ -21,6 +21,7 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.work.Data
 import com.google.android.material.bottomsheet.BottomSheetBehavior.*
+import com.google.android.material.snackbar.Snackbar.LENGTH_SHORT
 import com.yandex.mapkit.Animation
 import com.yandex.mapkit.Animation.Type.SMOOTH
 import com.yandex.mapkit.MapKitFactory
@@ -55,7 +56,9 @@ import kotlinx.android.synthetic.main.bottom_sheet_row_location.view.*
 import kotlinx.android.synthetic.main.bottom_sheet_row_reminder.view.*
 import kotlinx.android.synthetic.main.map_fragment.view.*
 import ru.ifr0z.core.custom.ImageProviderCustom
+import ru.ifr0z.core.extension.action
 import ru.ifr0z.core.extension.bottomSheetStateCallback
+import ru.ifr0z.core.extension.snackBarTop
 import ru.ifr0z.core.livedata.ConnectivityLiveData
 import tk.ifroz.loctrackcar.R
 import tk.ifroz.loctrackcar.db.entity.Target
@@ -71,9 +74,9 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
     private var isPermission = false
     private var isFollowUser = false
     private var isCar = false
-    private var isPanorama = false
     private var isPedestrian = false
     private var isMarker = false
+    private var isReminder = false
 
     private var routeEnd = Point(0.0, 0.0)
     private var routeStart = Point(0.0, 0.0)
@@ -154,6 +157,9 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
         cameraPositionUser()
 
         isPermission = true
+
+        val locationDetected = getString(R.string.location_detected)
+        view.coordinator_l.snackBarTop(locationDetected, LENGTH_SHORT) {}
     }
 
     private fun cameraPositionUser() {
@@ -247,6 +253,9 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
                     )
                 } else {
                     insertCar()
+
+                    val markerCreated = getString(R.string.marker_created)
+                    view.coordinator_l.snackBarTop(markerCreated, LENGTH_SHORT) {}
                 }
 
                 from(view.bottom_sheet).state = STATE_EXPANDED
@@ -296,6 +305,9 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
                         getString(R.string.search_place_title_format, searchPlaceTitle)
 
                     view.search_place_fab.text = searchPlaceTitleFormat
+
+                    val markerSearched = getString(R.string.marker_searched)
+                    view.coordinator_l.snackBarTop(markerSearched, LENGTH_SHORT) {}
                 } else {
                     view.search_place_fab.text = searchPlaceTitle
                 }
@@ -340,11 +352,21 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
         }
 
         view.pedestrian_c.setOnClickListener {
-            drawPedestrian(view)
+            setPedestrian(view)
         }
 
         view.reminder_c.setOnClickListener {
-            findNavController().navigate(R.id.reminder_dest, null)
+            if (isReminder) {
+                val notificationIsAlready = getString(R.string.notification_is_already)
+                view.coordinator_l.snackBarTop(notificationIsAlready, LENGTH_SHORT) {
+                    val notificationUpdate = getString(R.string.update)
+                    action(notificationUpdate) {
+                        findNavController().navigate(R.id.reminder_dest, null)
+                    }
+                }
+            } else {
+                findNavController().navigate(R.id.reminder_dest, null)
+            }
         }
 
         view.share_c.setOnClickListener {
@@ -361,19 +383,36 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
         }
     }
 
-    private fun drawPedestrian(view: View) {
+    private fun setPedestrian(view: View) {
         routeStart = userLocationLayer.cameraPosition()!!.target
         if (!isPedestrian) {
-            carPedestrianObject = view.map_v.map.mapObjects.addCollection()
-            val points = ArrayList<RequestPoint>().apply {
-                add(RequestPoint(routeStart, WAYPOINT, null))
-                add(RequestPoint(routeEnd, WAYPOINT, null))
-            }
-            carPedestrianRouter = TransportFactory.getInstance().createPedestrianRouter()
-            carPedestrianRouter.requestRoutes(points, TimeOptions(), this)
+            drawPedestrian(view)
         } else {
             cameraPositionPedestrian()
+
+            val pedestrianIsAlready = getString(R.string.pedestrian_is_already)
+            view.coordinator_l.snackBarTop(pedestrianIsAlready, LENGTH_SHORT) {
+                val pedestrianUpdate = getString(R.string.update)
+                action(pedestrianUpdate) {
+                    deletePedestrian(view)
+
+                    drawPedestrian(view)
+                }
+            }
         }
+    }
+
+    private fun drawPedestrian(view: View) {
+        carPedestrianObject = view.map_v.map.mapObjects.addCollection()
+        val points = ArrayList<RequestPoint>().apply {
+            add(RequestPoint(routeStart, WAYPOINT, null))
+            add(RequestPoint(routeEnd, WAYPOINT, null))
+        }
+        carPedestrianRouter = TransportFactory.getInstance().createPedestrianRouter()
+        carPedestrianRouter.requestRoutes(points, TimeOptions(), this)
+
+        val pedestrianComplete = getString(R.string.pedestrian_complete)
+        view.coordinator_l.snackBarTop(pedestrianComplete, LENGTH_SHORT) {}
     }
 
     private fun cameraPositionPedestrian() {
@@ -417,25 +456,56 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
     private fun dialogMenuCar(view: View) {
         val menuTitle = getString(R.string.dialog_menu_title)
         val deleteReminder = getString(R.string.notification)
-        val deletePedestrian = getString(R.string.dialog_menu_item_delete_pedestrian)
+        val deletePedestrian = getString(R.string.pedestrian_title)
         val deleteCar = getString(R.string.dialog_menu_item_delete_car)
         val listItem = arrayOf(deleteReminder, deletePedestrian, deleteCar)
         AlertDialog.Builder(view.context).setTitle(menuTitle).setItems(listItem) { _, which ->
             when (which) {
-                0 -> reminderViewModel.cancel()
+                0 -> deleteReminder(view)
                 1 -> deletePedestrian(view)
                 2 -> deleteCar(view)
             }
         }.create().show()
     }
 
+    private fun deleteReminder(view: View) {
+        if (isReminder) {
+            val notificationDeleted = getString(R.string.notification_deleted)
+            view.coordinator_l.snackBarTop(notificationDeleted, LENGTH_SHORT) {}
+
+            reminderViewModel.cancel()
+            carViewModel.deleteReminder()
+
+            isReminder = false
+        } else {
+            val notificationIsNotAlready = getString(R.string.notification_is_not_already)
+            view.coordinator_l.snackBarTop(notificationIsNotAlready, LENGTH_SHORT) {
+                val notificationInsert = getString(R.string.insert)
+                action(notificationInsert) {
+                    findNavController().navigate(R.id.reminder_dest, null)
+                }
+            }
+        }
+    }
+
     private fun deletePedestrian(view: View) {
         if (isPedestrian) {
+            val pedestrianDeleted = getString(R.string.pedestrian_deleted)
+            view.coordinator_l.snackBarTop(pedestrianDeleted, LENGTH_SHORT) {}
+
             carPedestrianObject.clear()
 
             view.distance_cv.visibility = GONE
 
             isPedestrian = false
+        } else {
+            val pedestrianIsNotAlready = getString(R.string.pedestrian_is_not_already)
+            view.coordinator_l.snackBarTop(pedestrianIsNotAlready, LENGTH_SHORT) {
+                val pedestrianInsert = getString(R.string.insert)
+                action(pedestrianInsert) {
+                    setPedestrian(view)
+                }
+            }
         }
     }
 
@@ -451,10 +521,13 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
             reminderViewModel.cancel()
             addressViewModel.clear()
 
-            isPanorama = false
             isCar = false
+            isReminder = false
 
             from(view.bottom_sheet).state = STATE_HIDDEN
+
+            val markerDeleted = getString(R.string.marker_deleted)
+            view.coordinator_l.snackBarTop(markerDeleted, LENGTH_SHORT) {}
         }
     }
 
@@ -494,7 +567,7 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
 
         ConnectivityLiveData(view.context).observe(
             viewLifecycleOwner, Observer { isNetworkAvailable ->
-                if (isNetworkAvailable && !isPanorama) {
+                if (isNetworkAvailable) {
                     showPanorama(routeEnd)
                 }
             }
@@ -538,8 +611,10 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
                 val workInfo = listOfWorkInfo[0]
                 if (workInfo.state.isFinished) {
                     view.reminder_cv.visibility = GONE
+                    isReminder = false
                 } else {
                     view.reminder_cv.visibility = VISIBLE
+                    isReminder = true
                 }
             }
         })
@@ -555,8 +630,6 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
             view.panorama_v.player.openPanorama(panoramaId)
             view.panorama_v.player.logo.setAlignment(Alignment(RIGHT, TOP))
             view.panorama_v.setNoninteractive(true)
-
-            isPanorama = true
         }
     }
 

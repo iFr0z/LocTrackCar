@@ -32,7 +32,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ellipsize="end"
-            android:text="@string/shortest_way"
+            android:text="@string/shortest_pedestrian"
             android:textColor="@color/colorNull"
             android:textSize="14sp" />
 
