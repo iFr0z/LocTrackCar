@@ -1,60 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.textfield.TextInputLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    style="@style/MaterialCardViewTwoCornerTheme"
+    android:id="@+id/search_place_til"
+    style="@style/TextInputLayoutTheme"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.MaterialCardViewOneCornerTheme.MaterialCardView.Rounded">
+    android:layout_height="wrap_content"
+    android:contentDescription="@string/app_name"
+    android:isScrollContainer="true"
+    app:endIconMode="clear_text"
+    app:errorEnabled="true"
+    app:startIconDrawable="@drawable/ic_search_grey_24dp">
 
-    <androidx.appcompat.widget.LinearLayoutCompat
+    <com.google.android.material.textfield.TextInputEditText
+        android:id="@+id/search_place_tiet"
+        style="@style/TextInputEditTextTheme"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:digits="0123456789.,-"
+        android:hint="@string/search_place_hint"
+        android:imeOptions="actionSearch"
+        android:inputType="numberDecimal"
+        android:singleLine="true"
+        tools:ignore="Autofill">
 
-        <androidx.appcompat.widget.AppCompatImageView
-            style="@style/AppCompatImageViewTheme"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_margin="16dp"
-            android:layout_marginEnd="24dp"
-            android:layout_weight="0.2"
-            android:contentDescription="@string/app_name"
-            app:srcCompat="@drawable/ic_search_grey_24dp" />
+        <requestFocus />
 
-        <androidx.appcompat.widget.AppCompatEditText
-            android:id="@+id/search_place_et"
-            style="@style/EditTextTheme"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            android:layout_weight="1.6"
-            android:digits="0123456789.,-"
-            android:hint="@string/search_place_hint"
-            android:imeOptions="actionSearch"
-            android:inputType="numberDecimal"
-            android:singleLine="true"
-            tools:ignore="Autofill">
+    </com.google.android.material.textfield.TextInputEditText>
 
-            <requestFocus />
-
-        </androidx.appcompat.widget.AppCompatEditText>
-
-        <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/clear_search_iv"
-            style="@style/AppCompatImageViewTheme"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_margin="16dp"
-            android:layout_marginStart="9dp"
-            android:layout_marginEnd="14dp"
-            android:layout_weight="0.2"
-            android:background="?selectableItemBackgroundBorderless"
-            android:contentDescription="@string/app_name"
-            android:visibility="invisible"
-            app:srcCompat="@drawable/ic_clear_grey_24dp" />
-
-    </androidx.appcompat.widget.LinearLayoutCompat>
-
-</com.google.android.material.card.MaterialCardView>
+</com.google.android.material.textfield.TextInputLayout>

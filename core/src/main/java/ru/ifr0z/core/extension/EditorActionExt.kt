@@ -1,13 +1,12 @@
 package ru.ifr0z.core.extension
 
-import android.content.Context
-import android.widget.EditText
-import android.widget.Toast
+import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.textfield.TextInputLayout
 
-fun EditText.onEditorAction(
+fun TextInputEditText.onEditorAction(
     action: Int,
     regex: String,
-    context: Context,
+    textInputLayout: TextInputLayout,
     requestStart: String,
     requestEnd: String,
     runAction: (List<String>?) -> Unit
@@ -18,9 +17,7 @@ fun EditText.onEditorAction(
                 if (view.text.matches(regex.toRegex())) {
                     runAction.invoke(view.text.split(",".toRegex()))
                 } else {
-                    Toast.makeText(
-                        context, "$requestStart '${view.text}' $requestEnd", Toast.LENGTH_SHORT
-                    ).show()
+                    textInputLayout.error = "$requestStart '${view.text}' $requestEnd"
                 }
 
                 true

@@ -86,15 +86,22 @@
         <item name="cardElevation">0dp</item>
     </style>
 
-    <style name="EditTextTheme">
-        <item name="android:textColor">@color/colorPurple</item>
-        <item name="backgroundTint">@color/colorPrimary</item>
-        <item name="android:textSize">16sp</item>
-        <item name="android:textColorHint">@color/colorGrey</item>
+    <style name="TextInputLayoutTheme" parent="Widget.MaterialComponents.TextInputLayout.FilledBox">
+        <item name="boxBackgroundColor">@color/colorPrimary</item>
+        <item name="hintTextColor">@color/colorPurple</item>
+        <item name="android:background">@drawable/bg_linear_gradient_black</item>
+        <item name="startIconTint">@color/colorPurple</item>
+        <item name="endIconTint">@color/colorPurple</item>
+        <item name="cornerFamily">rounded</item>
+        <item name="boxCornerRadiusTopStart">16dp</item>
+        <item name="boxCornerRadiusTopEnd">0dp</item>
+        <item name="boxCornerRadiusBottomStart">0dp</item>
+        <item name="boxCornerRadiusBottomEnd">0dp</item>
+        <item name="android:theme">@style/TextInputEditTextTheme</item>
     </style>
 
-    <style name="AppCompatImageViewTheme">
-        <item name="tint">@color/colorPurple</item>
+    <style name="TextInputEditTextTheme" parent="ThemeOverlay.MaterialComponents.TextInputEditText.FilledBox">
+        <item name="colorPrimary">@color/colorPurple</item>
     </style>
 
     <style name="ShapeAppearanceOverlay.ExtendedFloatingActionButtonOneCornerTheme.ExtendedFloatingActionButton.Rounded" parent="">

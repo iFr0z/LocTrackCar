@@ -11,7 +11,6 @@ import androidx.lifecycle.Observer
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import kotlinx.android.synthetic.main.search_place_fragment.view.*
 import ru.ifr0z.core.extension.onEditorAction
-import ru.ifr0z.core.extension.onTextChanges
 import tk.ifroz.loctrackcar.R
 import tk.ifroz.loctrackcar.viewmodel.SearchPlaceViewModel
 
@@ -40,17 +39,16 @@ class SearchPlaceFragment : BottomSheetDialogFragment() {
 
             val requestStart = getString(R.string.search_place_request_start)
             val requestEnd = getString(R.string.search_place_request_end)
-            search_place_et.onEditorAction(
-                IME_ACTION_SEARCH, coordinatesPattern, view.context, requestStart, requestEnd
+            search_place_tiet.onEditorAction(
+                IME_ACTION_SEARCH, coordinatesPattern, search_place_til, requestStart, requestEnd
             ) { arrayLatLng ->
                 searchPlaceViewModel.update(arrayLatLng)
 
                 dialog?.onBackPressed()
             }
-            search_place_et.onTextChanges(clear_search_iv)
 
-            clear_search_iv.setOnClickListener {
-                search_place_et.text?.clear()
+            search_place_til.setEndIconOnClickListener {
+                search_place_tiet.text?.clear()
 
                 searchPlaceViewModel.clear()
             }
@@ -64,8 +62,8 @@ class SearchPlaceFragment : BottomSheetDialogFragment() {
                             R.string.search_place_format, searchPlaceLatitude, searchPlaceLongitude
                         )
 
-                        search_place_et.setText(searchPlaceFormatResult)
-                        search_place_et.setSelection(search_place_et.text?.length!!)
+                        search_place_tiet.setText(searchPlaceFormatResult)
+                        search_place_tiet.setSelection(search_place_tiet.text?.length!!)
                     }
                 }
             )
