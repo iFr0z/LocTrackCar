@@ -16,34 +16,7 @@
         android:layout_margin="8dp"
         app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.MaterialCardViewTheme.MaterialCardView.Rounded">
 
-        <androidx.appcompat.widget.LinearLayoutCompat
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <HorizontalScrollView
-                style="@style/NestedScrollViewTheme"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <androidx.appcompat.widget.LinearLayoutCompat
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <include layout="@layout/bottom_sheet_row_distance" />
-
-                    <include layout="@layout/bottom_sheet_row_location" />
-
-                    <include layout="@layout/bottom_sheet_row_reminder" />
-
-                </androidx.appcompat.widget.LinearLayoutCompat>
-
-            </HorizontalScrollView>
-
-            <include layout="@layout/bottom_sheet_navigation" />
-
-        </androidx.appcompat.widget.LinearLayoutCompat>
+        <include layout="@layout/bottom_sheet_information" />
 
     </com.google.android.material.card.MaterialCardView>
 

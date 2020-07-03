@@ -50,10 +50,8 @@ import com.yandex.runtime.Error
 import com.yandex.runtime.image.ImageProvider.fromBitmap
 import kotlinx.android.synthetic.main.bottom_sheet_backend.view.*
 import kotlinx.android.synthetic.main.bottom_sheet_frontend.view.*
+import kotlinx.android.synthetic.main.bottom_sheet_information.view.*
 import kotlinx.android.synthetic.main.bottom_sheet_navigation.view.*
-import kotlinx.android.synthetic.main.bottom_sheet_row_distance.view.*
-import kotlinx.android.synthetic.main.bottom_sheet_row_location.view.*
-import kotlinx.android.synthetic.main.bottom_sheet_row_reminder.view.*
 import kotlinx.android.synthetic.main.map_fragment.view.*
 import ru.ifr0z.core.custom.ImageProviderCustom
 import ru.ifr0z.core.extension.action
@@ -357,13 +355,18 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
 
         view.reminder_c.setOnClickListener {
             if (isReminder) {
-                val notificationIsAlready = getString(R.string.notification_is_already)
-                view.coordinator_l.snackBarTop(notificationIsAlready, LENGTH_SHORT) {
-                    val notificationUpdate = getString(R.string.update)
-                    action(notificationUpdate) {
-                        findNavController().navigate(R.id.reminder_dest, null)
+                carViewModel.reminders.observe(viewLifecycleOwner, Observer { reminder ->
+                    reminder?.let {
+                        val notification = getString(R.string.notification)
+                        val notificationData = "$notification: ${reminder.reminder}"
+                        view.coordinator_l.snackBarTop(notificationData, LENGTH_SHORT) {
+                            val notificationUpdate = getString(R.string.update)
+                            action(notificationUpdate) {
+                                findNavController().navigate(R.id.reminder_dest, null)
+                            }
+                        }
                     }
-                }
+                })
             } else {
                 findNavController().navigate(R.id.reminder_dest, null)
             }
@@ -444,7 +447,7 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
                 val time = routes[0].sections[0].metadata.weight.time.text
                 val combination = "$distance \u00B7 $time \u00B7\uD83D\uDEB6"
                 view.distance_tv.text = combination
-                view.distance_cv.visibility = VISIBLE
+                view.distance_tv.visibility = VISIBLE
 
                 isPedestrian = true
             }
@@ -495,7 +498,7 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
 
             carPedestrianObject.clear()
 
-            view.distance_cv.visibility = GONE
+            view.distance_tv.visibility = GONE
 
             isPedestrian = false
         } else {
@@ -560,11 +563,6 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
     }
 
     private fun dataCar(latitude: Double, longitude: Double, view: View) {
-        val subtitleLatitude = getString(R.string.latitude_subtitle)
-        val subtitleLongitude = getString(R.string.longitude_subtitle)
-        val coordinates = "$subtitleLatitude $latitude\n$subtitleLongitude $longitude"
-        view.coordinates_tv.text = coordinates
-
         ConnectivityLiveData(view.context).observe(
             viewLifecycleOwner, Observer { isNetworkAvailable ->
                 if (isNetworkAvailable) {
@@ -597,25 +595,13 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
             }
         })
 
-        carViewModel.reminders.observe(viewLifecycleOwner, Observer { reminder ->
-            reminder?.let {
-                view.reminder_tv.text = reminder.reminder
-            }
-        })
-
         reminderViewModel.outputStatus.observe(viewLifecycleOwner, Observer { listOfWorkInfo ->
             listOfWorkInfo?.let {
                 if (listOfWorkInfo.isNullOrEmpty()) {
                     return@Observer
                 }
                 val workInfo = listOfWorkInfo[0]
-                if (workInfo.state.isFinished) {
-                    view.reminder_cv.visibility = GONE
-                    isReminder = false
-                } else {
-                    view.reminder_cv.visibility = VISIBLE
-                    isReminder = true
-                }
+                isReminder = !workInfo.state.isFinished
             }
         })
     }

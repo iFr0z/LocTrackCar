@@ -77,13 +77,20 @@
     </style>
 
     <style name="MaterialCardViewPrimaryTheme">
-        <item name="cardBackgroundColor">@color/colorPrimary</item>
+        <item name="cardBackgroundColor">@color/colorDarkBackground</item>
         <item name="cardElevation">8dp</item>
     </style>
 
-    <style name="MaterialCardViewSecondaryTheme">
-        <item name="cardBackgroundColor">@color/colorPrimary</item>
-        <item name="cardElevation">0dp</item>
+    <style name="AppCompatTextViewPrimaryTheme">
+        <item name="android:textColor">@color/colorNull</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:ellipsize">end</item>
+    </style>
+
+    <style name="AppCompatTextViewSecondaryTheme">
+        <item name="android:textColor">@color/colorNull</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:ellipsize">end</item>
     </style>
 
     <style name="TextInputLayoutTheme" parent="Widget.MaterialComponents.TextInputLayout.FilledBox">
