@@ -31,9 +31,7 @@ import com.yandex.mapkit.geometry.Point
 import com.yandex.mapkit.layers.ObjectEvent
 import com.yandex.mapkit.logo.Alignment
 import com.yandex.mapkit.logo.HorizontalAlignment.LEFT
-import com.yandex.mapkit.logo.HorizontalAlignment.RIGHT
 import com.yandex.mapkit.logo.VerticalAlignment.BOTTOM
-import com.yandex.mapkit.logo.VerticalAlignment.TOP
 import com.yandex.mapkit.map.*
 import com.yandex.mapkit.map.Map
 import com.yandex.mapkit.places.PlacesFactory
@@ -622,7 +620,7 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
     override fun onPanoramaSearchResult(panoramaId: String) {
         view?.let { view ->
             view.panorama_v.player.openPanorama(panoramaId)
-            view.panorama_v.player.logo.setAlignment(Alignment(RIGHT, TOP))
+            view.panorama_v.player.logo.setAlignment(Alignment(LEFT, BOTTOM))
             view.panorama_v.setNoninteractive(true)
         }
     }
