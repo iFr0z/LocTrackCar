@@ -48,10 +48,6 @@ import com.yandex.mapkit.user_location.UserLocationObjectListener
 import com.yandex.mapkit.user_location.UserLocationView
 import com.yandex.runtime.Error
 import com.yandex.runtime.image.ImageProvider.fromBitmap
-import kotlinx.android.synthetic.main.bottom_sheet_backend.view.*
-import kotlinx.android.synthetic.main.bottom_sheet_frontend.view.*
-import kotlinx.android.synthetic.main.bottom_sheet_information.view.*
-import kotlinx.android.synthetic.main.bottom_sheet_navigation.view.*
 import kotlinx.android.synthetic.main.map_fragment.view.*
 import ru.ifr0z.core.custom.ImageProviderCustom
 import ru.ifr0z.core.extension.action
