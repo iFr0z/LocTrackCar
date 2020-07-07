@@ -35,7 +35,7 @@
     <style name="ExtendedFloatingActionButtonTheme">
         <item name="backgroundTint">@color/colorPrimary</item>
         <item name="iconTint">@color/colorPurple</item>
-        <item name="rippleColor">@color/colorGreyRipple</item>
+        <item name="rippleColor">@color/colorNull</item>
         <item name="android:textColor">@color/colorPurple</item>
         <item name="elevation">2dp</item>
     </style>
@@ -43,28 +43,28 @@
     <style name="FloatingActionButtonPrimaryTheme">
         <item name="backgroundTint">@color/colorPurple</item>
         <item name="android:tint">@color/colorPrimaryDark</item>
-        <item name="rippleColor">@color/colorGreyRipple</item>
+        <item name="rippleColor">@color/colorNull</item>
         <item name="elevation">2dp</item>
     </style>
 
     <style name="FloatingActionButtonSecondaryTheme">
         <item name="backgroundTint">@color/colorTeal</item>
         <item name="android:tint">@color/colorPrimaryDark</item>
-        <item name="rippleColor">@color/colorGreyRipple</item>
+        <item name="rippleColor">@color/colorNull</item>
         <item name="android:textColor">@color/colorPrimaryDark</item>
         <item name="elevation">2dp</item>
     </style>
 
     <style name="ChipPrimaryTheme" parent="Widget.MaterialComponents.Chip.Action">
         <item name="chipIconTint">@color/colorPrimaryDark</item>
-        <item name="rippleColor">@color/colorGreyRipple</item>
+        <item name="rippleColor">@color/colorNull</item>
         <item name="chipBackgroundColor">@color/colorPurple</item>
         <item name="android:textColor">@color/colorPrimaryDark</item>
     </style>
 
     <style name="ChipSecondaryTheme" parent="Widget.MaterialComponents.Chip.Action">
         <item name="chipIconTint">@color/colorPrimaryDark</item>
-        <item name="rippleColor">@color/colorGreyRipple</item>
+        <item name="rippleColor">@color/colorNull</item>
         <item name="chipBackgroundColor">@color/colorTeal</item>
         <item name="android:textColor">@color/colorPrimaryDark</item>
     </style>

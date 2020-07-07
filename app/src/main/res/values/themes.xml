@@ -43,7 +43,7 @@
     <style name="FloatingActionButtonPrimaryTheme">
         <item name="backgroundTint">@color/colorPrimaryDark</item>
         <item name="tint">@color/colorNull</item>
-        <item name="rippleColor">@color/colorGreyRipple</item>
+        <item name="rippleColor">@color/colorNull</item>
         <item name="elevation">2dp</item>
     </style>
 
