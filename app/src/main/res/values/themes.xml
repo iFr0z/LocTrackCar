@@ -37,14 +37,14 @@
         <item name="iconTint">@color/colorPrimaryDark</item>
         <item name="rippleColor">@color/colorGreyRipple</item>
         <item name="android:textColor">@color/colorPrimaryDark</item>
-        <item name="elevation">8dp</item>
+        <item name="elevation">2dp</item>
     </style>
 
     <style name="FloatingActionButtonPrimaryTheme">
         <item name="backgroundTint">@color/colorPrimaryDark</item>
         <item name="tint">@color/colorNull</item>
         <item name="rippleColor">@color/colorGreyRipple</item>
-        <item name="elevation">8dp</item>
+        <item name="elevation">2dp</item>
     </style>
 
     <style name="FloatingActionButtonSecondaryTheme">
@@ -52,7 +52,7 @@
         <item name="tint">@color/colorPrimaryDark</item>
         <item name="rippleColor">@color/colorGreyRipple</item>
         <item name="android:textColor">@color/colorPrimaryDark</item>
-        <item name="elevation">8dp</item>
+        <item name="elevation">2dp</item>
     </style>
 
     <style name="ChipPrimaryTheme" parent="Widget.MaterialComponents.Chip.Action">
@@ -74,12 +74,12 @@
     <style name="MaterialCardViewTwoCornerTheme">
         <item name="android:backgroundTint">@color/colorNull</item>
         <item name="cardBackgroundColor">@color/colorNull</item>
-        <item name="cardElevation">8dp</item>
+        <item name="cardElevation">2dp</item>
     </style>
 
     <style name="MaterialCardViewPrimaryTheme">
         <item name="cardBackgroundColor">@color/colorNull</item>
-        <item name="cardElevation">8dp</item>
+        <item name="cardElevation">2dp</item>
     </style>
 
     <style name="AppCompatTextViewPrimaryTheme">
