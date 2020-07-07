@@ -274,11 +274,17 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
 
     private fun searchPlace(view: View) {
         view.search_place_fab.setOnClickListener {
-            if (isPermission) {
-                noAnchor()
+            if (isMarker) {
+                val markerIsAlready = getString(R.string.marker_searched_is_already)
+                view.coordinator_l.snackBarTop(markerIsAlready, LENGTH_SHORT) {
+                    val notificationChange = getString(R.string.change)
+                    action(notificationChange) {
+                        searchPlaceDestination()
+                    }
+                }
+            } else {
+                searchPlaceDestination()
             }
-
-            findNavController().navigate(R.id.search_place_dest, null)
         }
 
         searchPlaceViewModel.searchPlaceResult.observe(
@@ -307,6 +313,14 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
                 }
             }
         )
+    }
+
+    private fun searchPlaceDestination() {
+        if (isPermission) {
+            noAnchor()
+        }
+
+        findNavController().navigate(R.id.search_place_dest, null)
     }
 
     private fun drawMarker(markerLatitude: Double, markerLongitude: Double, view: View) {
@@ -353,11 +367,9 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
             if (isReminder) {
                 carViewModel.reminders.observe(viewLifecycleOwner, Observer { reminder ->
                     reminder?.let {
-                        val notification = getString(R.string.notification)
-                        val notificationData = "$notification: ${reminder.reminder}"
-                        view.coordinator_l.snackBarTop(notificationData, LENGTH_SHORT) {
-                            val notificationUpdate = getString(R.string.update)
-                            action(notificationUpdate) {
+                        view.coordinator_l.snackBarTop(reminder.reminder, LENGTH_SHORT) {
+                            val notificationChange = getString(R.string.change)
+                            action(notificationChange) {
                                 findNavController().navigate(R.id.reminder_dest, null)
                             }
                         }
@@ -391,8 +403,8 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
 
             val pedestrianIsAlready = getString(R.string.pedestrian_is_already)
             view.coordinator_l.snackBarTop(pedestrianIsAlready, LENGTH_SHORT) {
-                val pedestrianUpdate = getString(R.string.update)
-                action(pedestrianUpdate) {
+                val pedestrianChange = getString(R.string.change)
+                action(pedestrianChange) {
                     deletePedestrian(view)
 
                     drawPedestrian(view)
@@ -477,8 +489,8 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
 
             isReminder = false
         } else {
-            val notificationIsNotAlready = getString(R.string.notification_is_not_already)
-            view.coordinator_l.snackBarTop(notificationIsNotAlready, LENGTH_SHORT) {
+            val isNotAlready = getString(R.string.is_not_already)
+            view.coordinator_l.snackBarTop(isNotAlready, LENGTH_SHORT) {
                 val notificationInsert = getString(R.string.insert)
                 action(notificationInsert) {
                     findNavController().navigate(R.id.reminder_dest, null)
@@ -498,8 +510,8 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
 
             isPedestrian = false
         } else {
-            val pedestrianIsNotAlready = getString(R.string.pedestrian_is_not_already)
-            view.coordinator_l.snackBarTop(pedestrianIsNotAlready, LENGTH_SHORT) {
+            val isNotAlready = getString(R.string.is_not_already)
+            view.coordinator_l.snackBarTop(isNotAlready, LENGTH_SHORT) {
                 val pedestrianInsert = getString(R.string.insert)
                 action(pedestrianInsert) {
                     setPedestrian(view)
