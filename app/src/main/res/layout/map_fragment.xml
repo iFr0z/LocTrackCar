@@ -60,7 +60,7 @@
                 <com.yandex.mapkit.places.panorama.PanoramaView
                     android:id="@+id/panorama_v"
                     android:layout_width="match_parent"
-                    android:layout_height="140dp"
+                    android:layout_height="120dp"
                     app:movable="true" />
 
                 <androidx.appcompat.widget.AppCompatTextView
@@ -94,7 +94,9 @@
                         <com.google.android.material.chip.ChipGroup
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_margin="16dp">
+                            android:layout_marginEnd="16dp"
+                            android:layout_marginStart="16dp"
+                            android:layout_marginBottom="16dp">
 
                             <com.google.android.material.chip.Chip
                                 android:id="@+id/pedestrian_c"
