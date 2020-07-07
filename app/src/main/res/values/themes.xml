@@ -67,7 +67,7 @@
         <item name="rippleColor">@color/colorGreyRipple</item>
         <item name="chipBackgroundColor">@color/colorNull</item>
         <item name="android:textColor">@color/colorPrimaryDark</item>
-        <item name="chipStrokeColor">@color/colorPrimaryDark</item>
+        <item name="chipStrokeColor">@color/colorGreyRipple</item>
         <item name="chipStrokeWidth">1dp</item>
     </style>
 
@@ -89,7 +89,7 @@
     </style>
 
     <style name="AppCompatTextViewSecondaryTheme">
-        <item name="android:textColor">@color/colorAppTheme</item>
+        <item name="android:textColor">@color/colorGrey</item>
         <item name="android:textSize">14sp</item>
         <item name="android:ellipsize">end</item>
     </style>
