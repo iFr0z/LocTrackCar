@@ -14,7 +14,7 @@ buildscript {
         materialVersion = '1.1.0'
         appCompatVersion = '1.1.0'
         roomVersion = '2.2.5'
-        lifeCycleVersion = '2.2.0'
+        lifecycleVersion = '2.2.0'
         fragmentVersion = '1.2.4'
         workVersion = '2.3.4'
         navigationVersion = '2.2.2'
@@ -26,9 +26,9 @@ buildscript {
         moshiVersion = '1.9.3'
 
         firebaseCoreVersion = '17.4.3'
-        yandexMapKitVersion = '3.5.0'
-        playServicesLocationVersion = '17.0.0'
-        timePickerVersion = '1.0'
+        yandexMapkitVersion = '3.5.0'
+        playservicesLocationVersion = '17.0.0'
+        timepickerVersion = '1.0'
 
         kotlinDependencies = [
                 kotlin: 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:' + rootProject.kotlinVersion,
@@ -41,13 +41,15 @@ buildscript {
 
         androidxDependencies = [
                 material: 'com.google.android.material:material:' + rootProject.materialVersion,
-                appCompat: 'androidx.appcompat:appcompat:' + rootProject.appCompatVersion,
+                appcompat: 'androidx.appcompat:appcompat:' + rootProject.appCompatVersion,
                 roomRuntime: 'androidx.room:room-runtime:' + rootProject.roomVersion,
                 roomKtx: 'androidx.room:room-ktx:' + rootProject.roomVersion,
-                viewModelKtx: 'androidx.lifecycle:lifecycle-viewmodel-ktx:'
-                        + rootProject.lifeCycleVersion,
-                lifeCycleExtensions: 'androidx.lifecycle:lifecycle-extensions:'
-                        + rootProject.lifeCycleVersion,
+                lifecycleRuntime: 'androidx.lifecycle:lifecycle-runtime-ktx:'
+                        + rootProject.lifecycleVersion,
+                lifecycleViewmodelKtx: 'androidx.lifecycle:lifecycle-viewmodel-ktx:'
+                        + rootProject.lifecycleVersion,
+                lifecycleExtensions: 'androidx.lifecycle:lifecycle-extensions:'
+                        + rootProject.lifecycleVersion,
                 workRuntime: 'androidx.work:work-runtime:' + rootProject.workVersion,
                 workRuntimeKtx: 'androidx.work:work-runtime-ktx:' + rootProject.workVersion,
                 fragmentKtx: 'androidx.fragment:fragment-ktx:' + rootProject.fragmentVersion,
@@ -60,11 +62,11 @@ buildscript {
         ]
         androidxKaptDependencies = [
                 roomCompiler: 'androidx.room:room-compiler:' + rootProject.roomVersion,
-                lifeCycleCompiler: 'androidx.lifecycle:lifecycle-compiler:'
-                        + rootProject.lifeCycleVersion
+                lifecycleCompiler: 'androidx.lifecycle:lifecycle-compiler:'
+                        + rootProject.lifecycleVersion
         ]
 
-        RetrofitDependencies = [
+        retrofitDependencies = [
                 retrofit: 'com.squareup.retrofit2:retrofit:' + rootProject.retrofitVersion,
                 retrofitMoshi: 'com.squareup.retrofit2:converter-moshi:'
                         + rootProject.retrofitVersion,
@@ -72,25 +74,25 @@ buildscript {
                 okio: 'com.squareup.okio:okio:' + rootProject.okioVersion,
                 moshi: 'com.squareup.moshi:moshi-kotlin:' + rootProject.moshiVersion
         ]
-        RetrofitKaptDependencies = [
+        retrofitKaptDependencies = [
                 moshiCodegen: 'com.squareup.moshi:moshi-kotlin-codegen:' + rootProject.moshiVersion
         ]
 
         googleDependencies = [
                 firebaseCore: 'com.google.firebase:firebase-core:'
                         + rootProject.firebaseCoreVersion,
-                playServicesLocation: 'com.google.android.gms:play-services-location:'
-                        + rootProject.playServicesLocationVersion
+                playservicesLocation: 'com.google.android.gms:play-services-location:'
+                        + rootProject.playservicesLocationVersion
         ]
 
-        yandexMapKitDependencies = [
-                mapkit: 'com.yandex.android:mapkit:' + rootProject.yandexMapKitVersion,
-                places: 'com.yandex.android:places:' + rootProject.yandexMapKitVersion,
-                transport: 'com.yandex.android:transport:' + rootProject.yandexMapKitVersion
+        yandexDependencies = [
+                mapkit: 'com.yandex.android:mapkit:' + rootProject.yandexMapkitVersion,
+                places: 'com.yandex.android:places:' + rootProject.yandexMapkitVersion,
+                transport: 'com.yandex.android:transport:' + rootProject.yandexMapkitVersion
         ]
 
         ifr0zDependencies = [
-                timePicker: 'com.github.ifr0z:timepickercompact:' + rootProject.timePickerVersion
+                timepicker: 'com.github.ifr0z:timepickercompact:' + rootProject.timepickerVersion
         ]
     }
 
@@ -100,7 +102,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:4.0.0'
+        classpath 'com.android.tools.build:gradle:4.0.1'
         classpath 'com.google.gms:google-services:4.3.3'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
     }

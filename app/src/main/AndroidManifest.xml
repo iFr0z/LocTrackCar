@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="tk.ifroz.loctrackcar"
-    android:installLocation="auto">
+    package="tk.ifroz.loctrackcar">
 
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -20,7 +20,7 @@
         android:theme="@style/Theme"
         tools:ignore="AllowBackup">
         <activity
-            android:name=".ui.activity.SplashScreenActivity"
+            android:name="tk.ifroz.loctrackcar.ui.view.activity.SplashScreenActivity"
             android:noHistory="true"
             android:screenOrientation="portrait"
             android:theme="@style/SplashTheme">
@@ -32,7 +32,7 @@
 
         </activity>
         <activity
-            android:name=".ui.activity.MainActivity"
+            android:name="tk.ifroz.loctrackcar.ui.view.activity.MainActivity"
             android:screenOrientation="portrait">
             <nav-graph android:value="@navigation/mobile_navigation" />
 

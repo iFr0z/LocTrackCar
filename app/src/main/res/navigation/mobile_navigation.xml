@@ -5,7 +5,7 @@
 
     <fragment
         android:id="@+id/map_dest"
-        android:name="tk.ifroz.loctrackcar.ui.fragment.MapFragment"
+        android:name="tk.ifroz.loctrackcar.ui.view.fragment.MapFragment"
         android:label="MapFragment">
         <action
             android:id="@+id/action_mapFragment_to_reminderFragment"
@@ -17,12 +17,12 @@
 
     <dialog
         android:id="@+id/reminder_dest"
-        android:name="tk.ifroz.loctrackcar.ui.fragment.ReminderFragment"
+        android:name="tk.ifroz.loctrackcar.ui.view.fragment.ReminderFragment"
         android:label="ReminderFragment" />
 
     <dialog
         android:id="@+id/search_place_dest"
-        android:name="tk.ifroz.loctrackcar.ui.fragment.SearchPlaceFragment"
+        android:name="tk.ifroz.loctrackcar.ui.view.fragment.SearchPlaceFragment"
         android:label="SearchPlaceFragment" />
 
 </navigation>

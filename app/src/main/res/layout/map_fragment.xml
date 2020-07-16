@@ -63,6 +63,17 @@
                     android:layout_height="120dp"
                     app:movable="true" />
 
+                <androidx.core.widget.ContentLoadingProgressBar
+                    android:id="@+id/progressBar"
+                    style="?android:attr/progressBarStyleSmall"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:theme="@style/ContentLoadingProgressBarTheme"
+                    android:visibility="gone" />
+
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/address_tv"
                     style="@style/AppCompatTextViewPrimaryTheme"
@@ -70,7 +81,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="16dp"
-                    android:layout_marginEnd="16dp" />
+                    android:layout_marginEnd="16dp"
+                    android:visibility="gone" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/distance_tv"
@@ -94,8 +106,8 @@
                         <com.google.android.material.chip.ChipGroup
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginEnd="16dp"
                             android:layout_marginStart="16dp"
+                            android:layout_marginEnd="16dp"
                             android:layout_marginBottom="16dp">
 
                             <com.google.android.material.chip.Chip

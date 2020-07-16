@@ -43,7 +43,6 @@ android {
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation project(':core')
 
     rootProject.kotlinDependencies.each { name, dependency ->
         add('implementation', dependency)
@@ -52,16 +51,14 @@ dependencies {
     rootProject.androidxDependencies.each { name, dependency ->
         add('implementation', dependency)
     }
-
     rootProject.androidxKaptDependencies.each { name, dependency ->
         add('kapt', dependency)
     }
 
-    rootProject.RetrofitDependencies.each { name, dependency ->
+    rootProject.retrofitDependencies.each { name, dependency ->
         add('implementation', dependency)
     }
-
-    rootProject.RetrofitKaptDependencies.each { name, dependency ->
+    rootProject.retrofitKaptDependencies.each { name, dependency ->
         add('kapt', dependency)
     }
 
@@ -69,7 +66,7 @@ dependencies {
         add('implementation', dependency)
     }
 
-    rootProject.yandexMapKitDependencies.each { name, dependency ->
+    rootProject.yandexDependencies.each { name, dependency ->
         add('implementation', dependency)
     }
 

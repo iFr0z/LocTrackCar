@@ -24,7 +24,6 @@
     <string name="dialog_menu_item_delete_car">Маркер</string>
     <string name="notification">Напоминание</string>
     <string name="notification_title">Пора забрать машину</string>
-    <string name="notification_address_error">Не удалось отобразить адрес</string>
     <string name="notification_created">Напоминание установлено</string>
     <string name="ok">Ок</string>
     <string name="notification_deleted">Напоминание удалено</string>
