@@ -37,6 +37,7 @@ import com.yandex.mapkit.logo.HorizontalAlignment.LEFT
 import com.yandex.mapkit.logo.VerticalAlignment.BOTTOM
 import com.yandex.mapkit.map.*
 import com.yandex.mapkit.map.Map
+import com.yandex.mapkit.map.MapType.VECTOR_MAP
 import com.yandex.mapkit.places.PlacesFactory
 import com.yandex.mapkit.places.panorama.PanoramaService.SearchListener
 import com.yandex.mapkit.transport.TransportFactory
@@ -155,6 +156,11 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
         userLocationLayer.setObjectListener(this)
 
         view.map_v.map.addCameraListener(this)
+        view.map_v.map.mapType = VECTOR_MAP
+        val mapStyle = resources.openRawResource(R.raw.map_style).bufferedReader().use {
+            it.readText()
+        }
+        view.map_v.map.setMapStyle(mapStyle)
         view.map_v.map.logo.setAlignment(Alignment(LEFT, BOTTOM))
 
         cameraPositionUser()
@@ -164,6 +170,8 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
         val locationDetected = getString(R.string.location_detected)
         view.coordinator_l.snackBarTop(locationDetected, LENGTH_SHORT) {}
     }
+
+
 
     private fun cameraPositionUser() {
         view?.let { view ->

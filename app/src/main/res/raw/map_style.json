@@ -1,0 +1,17 @@
+[{
+  "tags": {
+    "all": ["transit"]
+  },
+  "types": ["point"],
+  "stylers": {
+    "color": "00000000"
+  }
+}, {
+  "tags": {
+    "all": ["poi"]
+  },
+  "types": ["point"],
+  "stylers": {
+    "color": "00000000"
+  }
+}]
