@@ -41,8 +41,8 @@ class SearchPlaceFragment : BottomSheetDialogFragment() {
             val requestEnd = getString(R.string.search_place_request_end)
             search_place_tiet.onEditorAction(
                 IME_ACTION_SEARCH, coordinatesPattern, search_place_til, requestStart, requestEnd
-            ) { arrayLatLng ->
-                searchPlaceViewModel.insertSearchPlaceResult(arrayLatLng)
+            ) {
+                searchPlaceViewModel.insertSearchPlaceResult(it)
 
                 dialog?.onBackPressed()
             }
@@ -53,20 +53,18 @@ class SearchPlaceFragment : BottomSheetDialogFragment() {
                 searchPlaceViewModel.deleteSearchPlaceResult()
             }
 
-            searchPlaceViewModel.searchPlaceResults.observe(
-                viewLifecycleOwner, Observer { searchPlaceResult ->
-                    if (!searchPlaceResult.isNullOrEmpty()) {
-                        val searchPlaceLatitude = searchPlaceResult[0]
-                        val searchPlaceLongitude = searchPlaceResult[1]
-                        val searchPlaceFormatResult = getString(
-                            R.string.search_place_format, searchPlaceLatitude, searchPlaceLongitude
-                        )
+            searchPlaceViewModel.searchPlaceResults.observe(viewLifecycleOwner, Observer {
+                if (!it.isNullOrEmpty()) {
+                    val searchPlaceLatitude = it[0]
+                    val searchPlaceLongitude = it[1]
+                    val searchPlaceFormatResult = getString(
+                        R.string.search_place_format, searchPlaceLatitude, searchPlaceLongitude
+                    )
 
-                        search_place_tiet.setText(searchPlaceFormatResult)
-                        search_place_tiet.setSelection(search_place_tiet.text?.length!!)
-                    }
+                    search_place_tiet.setText(searchPlaceFormatResult)
+                    search_place_tiet.setSelection(search_place_tiet.text?.length!!)
                 }
-            )
+            })
         }
     }
 

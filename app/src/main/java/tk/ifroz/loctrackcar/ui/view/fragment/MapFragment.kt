@@ -2,6 +2,7 @@ package tk.ifroz.loctrackcar.ui.view.fragment
 
 import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.content.Intent
+import android.content.Intent.*
 import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.content.res.Configuration.*
 import android.graphics.PointF
@@ -139,8 +140,8 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
         when (requestCode) {
             requestPermissionLocation -> {
                 if (grantResults.isNotEmpty() && grantResults[0] == PERMISSION_GRANTED) {
-                    view?.let { view ->
-                        onMapReady(view)
+                    view?.let {
+                        onMapReady(it)
                     }
                 }
                 return
@@ -157,10 +158,9 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
 
         view.map_v.map.addCameraListener(this)
         view.map_v.map.mapType = VECTOR_MAP
-        val mapStyle = resources.openRawResource(R.raw.map_style).bufferedReader().use {
+        view.map_v.map.setMapStyle(resources.openRawResource(R.raw.map_style).bufferedReader().use {
             it.readText()
-        }
-        view.map_v.map.setMapStyle(mapStyle)
+        })
         view.map_v.map.logo.setAlignment(Alignment(LEFT, BOTTOM))
 
         cameraPositionUser()
@@ -174,14 +174,14 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
 
 
     private fun cameraPositionUser() {
-        view?.let { view ->
+        view?.let {
             if (userLocationLayer.cameraPosition() != null) {
                 routeStart = userLocationLayer.cameraPosition()!!.target
-                view.map_v.map.move(
+                it.map_v.map.move(
                     CameraPosition(routeStart, 18f, 0f, 0f), Animation(SMOOTH, 1f), null
                 )
             } else {
-                view.map_v.map.move(CameraPosition(Point(0.0, 0.0), 16f, 0f, 0f))
+                it.map_v.map.move(CameraPosition(Point(0.0, 0.0), 16f, 0f, 0f))
             }
         }
     }
@@ -201,37 +201,37 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
     }
 
     private fun setAnchor() {
-        view?.let { view ->
+        view?.let {
             userLocationLayer.setAnchor(
-                PointF((view.map_v.width * 0.5).toFloat(), (view.map_v.height * 0.5).toFloat()),
-                PointF((view.map_v.width * 0.5).toFloat(), (view.map_v.height * 0.83).toFloat())
+                PointF((it.map_v.width * 0.5).toFloat(), (it.map_v.height * 0.5).toFloat()),
+                PointF((it.map_v.width * 0.5).toFloat(), (it.map_v.height * 0.83).toFloat())
             )
 
-            view.location_fab.setImageResource(R.drawable.ic_my_location_black_24dp)
+            it.location_fab.setImageResource(R.drawable.ic_my_location_black_24dp)
 
             isFollowUser = false
         }
     }
 
     private fun noAnchor() {
-        view?.let { view ->
+        view?.let {
             userLocationLayer.resetAnchor()
 
-            view.location_fab.setImageResource(R.drawable.ic_gps_not_fixed_black_24dp)
+            it.location_fab.setImageResource(R.drawable.ic_gps_not_fixed_black_24dp)
         }
     }
 
     override fun onObjectAdded(userLocationView: UserLocationView) {
         setAnchor()
 
-        view?.context?.let { context ->
-            val bitmap = ImageProviderCustom(context, R.drawable.ic_dot_rose_24dp).image
+        view?.context?.let {
+            val bitmap = ImageProviderCustom(it, R.drawable.ic_dot_rose_24dp).image
             userLocationView.apply {
                 pin.setIcon(fromBitmap(bitmap))
                 pin.setIconStyle(IconStyle().setFlat(true))
                 arrow.setIcon(fromBitmap(bitmap))
                 arrow.setIconStyle(IconStyle().setFlat(true))
-                accuracyCircle.fillColor = getColor(context, R.color.colorAccuracyCircle)
+                accuracyCircle.fillColor = getColor(it, R.color.colorAccuracyCircle)
             }
         }
     }
@@ -304,32 +304,30 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
             }
         }
 
-        searchPlaceViewModel.searchPlaceResults.observe(
-            viewLifecycleOwner, Observer { searchPlaceResult ->
-                if (isMarker) {
-                    markerObject.clear()
+        searchPlaceViewModel.searchPlaceResults.observe(viewLifecycleOwner, Observer {
+            if (isMarker) {
+                markerObject.clear()
 
-                    isMarker = false
-                }
-
-                val searchPlaceTitle = getString(R.string.search_place_title)
-                if (!searchPlaceResult.isNullOrEmpty()) {
-                    val markerLatitude = searchPlaceResult[0]
-                    val markerLongitude = searchPlaceResult[1]
-                    drawMarker(markerLatitude.toDouble(), markerLongitude.toDouble(), view)
-
-                    val searchPlaceTitleFormat =
-                        getString(R.string.search_place_title_format, searchPlaceTitle)
-
-                    view.search_place_fab.text = searchPlaceTitleFormat
-
-                    val markerSearched = getString(R.string.marker_searched)
-                    view.coordinator_l.snackBarTop(markerSearched, LENGTH_SHORT) {}
-                } else {
-                    view.search_place_fab.text = searchPlaceTitle
-                }
+                isMarker = false
             }
-        )
+
+            val searchPlaceTitle = getString(R.string.search_place_title)
+            if (!it.isNullOrEmpty()) {
+                val markerLatitude = it[0]
+                val markerLongitude = it[1]
+                drawMarker(markerLatitude.toDouble(), markerLongitude.toDouble(), view)
+
+                val searchPlaceTitleFormat =
+                    getString(R.string.search_place_title_format, searchPlaceTitle)
+
+                view.search_place_fab.text = searchPlaceTitleFormat
+
+                val markerSearched = getString(R.string.marker_searched)
+                view.coordinator_l.snackBarTop(markerSearched, LENGTH_SHORT) {}
+            } else {
+                view.search_place_fab.text = searchPlaceTitle
+            }
+        })
     }
 
     private fun searchPlaceDestination() {
@@ -357,8 +355,8 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
     private fun bottomSheetCar(view: View) {
         from(view.bottom_sheet).state = STATE_HIDDEN
 
-        view.bottom_sheet.bottomSheetStateCallback { state ->
-            when (state) {
+        view.bottom_sheet.bottomSheetStateCallback {
+            when (it) {
                 STATE_EXPANDED -> {
                     view.car_fab.hide()
                     view.search_place_fab.hide()
@@ -383,9 +381,9 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
         view.reminder_c.setOnClickListener {
             if (isReminder) {
                 lifecycleScope.launch {
-                    carViewModel.reminders.collect { reminder ->
-                        reminder?.let {
-                            view.coordinator_l.snackBarTop(reminder.reminder, LENGTH_SHORT) {
+                    carViewModel.reminders.collect {
+                        it?.let {
+                            view.coordinator_l.snackBarTop(it.reminder, LENGTH_SHORT) {
                                 val notificationChange = getString(R.string.change)
                                 action(notificationChange) {
                                     findNavController().navigate(R.id.reminder_dest, null)
@@ -401,11 +399,11 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
 
         view.share_c.setOnClickListener {
             val sendIntent = Intent().apply {
-                action = Intent.ACTION_SEND
-                putExtra(Intent.EXTRA_TEXT, "${routeEnd.latitude},${routeEnd.longitude}")
+                action = ACTION_SEND
+                putExtra(EXTRA_TEXT, "${routeEnd.latitude},${routeEnd.longitude}")
                 type = "text/plain"
             }
-            startActivity(Intent.createChooser(sendIntent, null))
+            startActivity(createChooser(sendIntent, null))
         }
 
         view.delete_c.setOnClickListener {
@@ -446,12 +444,12 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
     }
 
     private fun cameraPositionPedestrian() {
-        view?.let { view ->
+        view?.let {
             val screenCenter = Point(
                 (routeStart.latitude + routeEnd.latitude) / 2,
                 (routeStart.longitude + routeEnd.longitude) / 2
             )
-            view.map_v.map.move(
+            it.map_v.map.move(
                 CameraPosition(screenCenter, 16f, 0f, 0f), Animation(SMOOTH, 1f), null
             )
         }
@@ -459,22 +457,22 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
 
     override fun onMasstransitRoutes(routes: List<Route>) {
         if (routes.isNotEmpty()) {
-            view?.context?.let { context ->
+            view?.context?.let {
                 carPedestrianObject.addPolyline(routes[0].geometry).apply {
-                    strokeColor = getColor(context, R.color.colorDot)
-                    outlineColor = getColor(context, R.color.colorWayOutline)
+                    strokeColor = getColor(it, R.color.colorDot)
+                    outlineColor = getColor(it, R.color.colorWayOutline)
                     outlineWidth = 10f
                 }
             }
 
             cameraPositionPedestrian()
 
-            view?.let { view ->
+            view?.let {
                 val distance = routes[0].sections[0].metadata.weight.walkingDistance.text
                 val time = routes[0].sections[0].metadata.weight.time.text
                 val combination = "$distance \u00B7 $time \u00B7\uD83D\uDEB6"
-                view.distance_tv.text = combination
-                view.distance_tv.visibility = VISIBLE
+                it.distance_tv.text = combination
+                it.distance_tv.visibility = VISIBLE
 
                 isPedestrian = true
             }
@@ -569,9 +567,9 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
 
     private fun retrieveCar(view: View) {
         lifecycleScope.launch {
-            carViewModel.targets.collect { target ->
-                target?.let {
-                    routeEnd = Point(target.latitude, target.longitude)
+            carViewModel.targets.collect {
+                it?.let {
+                    routeEnd = Point(it.latitude, it.longitude)
                     drawCar(routeEnd, view)
                 }
             }
@@ -618,12 +616,12 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
             }
         }
 
-        reminderViewModel.outputStatus.observe(viewLifecycleOwner, Observer { listOfWorkInfo ->
-            listOfWorkInfo?.let {
-                if (listOfWorkInfo.isNullOrEmpty()) {
+        reminderViewModel.outputStatus.observe(viewLifecycleOwner, Observer {
+            it?.let {
+                if (it.isNullOrEmpty()) {
                     return@Observer
                 }
-                val workInfo = listOfWorkInfo[0]
+                val workInfo = it[0]
                 isReminder = !workInfo.state.isFinished
             }
         })
@@ -645,19 +643,19 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
     }
 
     override fun onPanoramaSearchResult(panoramaId: String) {
-        view?.let { view ->
-            view.panorama_v.player.openPanorama(panoramaId)
-            view.panorama_v.player.logo.setAlignment(Alignment(LEFT, BOTTOM))
-            view.panorama_v.setNoninteractive(true)
+        view?.let {
+            it.panorama_v.player.openPanorama(panoramaId)
+            it.panorama_v.player.logo.setAlignment(Alignment(LEFT, BOTTOM))
+            it.panorama_v.setNoninteractive(true)
         }
     }
 
     override fun onPanoramaSearchError(error: Error) {}
 
     override fun onStop() {
-        view?.let { view ->
-            view.map_v.onStop()
-            view.panorama_v.onStop()
+        view?.let {
+            it.map_v.onStop()
+            it.panorama_v.onStop()
         }
         MapKitFactory.getInstance().onStop()
         super.onStop()
@@ -665,9 +663,9 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
 
     override fun onStart() {
         super.onStart()
-        view?.let { view ->
-            view.map_v.onStart()
-            view.panorama_v.onStart()
+        view?.let {
+            it.map_v.onStart()
+            it.panorama_v.onStart()
         }
         MapKitFactory.getInstance().onStart()
     }

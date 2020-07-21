@@ -67,30 +67,23 @@ class ReminderFragment : BottomSheetDialogFragment() {
                         .putString(NOTIFICATION_ADDRESS, addressName.toString()).build()
 
                     reminderViewModel.scheduleNotification(customCalendar, data)
+                    reminderViewModel.outputStatus.observe(viewLifecycleOwner, Observer {
+                        it?.let {
+                            if (it.isNullOrEmpty()) {
+                                return@Observer
+                            }
+                            val workInfo = it[0]
+                            if (!workInfo.state.isFinished) {
+                                val dateFormat = SimpleDateFormat(datePattern, getDefault())
+                                carViewModel.upsertReminder(
+                                    Reminder(dateFormat.format(customCalendar.time).toString())
+                                )
 
-                    reminderViewModel.outputStatus.observe(
-                        viewLifecycleOwner, Observer { listOfWorkInfo ->
-                            listOfWorkInfo?.let {
-                                if (listOfWorkInfo.isNullOrEmpty()) {
-                                    return@Observer
-                                }
-                                val workInfo = listOfWorkInfo[0]
-                                if (!workInfo.state.isFinished) {
-                                    val dateFormat = SimpleDateFormat(datePattern, getDefault())
-                                    carViewModel.upsertReminder(
-                                        Reminder(dateFormat.format(customCalendar.time).toString())
-                                    )
-
-                                    val notificationCreated =
-                                        getString(R.string.notification_created)
-
-                                    coordinator_l.snackBarBottom(
-                                        notificationCreated, LENGTH_SHORT
-                                    ) {}
-                                }
+                                val notificationCreated = getString(R.string.notification_created)
+                                coordinator_l.snackBarBottom(notificationCreated, LENGTH_SHORT) {}
                             }
                         }
-                    )
+                    })
                 } else {
                     val notificationError = getString(R.string.notification_error)
                     coordinator_l.snackBarBottom(notificationError, LENGTH_SHORT) {}
