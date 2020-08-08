@@ -34,6 +34,7 @@ android {
     compileOptions {
         sourceCompatibility = '8'
         targetCompatibility = '8'
+        coreLibraryDesugaringEnabled true
     }
 
     kotlinOptions {
@@ -46,6 +47,10 @@ dependencies {
 
     rootProject.kotlinDependencies.each { name, dependency ->
         add('implementation', dependency)
+    }
+
+    rootProject.androidDependencies.each { name, dependency ->
+        add('coreLibraryDesugaring', dependency)
     }
 
     rootProject.androidxDependencies.each { name, dependency ->

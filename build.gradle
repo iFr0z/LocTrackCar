@@ -1,7 +1,7 @@
 buildscript {
     ext {
         applicationId = 'tk.ifroz.LocTrackCar'
-        buildToolsVersion = '30.0.0'
+        buildToolsVersion = '30.0.1'
         compileSdkVersion = 30
         targetSdkVersion = 30
         minSdkVersion = 21
@@ -9,23 +9,25 @@ buildscript {
         nameVersion = '8.2.0'
 
         kotlinVersion = '1.3.72'
-        сoroutinesVersion = '1.3.7'
+        сoroutinesVersion = '1.3.8'
 
-        materialVersion = '1.1.0'
-        appCompatVersion = '1.1.0'
+        desugaringCoreVersion = '1.0.10'
+
+        materialVersion = '1.2.0'
+        appCompatVersion = '1.2.0'
         roomVersion = '2.2.5'
         lifecycleVersion = '2.2.0'
-        fragmentVersion = '1.2.4'
-        workVersion = '2.3.4'
-        navigationVersion = '2.2.2'
-        constraintLayoutVersion = '2.0.0-beta3'
+        fragmentVersion = '1.2.5'
+        workVersion = '2.4.0'
+        navigationVersion = '2.3.0'
+        constraintLayoutVersion = '2.0.0-rc1'
 
         retrofitVersion = '2.9.0'
-        okHttpVersion = '4.7.2'
-        okioVersion = '2.6.0'
+        okHttpVersion = '4.8.1'
+        okioVersion = '2.7.0'
         moshiVersion = '1.9.3'
 
-        firebaseCoreVersion = '17.4.3'
+        firebaseCoreVersion = '17.4.4'
         yandexMapkitVersion = '3.5.0'
         playservicesLocationVersion = '17.0.0'
         timepickerVersion = '1.0'
@@ -37,6 +39,11 @@ buildscript {
                         + rootProject.сoroutinesVersion,
                 сoroutinesAndroid: 'org.jetbrains.kotlinx:kotlinx-coroutines-android:'
                         + rootProject.сoroutinesVersion
+        ]
+
+        androidDependencies = [
+                desugarJdk: 'com.android.tools:desugar_jdk_libs:'
+                        + rootProject.desugaringCoreVersion
         ]
 
         androidxDependencies = [
