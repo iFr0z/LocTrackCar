@@ -304,7 +304,7 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
             }
         }
 
-        searchPlaceViewModel.searchPlaceResults.observe(viewLifecycleOwner, Observer {
+        searchPlaceViewModel.searchPlaceResults.observe(viewLifecycleOwner, {
             if (isMarker) {
                 markerObject.clear()
 

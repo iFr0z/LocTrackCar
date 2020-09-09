@@ -99,13 +99,7 @@
     </style>
 
     <style name="TextInputLayoutTheme" parent="Widget.MaterialComponents.TextInputLayout.FilledBox">
-        <item name="android:background">@drawable/bg_linear_gradient_white</item>
         <item name="hintTextColor">@color/colorAppTheme</item>
-        <item name="cornerFamily">rounded</item>
-        <item name="boxCornerRadiusTopStart">16dp</item>
-        <item name="boxCornerRadiusTopEnd">0dp</item>
-        <item name="boxCornerRadiusBottomStart">0dp</item>
-        <item name="boxCornerRadiusBottomEnd">0dp</item>
         <item name="android:theme">@style/TextInputEditTextTheme</item>
     </style>
 

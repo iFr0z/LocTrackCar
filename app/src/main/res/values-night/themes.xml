@@ -97,16 +97,11 @@
     </style>
 
     <style name="TextInputLayoutTheme" parent="Widget.MaterialComponents.TextInputLayout.FilledBox">
+        <item name="android:background">@color/colorPrimary</item>
         <item name="boxBackgroundColor">@color/colorPrimary</item>
         <item name="hintTextColor">@color/colorPurple</item>
-        <item name="android:background">@drawable/bg_linear_gradient_black</item>
         <item name="startIconTint">@color/colorPurple</item>
         <item name="endIconTint">@color/colorPurple</item>
-        <item name="cornerFamily">rounded</item>
-        <item name="boxCornerRadiusTopStart">16dp</item>
-        <item name="boxCornerRadiusTopEnd">0dp</item>
-        <item name="boxCornerRadiusBottomStart">0dp</item>
-        <item name="boxCornerRadiusBottomEnd">0dp</item>
         <item name="android:theme">@style/TextInputEditTextTheme</item>
     </style>
 

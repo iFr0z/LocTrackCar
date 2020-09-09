@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import android.view.WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE
 import android.view.inputmethod.EditorInfo.IME_ACTION_SEARCH
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.Observer
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import kotlinx.android.synthetic.main.search_place_fragment.view.*
 import tk.ifroz.loctrackcar.R
@@ -53,7 +52,7 @@ class SearchPlaceFragment : BottomSheetDialogFragment() {
                 searchPlaceViewModel.deleteSearchPlaceResult()
             }
 
-            searchPlaceViewModel.searchPlaceResults.observe(viewLifecycleOwner, Observer {
+            searchPlaceViewModel.searchPlaceResults.observe(viewLifecycleOwner, {
                 if (!it.isNullOrEmpty()) {
                     val searchPlaceLatitude = it[0]
                     val searchPlaceLongitude = it[1]
