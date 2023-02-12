@@ -28,6 +28,7 @@ open class BaseRepository {
                 Error(errorMessage)
                 Log.d("BaseRepository: ", "${result.error}")
             }
+            else -> throw AssertionError()
         }
         return data
     }

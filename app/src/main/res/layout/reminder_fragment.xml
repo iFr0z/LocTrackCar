@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/coordinator_l"
+    android:id="@+id/coordinator_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <com.google.android.material.appbar.AppBarLayout
-        android:id="@+id/app_bar_l"
+        android:id="@+id/app_bar"
         android:layout_width="match_parent"
         android:layout_height="192dp"
         android:background="@color/colorTransparent"
         app:theme="@style/AppbarPrimaryTheme">
 
         <com.google.android.material.appbar.CollapsingToolbarLayout
-            android:id="@+id/collapsing_toolbar_l"
+            android:id="@+id/collapsing_toolbar"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:expandedTitleMarginBottom="32dp"
@@ -45,7 +45,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
-        app:layout_anchor="@id/app_bar_l"
+        app:layout_anchor="@id/app_bar"
         app:layout_anchorGravity="bottom|right"
         app:srcCompat="@drawable/ic_done_black_24dp" />
 
@@ -64,16 +64,17 @@
             android:layout_height="match_parent">
 
             <DatePicker
-                android:id="@+id/date_p"
+                android:id="@+id/date_picker"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:calendarViewShown="false"
                 android:datePickerMode="spinner"
                 android:paddingStart="8dp"
-                android:paddingEnd="0dp" />
+                android:paddingEnd="0dp"
+                android:paddingTop="200dp"/>
 
-            <ru.ifr0z.timepickercompact.TimePickerCompact
-                android:id="@+id/time_p"
+            <tk.ifroz.loctrackcar.util.custom.TimePickerCustom
+                android:id="@+id/time_picker"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/date_p"

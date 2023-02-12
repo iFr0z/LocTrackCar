@@ -10,7 +10,7 @@ import tk.ifroz.loctrackcar.ui.viewmodel.AddressViewModel
 class ViewModelFactory(private val addressApiHelper: AddressApiHelper) : ViewModelProvider.Factory {
 
     @ExperimentalCoroutinesApi
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(AddressViewModel::class.java)) {
             return AddressViewModel(AddressRepository(addressApiHelper)) as T
         }

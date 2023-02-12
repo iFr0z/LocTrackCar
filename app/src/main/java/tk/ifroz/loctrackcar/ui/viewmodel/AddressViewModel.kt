@@ -1,6 +1,5 @@
 package tk.ifroz.loctrackcar.ui.viewmodel
 
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -8,7 +7,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.launch
 import tk.ifroz.loctrackcar.data.repository.AddressRepository
@@ -24,9 +22,9 @@ class AddressViewModel(private val addressRepository: AddressRepository) : ViewM
     val state: StateFlow<MainState<Any>>
         get() = _state
 
-    private val _geocode = MutableLiveData<String>()
+    private val _geocode = MutableLiveData<String?>()
 
-    private val _addressName = MutableLiveData<String>()
+    private val _addressName = MutableLiveData<String?>()
 
     init {
         handleIntent()
@@ -69,7 +67,7 @@ class AddressViewModel(private val addressRepository: AddressRepository) : ViewM
         _addressName.value = AddressName
     }
 
-    internal fun fetchAddressName(): LiveData<String> {
+    internal fun fetchAddressName(): MutableLiveData<String?> {
         return _addressName
     }
 

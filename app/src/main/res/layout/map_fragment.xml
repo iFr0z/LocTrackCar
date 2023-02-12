@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/coordinator_l"
+    android:id="@+id/coordinator_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -10,7 +10,7 @@
         android:layout_height="match_parent">
 
         <com.yandex.mapkit.mapview.MapView
-            android:id="@+id/map_v"
+            android:id="@+id/map_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
@@ -45,7 +45,7 @@
         app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
 
         <com.google.android.material.card.MaterialCardView
-            android:id="@+id/card_v"
+            android:id="@+id/card_view"
             style="@style/MaterialCardViewPrimaryTheme"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -57,14 +57,8 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
-                <com.yandex.mapkit.places.panorama.PanoramaView
-                    android:id="@+id/panorama_v"
-                    android:layout_width="match_parent"
-                    android:layout_height="120dp"
-                    app:movable="true" />
-
                 <androidx.core.widget.ContentLoadingProgressBar
-                    android:id="@+id/progressBar"
+                    android:id="@+id/progress_bar"
                     style="?android:attr/progressBarStyleSmall"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -111,7 +105,7 @@
                             android:layout_marginBottom="16dp">
 
                             <com.google.android.material.chip.Chip
-                                android:id="@+id/pedestrian_c"
+                                android:id="@+id/pedestrian_chip"
                                 style="@style/ChipPrimaryTheme"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
@@ -119,7 +113,7 @@
                                 app:chipIcon="@drawable/ic_directions_walk_black_24dp" />
 
                             <com.google.android.material.chip.Chip
-                                android:id="@+id/reminder_c"
+                                android:id="@+id/reminder_chip"
                                 style="@style/ChipSecondaryTheme"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
@@ -127,7 +121,7 @@
                                 app:chipIcon="@drawable/ic_schedule_black_24dp" />
 
                             <com.google.android.material.chip.Chip
-                                android:id="@+id/share_c"
+                                android:id="@+id/share_chip"
                                 style="@style/ChipSecondaryTheme"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
@@ -135,7 +129,7 @@
                                 app:chipIcon="@drawable/ic_share_black_24dp" />
 
                             <com.google.android.material.chip.Chip
-                                android:id="@+id/delete_c"
+                                android:id="@+id/delete_chip"
                                 style="@style/ChipSecondaryTheme"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
@@ -155,7 +149,7 @@
     </androidx.core.widget.NestedScrollView>
 
     <androidx.appcompat.widget.LinearLayoutCompat
-        android:id="@+id/location_fab_llc"
+        android:id="@+id/location_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"

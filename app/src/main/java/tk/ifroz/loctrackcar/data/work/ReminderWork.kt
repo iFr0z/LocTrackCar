@@ -1,9 +1,10 @@
 package tk.ifroz.loctrackcar.data.work
 
+import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.NotificationManager.IMPORTANCE_HIGH
-import android.app.PendingIntent.getActivity
+import android.app.PendingIntent.*
 import android.content.Context
 import android.content.Context.NOTIFICATION_SERVICE
 import android.content.Intent
@@ -17,6 +18,7 @@ import android.media.RingtoneManager.TYPE_NOTIFICATION
 import android.media.RingtoneManager.getDefaultUri
 import android.os.Build.VERSION.SDK_INT
 import android.os.Build.VERSION_CODES.O
+import android.os.Build.VERSION_CODES.S
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationCompat.DEFAULT_ALL
 import androidx.core.app.NotificationCompat.PRIORITY_MAX
@@ -39,6 +41,7 @@ class ReminderWork(context: Context, params: WorkerParameters) : Worker(context,
         return success()
     }
 
+    @SuppressLint("UnspecifiedImmutableFlag")
     private fun showNotification(id: Int, addressName: String) {
         val intent = Intent(applicationContext, MainActivity::class.java).apply {
             flags = FLAG_ACTIVITY_NEW_TASK or FLAG_ACTIVITY_CLEAR_TASK
@@ -52,7 +55,11 @@ class ReminderWork(context: Context, params: WorkerParameters) : Worker(context,
             applicationContext.vectorDrawableToBitmap(R.drawable.ic_marker_with_outline_45dp)
 
         val titleNotification = applicationContext.getString(R.string.notification_title)
-        val pendingIntent = getActivity(applicationContext, 0, intent, 0)
+        val pendingIntent = if (SDK_INT >= S) {
+            getActivity(applicationContext, 0, intent, FLAG_MUTABLE)
+        } else {
+            getActivity(applicationContext, 0, intent, FLAG_UPDATE_CURRENT)
+        }
         val notification = NotificationCompat.Builder(applicationContext, NOTIFICATION_CHANNEL)
             .setLargeIcon(bitmap).setSmallIcon(R.drawable.ic_marker_notification_white)
             .setContentTitle(titleNotification).setContentText(addressName)

@@ -1,5 +1,6 @@
 package tk.ifroz.loctrackcar.ui.view.fragment
 
+import android.Manifest.permission.ACCESS_COARSE_LOCATION
 import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.content.Intent
 import android.content.Intent.*
@@ -16,6 +17,8 @@ import android.widget.FrameLayout.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
 import android.widget.FrameLayout.SYSTEM_UI_FLAG_LAYOUT_STABLE
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.addCallback
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat.checkSelfPermission
 import androidx.core.app.ActivityCompat.getColor
@@ -40,7 +43,6 @@ import com.yandex.mapkit.map.*
 import com.yandex.mapkit.map.Map
 import com.yandex.mapkit.map.MapType.VECTOR_MAP
 import com.yandex.mapkit.places.PlacesFactory
-import com.yandex.mapkit.places.panorama.PanoramaService.SearchListener
 import com.yandex.mapkit.transport.TransportFactory
 import com.yandex.mapkit.transport.masstransit.PedestrianRouter
 import com.yandex.mapkit.transport.masstransit.Route
@@ -51,14 +53,13 @@ import com.yandex.mapkit.user_location.UserLocationObjectListener
 import com.yandex.mapkit.user_location.UserLocationView
 import com.yandex.runtime.Error
 import com.yandex.runtime.image.ImageProvider.fromBitmap
-import kotlinx.android.synthetic.main.map_fragment.view.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import tk.ifroz.loctrackcar.R
 import tk.ifroz.loctrackcar.data.api.AddressApiBuilder.addressApiService
 import tk.ifroz.loctrackcar.data.api.AddressApiHelperImpl
 import tk.ifroz.loctrackcar.data.db.entity.Target
+import tk.ifroz.loctrackcar.databinding.MapFragmentBinding
 import tk.ifroz.loctrackcar.ui.intent.MainIntent
 import tk.ifroz.loctrackcar.ui.viewmodel.AddressViewModel
 import tk.ifroz.loctrackcar.ui.viewmodel.CarViewModel
@@ -72,8 +73,12 @@ import tk.ifroz.loctrackcar.util.extension.bottomSheetStateCallback
 import tk.ifroz.loctrackcar.util.extension.snackBarTop
 
 @ExperimentalCoroutinesApi
-class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, RouteListener,
-    SearchListener {
+class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, RouteListener {
+
+    private var _binding: MapFragmentBinding? = null
+    private val binding get() = _binding!!
+
+    private lateinit var checkLocationPermission: ActivityResultLauncher<Array<String>>
 
     private var isPermission = false
     private var isFollowUser = false
@@ -115,79 +120,70 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.map_fragment, container, false)
+    ): View {
+        _binding = MapFragmentBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        checkLocationPermission = registerForActivityResult(
+            ActivityResultContracts.RequestMultiplePermissions()
+        ) { permissions ->
+            if (permissions[ACCESS_FINE_LOCATION] == true ||
+                permissions[ACCESS_COARSE_LOCATION] == true) {
+                onMapReady()
+            }
+        }
+
         userInterface(view)
 
         checkPermission(view)
     }
 
     private fun checkPermission(view: View) {
-        val permissionLocation = checkSelfPermission(view.context, ACCESS_FINE_LOCATION)
-        if (permissionLocation != PERMISSION_GRANTED) {
-            requestPermissions(arrayOf(ACCESS_FINE_LOCATION), requestPermissionLocation)
+        if (checkSelfPermission(view.context, ACCESS_FINE_LOCATION) == PERMISSION_GRANTED ||
+            checkSelfPermission(view.context, ACCESS_COARSE_LOCATION) == PERMISSION_GRANTED
+        ) {
+            onMapReady()
         } else {
-            onMapReady(view)
+            checkLocationPermission.launch(arrayOf(ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION))
         }
     }
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int, permissions: Array<String>, grantResults: IntArray
-    ) {
-        when (requestCode) {
-            requestPermissionLocation -> {
-                if (grantResults.isNotEmpty() && grantResults[0] == PERMISSION_GRANTED) {
-                    view?.let {
-                        onMapReady(it)
-                    }
-                }
-                return
-            }
-        }
-    }
-
-    private fun onMapReady(view: View) {
+    private fun onMapReady() {
         val mapKit = MapKitFactory.getInstance()
-        userLocationLayer = mapKit.createUserLocationLayer(view.map_v.mapWindow)
+        userLocationLayer = mapKit.createUserLocationLayer(binding.mapView.mapWindow)
         userLocationLayer.isVisible = true
         userLocationLayer.isHeadingEnabled = false
         userLocationLayer.setObjectListener(this)
 
-        view.map_v.map.addCameraListener(this)
-        view.map_v.map.mapType = VECTOR_MAP
-        view.map_v.map.setMapStyle(resources.openRawResource(R.raw.map_style).bufferedReader().use {
-            it.readText()
-        })
-        view.map_v.map.logo.setAlignment(Alignment(LEFT, BOTTOM))
+        binding.mapView.map.addCameraListener(this)
+        binding.mapView.map.mapType = VECTOR_MAP
+        binding.mapView.map.logo.setAlignment(Alignment(LEFT, BOTTOM))
 
         cameraPositionUser()
 
         isPermission = true
 
         val locationDetected = getString(R.string.location_detected)
-        view.coordinator_l.snackBarTop(locationDetected, LENGTH_SHORT) {}
+        binding.coordinatorLayout.snackBarTop(locationDetected, LENGTH_SHORT) {}
     }
 
 
 
     private fun cameraPositionUser() {
-        view?.let {
-            if (userLocationLayer.cameraPosition() != null) {
-                routeStart = userLocationLayer.cameraPosition()!!.target
-                it.map_v.map.move(
-                    CameraPosition(routeStart, 18f, 0f, 0f), Animation(SMOOTH, 1f), null
-                )
-            } else {
-                it.map_v.map.move(CameraPosition(Point(0.0, 0.0), 16f, 0f, 0f))
-            }
+        if (userLocationLayer.cameraPosition() != null) {
+            routeStart = userLocationLayer.cameraPosition()!!.target
+            binding.mapView.map.move(
+                CameraPosition(routeStart, 18f, 0f, 0f), Animation(SMOOTH, 1f), null
+            )
+        } else {
+            binding.mapView.map.move(CameraPosition(Point(0.0, 0.0), 16f, 0f, 0f))
         }
     }
 
     override fun onCameraPositionChanged(
-        map: Map, cPos: CameraPosition, cUpd: CameraUpdateSource, finish: Boolean
+        map: Map, cPos: CameraPosition, cUpd: CameraUpdateReason, finish: Boolean
     ) {
         if (finish) {
             if (isFollowUser) {
@@ -201,38 +197,40 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
     }
 
     private fun setAnchor() {
-        view?.let {
-            userLocationLayer.setAnchor(
-                PointF((it.map_v.width * 0.5).toFloat(), (it.map_v.height * 0.5).toFloat()),
-                PointF((it.map_v.width * 0.5).toFloat(), (it.map_v.height * 0.83).toFloat())
+        userLocationLayer.setAnchor(
+            PointF(
+                (binding.mapView.width * 0.5).toFloat(), (binding.mapView.height * 0.5).toFloat()
+            ),
+            PointF(
+                (binding.mapView.width * 0.5).toFloat(), (binding.mapView.height * 0.83).toFloat()
             )
+        )
 
-            it.location_fab.setImageResource(R.drawable.ic_my_location_black_24dp)
+        binding.locationFab.setImageResource(R.drawable.ic_my_location_black_24dp)
 
-            isFollowUser = false
-        }
+        isFollowUser = false
     }
 
     private fun noAnchor() {
-        view?.let {
-            userLocationLayer.resetAnchor()
+        userLocationLayer.resetAnchor()
 
-            it.location_fab.setImageResource(R.drawable.ic_gps_not_fixed_black_24dp)
-        }
+        binding.locationFab.setImageResource(R.drawable.ic_gps_not_fixed_black_24dp)
     }
 
     override fun onObjectAdded(userLocationView: UserLocationView) {
         setAnchor()
 
-        view?.context?.let {
-            val bitmap = ImageProviderCustom(it, R.drawable.ic_dot_rose_24dp).image
-            userLocationView.apply {
-                pin.setIcon(fromBitmap(bitmap))
-                pin.setIconStyle(IconStyle().setFlat(true))
-                arrow.setIcon(fromBitmap(bitmap))
-                arrow.setIconStyle(IconStyle().setFlat(true))
-                accuracyCircle.fillColor = getColor(it, R.color.colorAccuracyCircle)
-            }
+        val bitmap = view?.let {
+            ImageProviderCustom(it.context, R.drawable.ic_dot_rose_24dp).image
+        }
+        userLocationView.apply {
+            pin.setIcon(fromBitmap(bitmap))
+            pin.setIconStyle(IconStyle().setFlat(true))
+            arrow.setIcon(fromBitmap(bitmap))
+            arrow.setIconStyle(IconStyle().setFlat(true))
+            accuracyCircle.fillColor = view?.let {
+                getColor(it.context, R.color.colorAccuracyCircle)
+            }!!
         }
     }
 
@@ -246,37 +244,37 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
         }
 
         when (resources.configuration.uiMode and UI_MODE_NIGHT_MASK) {
-            UI_MODE_NIGHT_NO -> view.map_v.map.isNightModeEnabled = false
-            UI_MODE_NIGHT_YES -> view.map_v.map.isNightModeEnabled = true
+            UI_MODE_NIGHT_NO -> binding.mapView.map.isNightModeEnabled = false
+            UI_MODE_NIGHT_YES -> binding.mapView.map.isNightModeEnabled = true
         }
 
-        searchPlace(view)
+        searchPlace()
 
         bottomSheetCar(view)
 
-        view.car_fab.setOnClickListener {
+        binding.carFab.setOnClickListener {
             if (isPermission) {
                 noAnchor()
 
                 if (isCar) {
-                    view.map_v.map.move(
+                    binding.mapView.map.move(
                         CameraPosition(routeEnd, 18f, 0f, 0f), Animation(SMOOTH, 1f), null
                     )
                 } else {
                     insertCar()
 
                     val markerCreated = getString(R.string.marker_created)
-                    view.coordinator_l.snackBarTop(markerCreated, LENGTH_SHORT) {}
+                    binding.coordinatorLayout.snackBarTop(markerCreated, LENGTH_SHORT) {}
                 }
 
-                from(view.bottom_sheet).state = STATE_EXPANDED
+                from(binding.bottomSheet).state = STATE_EXPANDED
             } else {
                 checkPermission(view)
             }
         }
-        view.location_fab.setOnClickListener {
+        binding.locationFab.setOnClickListener {
             if (isPermission) {
-                from(view.bottom_sheet).state = STATE_HIDDEN
+                from(binding.bottomSheet).state = STATE_HIDDEN
 
                 cameraPositionUser()
 
@@ -289,11 +287,11 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
         retrieveCar(view)
     }
 
-    private fun searchPlace(view: View) {
-        view.search_place_fab.setOnClickListener {
+    private fun searchPlace() {
+        binding.searchPlaceFab.setOnClickListener {
             if (isMarker) {
                 val markerIsAlready = getString(R.string.marker_searched_is_already)
-                view.coordinator_l.snackBarTop(markerIsAlready, LENGTH_SHORT) {
+                binding.coordinatorLayout.snackBarTop(markerIsAlready, LENGTH_SHORT) {
                     val notificationChange = getString(R.string.change)
                     action(notificationChange) {
                         searchPlaceDestination()
@@ -304,7 +302,7 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
             }
         }
 
-        searchPlaceViewModel.searchPlaceResults.observe(viewLifecycleOwner, {
+        searchPlaceViewModel.searchPlaceResults.observe(viewLifecycleOwner) {
             if (isMarker) {
                 markerObject.clear()
 
@@ -315,19 +313,19 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
             if (!it.isNullOrEmpty()) {
                 val markerLatitude = it[0]
                 val markerLongitude = it[1]
-                drawMarker(markerLatitude.toDouble(), markerLongitude.toDouble(), view)
+                drawMarker(markerLatitude.toDouble(), markerLongitude.toDouble())
 
                 val searchPlaceTitleFormat =
                     getString(R.string.search_place_title_format, searchPlaceTitle)
 
-                view.search_place_fab.text = searchPlaceTitleFormat
+                binding.searchPlaceFab.text = searchPlaceTitleFormat
 
                 val markerSearched = getString(R.string.marker_searched)
-                view.coordinator_l.snackBarTop(markerSearched, LENGTH_SHORT) {}
+                binding.coordinatorLayout.snackBarTop(markerSearched, LENGTH_SHORT) {}
             } else {
-                view.search_place_fab.text = searchPlaceTitle
+                binding.searchPlaceFab.text = searchPlaceTitle
             }
-        })
+        }
     }
 
     private fun searchPlaceDestination() {
@@ -338,52 +336,56 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
         findNavController().navigate(R.id.search_place_dest, null)
     }
 
-    private fun drawMarker(markerLatitude: Double, markerLongitude: Double, view: View) {
-        markerObject = view.map_v.map.mapObjects.addCollection()
+    private fun drawMarker(markerLatitude: Double, markerLongitude: Double) {
+        markerObject = binding.mapView.map.mapObjects.addCollection()
         val point = Point(markerLatitude, markerLongitude)
-        val bitmap = ImageProviderCustom(view.context, R.drawable.ic_place_black_45dp).image
+        val bitmap = view?.let {
+            ImageProviderCustom(it.context, R.drawable.ic_place_black_45dp).image
+        }
         markerPlacemark = markerObject.addPlacemark(point).apply {
             setIcon(fromBitmap(bitmap))
             setIconStyle(IconStyle().setAnchor(PointF(0.5f, 1f)))
         }
 
-        view.map_v.map.move(CameraPosition(point, 18f, 0f, 0f), Animation(SMOOTH, 1f), null)
+        binding.mapView.map.move(
+            CameraPosition(point, 18f, 0f, 0f), Animation(SMOOTH, 1f), null
+        )
 
         isMarker = true
     }
 
     private fun bottomSheetCar(view: View) {
-        from(view.bottom_sheet).state = STATE_HIDDEN
+        from(binding.bottomSheet).state = STATE_HIDDEN
 
-        view.bottom_sheet.bottomSheetStateCallback {
+        binding.bottomSheet.bottomSheetStateCallback {
             when (it) {
                 STATE_EXPANDED -> {
-                    view.car_fab.hide()
-                    view.search_place_fab.hide()
+                    binding.carFab.hide()
+                    binding.searchPlaceFab.hide()
 
                     customBack = requireActivity().onBackPressedDispatcher.addCallback(this) {
-                        from(view.bottom_sheet).state = STATE_HIDDEN
+                        from(binding.bottomSheet).state = STATE_HIDDEN
                     }
                 }
                 STATE_HIDDEN -> {
-                    view.car_fab.show()
-                    view.search_place_fab.show()
+                    binding.carFab.show()
+                    binding.searchPlaceFab.show()
 
                     customBack.remove()
                 }
             }
         }
 
-        view.pedestrian_c.setOnClickListener {
-            setPedestrian(view)
+        binding.pedestrianChip.setOnClickListener {
+            setPedestrian()
         }
 
-        view.reminder_c.setOnClickListener {
+        binding.reminderChip.setOnClickListener {
             if (isReminder) {
                 lifecycleScope.launch {
                     carViewModel.reminders.collect {
                         it?.let {
-                            view.coordinator_l.snackBarTop(it.reminder, LENGTH_SHORT) {
+                            binding.coordinatorLayout.snackBarTop(it.reminder, LENGTH_SHORT) {
                                 val notificationChange = getString(R.string.change)
                                 action(notificationChange) {
                                     findNavController().navigate(R.id.reminder_dest, null)
@@ -397,7 +399,7 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
             }
         }
 
-        view.share_c.setOnClickListener {
+        binding.shareChip.setOnClickListener {
             val sendIntent = Intent().apply {
                 action = ACTION_SEND
                 putExtra(EXTRA_TEXT, "${routeEnd.latitude},${routeEnd.longitude}")
@@ -406,32 +408,32 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
             startActivity(createChooser(sendIntent, null))
         }
 
-        view.delete_c.setOnClickListener {
+        binding.deleteChip.setOnClickListener {
             dialogMenuCar(view)
         }
     }
 
-    private fun setPedestrian(view: View) {
+    private fun setPedestrian() {
         routeStart = userLocationLayer.cameraPosition()!!.target
         if (!isPedestrian) {
-            drawPedestrian(view)
+            drawPedestrian()
         } else {
             cameraPositionPedestrian()
 
             val pedestrianIsAlready = getString(R.string.pedestrian_is_already)
-            view.coordinator_l.snackBarTop(pedestrianIsAlready, LENGTH_SHORT) {
+            binding.coordinatorLayout.snackBarTop(pedestrianIsAlready, LENGTH_SHORT) {
                 val pedestrianChange = getString(R.string.change)
                 action(pedestrianChange) {
-                    deletePedestrian(view)
+                    deletePedestrian()
 
-                    drawPedestrian(view)
+                    drawPedestrian()
                 }
             }
         }
     }
 
-    private fun drawPedestrian(view: View) {
-        carPedestrianObject = view.map_v.map.mapObjects.addCollection()
+    private fun drawPedestrian() {
+        carPedestrianObject = binding.mapView.map.mapObjects.addCollection()
         val points = ArrayList<RequestPoint>().apply {
             add(RequestPoint(routeStart, WAYPOINT, null))
             add(RequestPoint(routeEnd, WAYPOINT, null))
@@ -440,42 +442,37 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
         carPedestrianRouter.requestRoutes(points, TimeOptions(), this)
 
         val pedestrianComplete = getString(R.string.pedestrian_complete)
-        view.coordinator_l.snackBarTop(pedestrianComplete, LENGTH_SHORT) {}
+        binding.coordinatorLayout.snackBarTop(pedestrianComplete, LENGTH_SHORT) {}
     }
 
     private fun cameraPositionPedestrian() {
-        view?.let {
-            val screenCenter = Point(
-                (routeStart.latitude + routeEnd.latitude) / 2,
-                (routeStart.longitude + routeEnd.longitude) / 2
-            )
-            it.map_v.map.move(
-                CameraPosition(screenCenter, 16f, 0f, 0f), Animation(SMOOTH, 1f), null
-            )
-        }
+        val screenCenter = Point(
+            (routeStart.latitude + routeEnd.latitude) / 2,
+            (routeStart.longitude + routeEnd.longitude) / 2
+        )
+        binding.mapView.map.move(
+            CameraPosition(screenCenter, 16f, 0f, 0f), Animation(SMOOTH, 1f), null
+        )
     }
 
     override fun onMasstransitRoutes(routes: List<Route>) {
         if (routes.isNotEmpty()) {
             view?.context?.let {
                 carPedestrianObject.addPolyline(routes[0].geometry).apply {
-                    strokeColor = getColor(it, R.color.colorDot)
                     outlineColor = getColor(it, R.color.colorWayOutline)
-                    outlineWidth = 10f
+                    outlineWidth = 3f
                 }
             }
 
             cameraPositionPedestrian()
 
-            view?.let {
-                val distance = routes[0].sections[0].metadata.weight.walkingDistance.text
-                val time = routes[0].sections[0].metadata.weight.time.text
-                val combination = "$distance \u00B7 $time \u00B7\uD83D\uDEB6"
-                it.distance_tv.text = combination
-                it.distance_tv.visibility = VISIBLE
+            val distance = routes[0].sections[0].metadata.weight.walkingDistance.text
+            val time = routes[0].sections[0].metadata.weight.time.text
+            val combination = "$distance \u00B7 $time \u00B7\uD83D\uDEB6"
+            binding.distanceTv.text = combination
+            binding.distanceTv.visibility = VISIBLE
 
-                isPedestrian = true
-            }
+            isPedestrian = true
         }
     }
 
@@ -489,17 +486,17 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
         val listItem = arrayOf(deleteReminder, deletePedestrian, deleteCar)
         AlertDialog.Builder(view.context).setTitle(menuTitle).setItems(listItem) { _, which ->
             when (which) {
-                0 -> deleteReminder(view)
-                1 -> deletePedestrian(view)
-                2 -> deleteCar(view)
+                0 -> deleteReminder()
+                1 -> deletePedestrian()
+                2 -> deleteCar()
             }
         }.create().show()
     }
 
-    private fun deleteReminder(view: View) {
+    private fun deleteReminder() {
         if (isReminder) {
             val notificationDeleted = getString(R.string.notification_deleted)
-            view.coordinator_l.snackBarTop(notificationDeleted, LENGTH_SHORT) {}
+            binding.coordinatorLayout.snackBarTop(notificationDeleted, LENGTH_SHORT) {}
 
             reminderViewModel.deleteScheduleNotification()
             carViewModel.deleteReminder()
@@ -507,7 +504,7 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
             isReminder = false
         } else {
             val isNotAlready = getString(R.string.is_not_already)
-            view.coordinator_l.snackBarTop(isNotAlready, LENGTH_SHORT) {
+            binding.coordinatorLayout.snackBarTop(isNotAlready, LENGTH_SHORT) {
                 val notificationInsert = getString(R.string.insert)
                 action(notificationInsert) {
                     findNavController().navigate(R.id.reminder_dest, null)
@@ -516,30 +513,30 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
         }
     }
 
-    private fun deletePedestrian(view: View) {
+    private fun deletePedestrian() {
         if (isPedestrian) {
             val pedestrianDeleted = getString(R.string.pedestrian_deleted)
-            view.coordinator_l.snackBarTop(pedestrianDeleted, LENGTH_SHORT) {}
+            binding.coordinatorLayout.snackBarTop(pedestrianDeleted, LENGTH_SHORT) {}
 
             carPedestrianObject.clear()
 
-            view.distance_tv.visibility = GONE
+            binding.distanceTv.visibility = GONE
 
             isPedestrian = false
         } else {
             val isNotAlready = getString(R.string.is_not_already)
-            view.coordinator_l.snackBarTop(isNotAlready, LENGTH_SHORT) {
+            binding.coordinatorLayout.snackBarTop(isNotAlready, LENGTH_SHORT) {
                 val pedestrianInsert = getString(R.string.insert)
                 action(pedestrianInsert) {
-                    setPedestrian(view)
+                    setPedestrian()
                 }
             }
         }
     }
 
-    private fun deleteCar(view: View) {
+    private fun deleteCar() {
         if (isCar) {
-            deletePedestrian(view)
+            deletePedestrian()
 
             carObject.clear()
 
@@ -552,10 +549,10 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
             isCar = false
             isReminder = false
 
-            from(view.bottom_sheet).state = STATE_HIDDEN
+            from(binding.bottomSheet).state = STATE_HIDDEN
 
             val markerDeleted = getString(R.string.marker_deleted)
-            view.coordinator_l.snackBarTop(markerDeleted, LENGTH_SHORT) {}
+            binding.coordinatorLayout.snackBarTop(markerDeleted, LENGTH_SHORT) {}
         }
     }
 
@@ -578,20 +575,18 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
 
     private fun drawCar(routeEnd: Point, view: View) {
         val bitmap = ImageProviderCustom(view.context, R.drawable.ic_marker_with_outline_45dp).image
-        carObject = view.map_v.map.mapObjects.addCollection()
+        carObject = binding.mapView.map.mapObjects.addCollection()
         carPlacemark = carObject.addPlacemark(routeEnd).apply {
             setIcon(fromBitmap(bitmap))
             setIconStyle(IconStyle().setAnchor(PointF(0.5f, 1f)))
         }
 
-        dataCar(routeEnd.latitude, routeEnd.longitude, view)
+        dataCar(routeEnd.latitude, routeEnd.longitude)
 
         isCar = true
     }
 
-    private fun dataCar(latitude: Double, longitude: Double, view: View) {
-        showPanorama(routeEnd)
-
+    private fun dataCar(latitude: Double, longitude: Double) {
         lifecycleScope.launch {
             val geocode = "$longitude,$latitude"
             addressViewModel.insertGeocode(geocode)
@@ -601,24 +596,25 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
             addressViewModel.state.collect {
                 when (it) {
                     is MainState.Loading -> {
-                        view.address_tv.visibility = GONE
-                        view.progressBar.visibility = VISIBLE
+                        binding.addressTv.visibility = GONE
+                        binding.progressBar.visibility = VISIBLE
                     }
                     is MainState.Success -> {
-                        view.progressBar.visibility = GONE
-                        renderAddress(view, it.data.toString())
+                        binding.progressBar.visibility = GONE
+                        renderAddress(it.data.toString())
                     }
                     is MainState.Error -> {
-                        view.progressBar.visibility = GONE
-                        renderAddress(view, it.error!!)
+                        binding.progressBar.visibility = GONE
+                        renderAddress(it.error!!)
                     }
+                    else -> throw AssertionError()
                 }
             }
         }
 
         reminderViewModel.outputStatus.observe(viewLifecycleOwner, Observer {
             it?.let {
-                if (it.isNullOrEmpty()) {
+                if (it.isEmpty()) {
                     return@Observer
                 }
                 val workInfo = it[0]
@@ -627,51 +623,34 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
         })
     }
 
-    private fun renderAddress(view: View, address: String) {
-        view.address_tv.visibility = VISIBLE
+    private fun renderAddress(address: String) {
+        binding.addressTv.visibility = VISIBLE
         address.let { addressName ->
             addressName.let {
-                view.address_tv.text = it
+                binding.addressTv.text = it
                 addressViewModel.insertAddressName(it)
             }
         }
     }
 
-    private fun showPanorama(routeEnd: Point) {
-        val panoramaService = PlacesFactory.getInstance().createPanoramaService()
-        panoramaService.findNearest(Point(routeEnd.latitude, routeEnd.longitude), this)
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
-
-    override fun onPanoramaSearchResult(panoramaId: String) {
-        view?.let {
-            it.panorama_v.player.openPanorama(panoramaId)
-            it.panorama_v.player.logo.setAlignment(Alignment(LEFT, BOTTOM))
-            it.panorama_v.setNoninteractive(true)
-        }
-    }
-
-    override fun onPanoramaSearchError(error: Error) {}
 
     override fun onStop() {
-        view?.let {
-            it.map_v.onStop()
-            it.panorama_v.onStop()
-        }
+        binding.mapView.onStop()
         MapKitFactory.getInstance().onStop()
         super.onStop()
     }
 
     override fun onStart() {
         super.onStart()
-        view?.let {
-            it.map_v.onStart()
-            it.panorama_v.onStart()
-        }
+        binding.mapView.onStart()
         MapKitFactory.getInstance().onStart()
     }
 
     companion object {
-        const val mapKitApiKey = "e4b59fa0-e067-42ae-9044-5c6a038503e9"
-        const val requestPermissionLocation = 1
+        const val mapKitApiKey = "bb20cb74-9351-4c60-a3c3-494214e391ac"
     }
 }

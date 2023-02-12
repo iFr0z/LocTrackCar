@@ -1,81 +1,64 @@
-apply plugin: 'com.android.application'
-apply plugin: 'com.google.gms.google-services'
-apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
-apply plugin: 'kotlin-kapt'
+plugins {
+    id 'com.android.application'
+    id 'org.jetbrains.kotlin.android'
+    id 'org.jetbrains.kotlin.kapt'
+}
 
 android {
-    compileSdkVersion rootProject.compileSdkVersion
+    namespace 'tk.ifroz.loctrackcar'
+    compileSdk 33
 
     defaultConfig {
-        applicationId rootProject.applicationId
-        buildToolsVersion rootProject.buildToolsVersion
-        minSdkVersion rootProject.minSdkVersion
-        targetSdkVersion rootProject.targetSdkVersion
-        versionCode rootProject.codeVersion
-        versionName rootProject.nameVersion
-    }
-
-    bundle {
-        density.enableSplit = true
-        abi.enableSplit = true
-        language.enableSplit = true
+        applicationId "tk.ifroz.LocTrackCar"
+        minSdk 21
+        targetSdk 33
+        versionCode 78
+        versionName '9.0.0'
     }
 
     buildTypes {
         release {
-            minifyEnabled true
-            shrinkResources true
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'),
-                    'proguard-rules.pro'
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
-
     compileOptions {
-        sourceCompatibility = '8'
-        targetCompatibility = '8'
-        coreLibraryDesugaringEnabled true
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
-
     kotlinOptions {
         jvmTarget = '1.8'
+    }
+    buildFeatures {
+        viewBinding true
     }
 }
 
 dependencies {
-    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4'
 
-    rootProject.kotlinDependencies.each { name, dependency ->
-        add('implementation', dependency)
-    }
+    implementation 'com.google.android.material:material:1.8.0'
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'androidx.room:room-runtime:2.5.0'
+    implementation 'androidx.room:room-ktx:2.5.0'
+    kapt 'androidx.room:room-compiler:2.5.0'
+    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.5.1'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1'
+    implementation 'androidx.work:work-runtime:2.8.0'
+    implementation 'androidx.work:work-runtime-ktx:2.8.0'
+    implementation 'androidx.fragment:fragment-ktx:'
+    implementation 'androidx.navigation:navigation-fragment-ktx:2.5.3'
+    implementation 'androidx.navigation:navigation-ui-ktx:2.5.3'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
 
-    rootProject.androidDependencies.each { name, dependency ->
-        add('coreLibraryDesugaring', dependency)
-    }
+    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
+    implementation 'com.squareup.retrofit2:converter-moshi:2.9.0'
+    implementation 'com.squareup.okhttp3:okhttp:4.10.0'
+    implementation 'com.squareup.okio:okio:3.3.0'
+    implementation 'com.squareup.moshi:moshi-kotlin:1.14.0'
+    kapt 'com.squareup.moshi:moshi-kotlin-codegen:1.14.0'
 
-    rootProject.androidxDependencies.each { name, dependency ->
-        add('implementation', dependency)
-    }
-    rootProject.androidxKaptDependencies.each { name, dependency ->
-        add('kapt', dependency)
-    }
-
-    rootProject.retrofitDependencies.each { name, dependency ->
-        add('implementation', dependency)
-    }
-    rootProject.retrofitKaptDependencies.each { name, dependency ->
-        add('kapt', dependency)
-    }
-
-    rootProject.googleDependencies.each { name, dependency ->
-        add('implementation', dependency)
-    }
-
-    rootProject.yandexDependencies.each { name, dependency ->
-        add('implementation', dependency)
-    }
-
-    rootProject.ifr0zDependencies.each { name, dependency ->
-        add('implementation', dependency)
-    }
+    implementation 'com.google.android.gms:play-services-location:20.0.0'
+    implementation 'com.yandex.android:maps.mobile:4.2.2-full'
 }

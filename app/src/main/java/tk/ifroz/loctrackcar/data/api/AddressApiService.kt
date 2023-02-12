@@ -7,6 +7,6 @@ import tk.ifroz.loctrackcar.data.model.address.AddressResult
 
 interface AddressApiService {
 
-    @GET("?apikey=fdab91eb-db19-4f34-b4ff-d7c4a0932ca1&format=json&results=1")
+    @GET("?apikey=d8aca5f4-f66d-4207-b8ab-d26c33f96ea2&format=json&results=1")
     suspend fun getAddress(@Query("geocode") geocode: String): Response<AddressResult>
 }

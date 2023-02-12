@@ -1,15 +1,21 @@
 package tk.ifroz.loctrackcar.ui.view.fragment
 
+import android.Manifest.permission.POST_NOTIFICATIONS
+import android.content.pm.PackageManager.PERMISSION_GRANTED
+import android.os.Build.VERSION.SDK_INT
+import android.os.Build.VERSION_CODES.TIRAMISU
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat.checkSelfPermission
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.work.Data
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.snackbar.Snackbar.LENGTH_SHORT
-import kotlinx.android.synthetic.main.reminder_fragment.view.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import tk.ifroz.loctrackcar.R
 import tk.ifroz.loctrackcar.data.api.AddressApiBuilder
@@ -17,6 +23,7 @@ import tk.ifroz.loctrackcar.data.api.AddressApiHelperImpl
 import tk.ifroz.loctrackcar.data.db.entity.Reminder
 import tk.ifroz.loctrackcar.data.work.ReminderWork.Companion.NOTIFICATION_ADDRESS
 import tk.ifroz.loctrackcar.data.work.ReminderWork.Companion.NOTIFICATION_ID
+import tk.ifroz.loctrackcar.databinding.ReminderFragmentBinding
 import tk.ifroz.loctrackcar.ui.viewmodel.AddressViewModel
 import tk.ifroz.loctrackcar.ui.viewmodel.CarViewModel
 import tk.ifroz.loctrackcar.ui.viewmodel.ReminderViewModel
@@ -28,6 +35,12 @@ import java.util.Locale.getDefault
 
 @ExperimentalCoroutinesApi
 class ReminderFragment : BottomSheetDialogFragment() {
+
+    private var _binding: ReminderFragmentBinding? = null
+    private val binding get() = _binding!!
+
+    private lateinit var checkNotificationPermission: ActivityResultLauncher<String>
+    private var isPermission = false
 
     private val addressViewModel: AddressViewModel by activityViewModels {
         ViewModelFactory(AddressApiHelperImpl(AddressApiBuilder.addressApiService))
@@ -42,22 +55,52 @@ class ReminderFragment : BottomSheetDialogFragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.reminder_fragment, container, false)
+    ): View {
+        _binding = ReminderFragmentBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        userInterface(view)
+        checkNotificationPermission = registerForActivityResult(
+            ActivityResultContracts.RequestPermission()
+        ) { isGranted: Boolean ->
+            isPermission = isGranted
+        }
+
+        userInterface()
+
+        checkPermission(view)
     }
 
-    private fun userInterface(view: View) {
-        view.apply {
-            val titleNotification = getString(R.string.notification)
-            collapsing_toolbar_l.title = titleNotification
+    private fun checkPermission(view: View) {
+        if (SDK_INT >= TIRAMISU) {
+            if (checkSelfPermission(view.context, POST_NOTIFICATIONS) == PERMISSION_GRANTED) {
+                isPermission = true
+            } else {
+                isPermission = false
 
-            done_fab.setOnClickListener {
+                checkNotificationPermission.launch(POST_NOTIFICATIONS)
+            }
+        } else {
+            isPermission = true
+        }
+    }
+
+    private fun userInterface() {
+        val titleNotification = getString(R.string.notification)
+        binding.collapsingToolbar.title = titleNotification
+
+        binding.doneFab.setOnClickListener {
+            if (isPermission) {
                 val customCalendar = Calendar.getInstance().apply {
-                    set(date_p.year, date_p.month, date_p.dayOfMonth, time_p.hour, time_p.minute, 0)
+                    set(
+                        binding.datePicker.year,
+                        binding.datePicker.month,
+                        binding.datePicker.dayOfMonth,
+                        binding.timePicker.hour,
+                        binding.timePicker.minute,
+                        0
+                    )
                 }
                 val currentTime = System.currentTimeMillis()
                 val customTime = customCalendar.timeInMillis
@@ -69,7 +112,7 @@ class ReminderFragment : BottomSheetDialogFragment() {
                     reminderViewModel.scheduleNotification(customCalendar, data)
                     reminderViewModel.outputStatus.observe(viewLifecycleOwner, Observer {
                         it?.let {
-                            if (it.isNullOrEmpty()) {
+                            if (it.isEmpty()) {
                                 return@Observer
                             }
                             val workInfo = it[0]
@@ -80,16 +123,27 @@ class ReminderFragment : BottomSheetDialogFragment() {
                                 )
 
                                 val notificationCreated = getString(R.string.notification_created)
-                                coordinator_l.snackBarBottom(notificationCreated, LENGTH_SHORT) {}
+                                binding.coordinatorLayout.snackBarBottom(
+                                    notificationCreated, LENGTH_SHORT
+                                ) {}
                             }
                         }
                     })
                 } else {
                     val notificationError = getString(R.string.notification_error)
-                    coordinator_l.snackBarBottom(notificationError, LENGTH_SHORT) {}
+                    binding.coordinatorLayout.snackBarBottom(notificationError, LENGTH_SHORT) {}
+                }
+            } else {
+                if (SDK_INT >= TIRAMISU) {
+                    checkNotificationPermission.launch(POST_NOTIFICATIONS)
                 }
             }
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     companion object {
