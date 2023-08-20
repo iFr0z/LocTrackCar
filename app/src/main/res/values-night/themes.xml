@@ -31,6 +31,11 @@
         <item name="elevation">2dp</item>
     </style>
 
+    <style name="FloatingActionButtonSquare" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">16dp</item>
+    </style>
+
     <style name="FloatingActionButtonPrimaryTheme">
         <item name="backgroundTint">@color/colorPurple</item>
         <item name="android:tint">@color/colorPrimaryDark</item>
