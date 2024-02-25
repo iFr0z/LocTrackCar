@@ -16,7 +16,7 @@ interface TargetDao {
     fun getTarget(): Flow<Target?>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(target: Target?)
+    suspend fun insert(target: Target)
 
     @Query("DELETE FROM marker_car_target_table")
     suspend fun delete()

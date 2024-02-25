@@ -16,7 +16,7 @@ class MarkerCarRepository(private val targetDao: TargetDao, private val reminder
 
     @WorkerThread
     suspend fun insertTarget(target: Target?) {
-        targetDao.insert(target)
+        targetDao.insert(target!!)
     }
 
     @WorkerThread

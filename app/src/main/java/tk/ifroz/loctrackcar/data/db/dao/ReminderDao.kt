@@ -16,7 +16,7 @@ abstract class ReminderDao {
     abstract fun getReminder(): Flow<Reminder?>
 
     @Insert
-    abstract suspend fun insert(reminder: Reminder?)
+    abstract suspend fun insert(reminder: Reminder)
 
     @Query("DELETE FROM marker_car_reminder_table")
     abstract suspend fun delete()
@@ -24,6 +24,6 @@ abstract class ReminderDao {
     @Transaction
     open suspend fun upsert(reminder: Reminder?) {
         delete()
-        insert(reminder)
+        insert(reminder!!)
     }
 }

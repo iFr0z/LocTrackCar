@@ -157,9 +157,9 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
         userLocationLayer.isHeadingEnabled = false
         userLocationLayer.setObjectListener(this)
 
-        binding.mapView.map.addCameraListener(this)
-        binding.mapView.map.mapType = VECTOR_MAP
-        binding.mapView.map.logo.setAlignment(Alignment(LEFT, BOTTOM))
+        binding.mapView.mapWindow.map.addCameraListener(this)
+        binding.mapView.mapWindow.map.mapType = VECTOR_MAP
+        binding.mapView.mapWindow.map.logo.setAlignment(Alignment(LEFT, BOTTOM))
 
         cameraPositionUser()
 
@@ -174,11 +174,11 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
     private fun cameraPositionUser() {
         if (userLocationLayer.cameraPosition() != null) {
             routeStart = userLocationLayer.cameraPosition()!!.target
-            binding.mapView.map.move(
+            binding.mapView.mapWindow.map.move(
                 CameraPosition(routeStart, 18f, 0f, 0f), Animation(SMOOTH, 1f), null
             )
         } else {
-            binding.mapView.map.move(CameraPosition(Point(0.0, 0.0), 16f, 0f, 0f))
+            binding.mapView.mapWindow.map.move(CameraPosition(Point(0.0, 0.0), 16f, 0f, 0f))
         }
     }
 
@@ -244,8 +244,8 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
         }
 
         when (resources.configuration.uiMode and UI_MODE_NIGHT_MASK) {
-            UI_MODE_NIGHT_NO -> binding.mapView.map.isNightModeEnabled = false
-            UI_MODE_NIGHT_YES -> binding.mapView.map.isNightModeEnabled = true
+            UI_MODE_NIGHT_NO -> binding.mapView.mapWindow.map.isNightModeEnabled = false
+            UI_MODE_NIGHT_YES -> binding.mapView.mapWindow.map.isNightModeEnabled = true
         }
 
         searchPlace()
@@ -257,7 +257,7 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
                 noAnchor()
 
                 if (isCar) {
-                    binding.mapView.map.move(
+                    binding.mapView.mapWindow.map.move(
                         CameraPosition(routeEnd, 18f, 0f, 0f), Animation(SMOOTH, 1f), null
                     )
                 } else {
@@ -337,17 +337,18 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
     }
 
     private fun drawMarker(markerLatitude: Double, markerLongitude: Double) {
-        markerObject = binding.mapView.map.mapObjects.addCollection()
+        markerObject = binding.mapView.mapWindow.map.mapObjects.addCollection()
         val point = Point(markerLatitude, markerLongitude)
         val bitmap = view?.let {
             ImageProviderCustom(it.context, R.drawable.ic_place_black_45dp).image
         }
-        markerPlacemark = markerObject.addPlacemark(point).apply {
+        markerPlacemark = markerObject.addPlacemark().apply {
+            geometry = point
             setIcon(fromBitmap(bitmap))
             setIconStyle(IconStyle().setAnchor(PointF(0.5f, 1f)))
         }
 
-        binding.mapView.map.move(
+        binding.mapView.mapWindow.map.move(
             CameraPosition(point, 18f, 0f, 0f), Animation(SMOOTH, 1f), null
         )
 
@@ -433,10 +434,10 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
     }
 
     private fun drawPedestrian() {
-        carPedestrianObject = binding.mapView.map.mapObjects.addCollection()
+        carPedestrianObject = binding.mapView.mapWindow.map.mapObjects.addCollection()
         val points = ArrayList<RequestPoint>().apply {
-            add(RequestPoint(routeStart, WAYPOINT, null))
-            add(RequestPoint(routeEnd, WAYPOINT, null))
+            add(RequestPoint(routeStart, WAYPOINT, null, null))
+            add(RequestPoint(routeEnd, WAYPOINT, null, null))
         }
         carPedestrianRouter = TransportFactory.getInstance().createPedestrianRouter()
         carPedestrianRouter.requestRoutes(points, TimeOptions(), this)
@@ -450,7 +451,7 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
             (routeStart.latitude + routeEnd.latitude) / 2,
             (routeStart.longitude + routeEnd.longitude) / 2
         )
-        binding.mapView.map.move(
+        binding.mapView.mapWindow.map.move(
             CameraPosition(screenCenter, 16f, 0f, 0f), Animation(SMOOTH, 1f), null
         )
     }
@@ -575,8 +576,9 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
 
     private fun drawCar(routeEnd: Point, view: View) {
         val bitmap = ImageProviderCustom(view.context, R.drawable.ic_marker_with_outline_45dp).image
-        carObject = binding.mapView.map.mapObjects.addCollection()
-        carPlacemark = carObject.addPlacemark(routeEnd).apply {
+        carObject = binding.mapView.mapWindow.map.mapObjects.addCollection()
+        carPlacemark = carObject.addPlacemark().apply {
+            geometry = routeEnd
             setIcon(fromBitmap(bitmap))
             setIconStyle(IconStyle().setAnchor(PointF(0.5f, 1f)))
         }

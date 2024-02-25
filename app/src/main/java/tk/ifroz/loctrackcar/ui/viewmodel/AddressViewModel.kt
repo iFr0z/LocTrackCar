@@ -63,8 +63,8 @@ class AddressViewModel(private val addressRepository: AddressRepository) : ViewM
         _geocode.postValue(null)
     }
 
-    internal fun insertAddressName(AddressName: String) {
-        _addressName.value = AddressName
+    internal fun insertAddressName(addressName: String) {
+        _addressName.value = addressName
     }
 
     internal fun fetchAddressName(): MutableLiveData<String?> {
