@@ -12,8 +12,8 @@ android {
         applicationId "tk.ifroz.LocTrackCar"
         minSdk 21
         targetSdk 34
-        versionCode 80
-        versionName '9.2.0'
+        versionCode 81
+        versionName '9.3.0'
     }
 
     buildTypes {
