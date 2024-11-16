@@ -18,16 +18,13 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.snackbar.Snackbar.LENGTH_SHORT
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import tk.ifroz.loctrackcar.R
-import tk.ifroz.loctrackcar.data.api.AddressApiBuilder
-import tk.ifroz.loctrackcar.data.api.AddressApiHelperImpl
 import tk.ifroz.loctrackcar.data.db.entity.Reminder
 import tk.ifroz.loctrackcar.data.work.ReminderWork.Companion.NOTIFICATION_ADDRESS
 import tk.ifroz.loctrackcar.data.work.ReminderWork.Companion.NOTIFICATION_ID
 import tk.ifroz.loctrackcar.databinding.ReminderFragmentBinding
-import tk.ifroz.loctrackcar.ui.viewmodel.AddressViewModel
+import tk.ifroz.loctrackcar.ui.viewmodel.GeocodeViewModel
 import tk.ifroz.loctrackcar.ui.viewmodel.CarViewModel
 import tk.ifroz.loctrackcar.ui.viewmodel.ReminderViewModel
-import tk.ifroz.loctrackcar.util.ViewModelFactory
 import tk.ifroz.loctrackcar.util.extension.snackBarBottom
 import java.text.SimpleDateFormat
 import java.util.*
@@ -42,9 +39,7 @@ class ReminderFragment : BottomSheetDialogFragment() {
     private lateinit var checkNotificationPermission: ActivityResultLauncher<String>
     private var isPermission = false
 
-    private val addressViewModel: AddressViewModel by activityViewModels {
-        ViewModelFactory(AddressApiHelperImpl(AddressApiBuilder.addressApiService))
-    }
+    private val geocodeViewModel: GeocodeViewModel by activityViewModels()
     private val reminderViewModel: ReminderViewModel by activityViewModels()
     private val carViewModel: CarViewModel by activityViewModels()
 
@@ -105,9 +100,9 @@ class ReminderFragment : BottomSheetDialogFragment() {
                 val currentTime = System.currentTimeMillis()
                 val customTime = customCalendar.timeInMillis
                 if (customTime > currentTime) {
-                    val addressName = addressViewModel.fetchAddressName().value
+                    val geocode = geocodeViewModel.fetchGeocode().value
                     val data = Data.Builder().putInt(NOTIFICATION_ID, 0)
-                        .putString(NOTIFICATION_ADDRESS, addressName.toString()).build()
+                        .putString(NOTIFICATION_ADDRESS, geocode.toString()).build()
 
                     reminderViewModel.scheduleNotification(customCalendar, data)
                     reminderViewModel.outputStatus.observe(viewLifecycleOwner, Observer {

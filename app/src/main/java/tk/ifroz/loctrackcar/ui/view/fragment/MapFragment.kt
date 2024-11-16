@@ -3,10 +3,16 @@ package tk.ifroz.loctrackcar.ui.view.fragment
 import android.Manifest.permission.ACCESS_COARSE_LOCATION
 import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.content.Intent
-import android.content.Intent.*
+import android.content.Intent.ACTION_SEND
+import android.content.Intent.EXTRA_TEXT
+import android.content.Intent.createChooser
 import android.content.pm.PackageManager.PERMISSION_GRANTED
-import android.content.res.Configuration.*
+import android.content.res.Configuration.UI_MODE_NIGHT_MASK
+import android.content.res.Configuration.UI_MODE_NIGHT_NO
+import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import android.graphics.PointF
+import android.os.Build.VERSION.SDK_INT
+import android.os.Build.VERSION_CODES.VANILLA_ICE_CREAM
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -22,12 +28,17 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat.checkSelfPermission
 import androidx.core.app.ActivityCompat.getColor
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import com.google.android.material.bottomsheet.BottomSheetBehavior.*
+import com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_EXPANDED
+import com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_HIDDEN
+import com.google.android.material.bottomsheet.BottomSheetBehavior.from
 import com.google.android.material.snackbar.Snackbar.LENGTH_SHORT
 import com.yandex.mapkit.Animation
 import com.yandex.mapkit.Animation.Type.SMOOTH
@@ -39,15 +50,23 @@ import com.yandex.mapkit.layers.ObjectEvent
 import com.yandex.mapkit.logo.Alignment
 import com.yandex.mapkit.logo.HorizontalAlignment.LEFT
 import com.yandex.mapkit.logo.VerticalAlignment.BOTTOM
-import com.yandex.mapkit.map.*
+import com.yandex.mapkit.map.CameraListener
+import com.yandex.mapkit.map.CameraPosition
+import com.yandex.mapkit.map.CameraUpdateReason
+import com.yandex.mapkit.map.IconStyle
 import com.yandex.mapkit.map.Map
+import com.yandex.mapkit.map.MapObjectCollection
 import com.yandex.mapkit.map.MapType.VECTOR_MAP
-import com.yandex.mapkit.places.PlacesFactory
+import com.yandex.mapkit.map.PlacemarkMapObject
 import com.yandex.mapkit.transport.TransportFactory
+import com.yandex.mapkit.transport.masstransit.FilterVehicleTypes
+import com.yandex.mapkit.transport.masstransit.FitnessOptions
 import com.yandex.mapkit.transport.masstransit.PedestrianRouter
 import com.yandex.mapkit.transport.masstransit.Route
+import com.yandex.mapkit.transport.masstransit.RouteOptions
 import com.yandex.mapkit.transport.masstransit.Session.RouteListener
 import com.yandex.mapkit.transport.masstransit.TimeOptions
+import com.yandex.mapkit.transport.masstransit.TransitOptions
 import com.yandex.mapkit.user_location.UserLocationLayer
 import com.yandex.mapkit.user_location.UserLocationObjectListener
 import com.yandex.mapkit.user_location.UserLocationView
@@ -56,21 +75,17 @@ import com.yandex.runtime.image.ImageProvider.fromBitmap
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import tk.ifroz.loctrackcar.R
-import tk.ifroz.loctrackcar.data.api.AddressApiBuilder.addressApiService
-import tk.ifroz.loctrackcar.data.api.AddressApiHelperImpl
 import tk.ifroz.loctrackcar.data.db.entity.Target
 import tk.ifroz.loctrackcar.databinding.MapFragmentBinding
-import tk.ifroz.loctrackcar.ui.intent.MainIntent
-import tk.ifroz.loctrackcar.ui.viewmodel.AddressViewModel
 import tk.ifroz.loctrackcar.ui.viewmodel.CarViewModel
+import tk.ifroz.loctrackcar.ui.viewmodel.GeocodeViewModel
 import tk.ifroz.loctrackcar.ui.viewmodel.ReminderViewModel
 import tk.ifroz.loctrackcar.ui.viewmodel.SearchPlaceViewModel
-import tk.ifroz.loctrackcar.ui.viewstate.MainState
-import tk.ifroz.loctrackcar.util.ViewModelFactory
 import tk.ifroz.loctrackcar.util.custom.ImageProviderCustom
 import tk.ifroz.loctrackcar.util.extension.action
 import tk.ifroz.loctrackcar.util.extension.bottomSheetStateCallback
 import tk.ifroz.loctrackcar.util.extension.snackBarTop
+
 
 @ExperimentalCoroutinesApi
 class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, RouteListener {
@@ -104,18 +119,14 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
     private val carViewModel: CarViewModel by activityViewModels()
     private val reminderViewModel: ReminderViewModel by activityViewModels()
     private val searchPlaceViewModel: SearchPlaceViewModel by activityViewModels()
-    private val addressViewModel: AddressViewModel by activityViewModels {
-        ViewModelFactory(AddressApiHelperImpl(addressApiService))
-    }
+    private val geocodeViewModel: GeocodeViewModel by activityViewModels ()
 
     private lateinit var customBack: OnBackPressedCallback
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         MapKitFactory.setApiKey(mapKitApiKey)
         MapKitFactory.initialize(this.requireActivity())
-        PlacesFactory.initialize(this.requireActivity())
-        TransportFactory.initialize(this.requireActivity())
-        super.onCreate(savedInstanceState)
     }
 
     override fun onCreateView(
@@ -241,6 +252,19 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
     private fun userInterface(view: View) {
         @Suppress("DEPRECATION") view.apply {
             systemUiVisibility = SYSTEM_UI_FLAG_LAYOUT_STABLE or SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+        }
+        if (SDK_INT >= VANILLA_ICE_CREAM) {
+            ViewCompat.setOnApplyWindowInsetsListener(view) { view, windowInsets ->
+                val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemGestures())
+                // Apply the insets as padding to the view. Here, set all the dimensions
+                // as appropriate to your layout. You can also update the view's margin if
+                // more appropriate.
+                view.updatePadding(0, insets.top, 0, insets.bottom)
+
+                // Return CONSUMED if you don't want the window insets to keep passing down
+                // to descendant views.
+                WindowInsetsCompat.CONSUMED
+            }
         }
 
         when (resources.configuration.uiMode and UI_MODE_NIGHT_MASK) {
@@ -439,8 +463,11 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
             add(RequestPoint(routeStart, WAYPOINT, null, null))
             add(RequestPoint(routeEnd, WAYPOINT, null, null))
         }
+        val avoidSteep = false
+        val avoidStairs = false
+        val routeOptions = RouteOptions(FitnessOptions(avoidSteep, avoidStairs))
         carPedestrianRouter = TransportFactory.getInstance().createPedestrianRouter()
-        carPedestrianRouter.requestRoutes(points, TimeOptions(), this)
+        carPedestrianRouter.requestRoutes(points, TimeOptions(), routeOptions, this)
 
         val pedestrianComplete = getString(R.string.pedestrian_complete)
         binding.coordinatorLayout.snackBarTop(pedestrianComplete, LENGTH_SHORT) {}
@@ -544,8 +571,7 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
             carViewModel.deleteTarget()
             carViewModel.deleteReminder()
             reminderViewModel.deleteScheduleNotification()
-            addressViewModel.deleteGeocode()
-            addressViewModel.deleteAddressName()
+            geocodeViewModel.deleteGeocode()
 
             isCar = false
             isReminder = false
@@ -589,30 +615,9 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
     }
 
     private fun dataCar(latitude: Double, longitude: Double) {
-        lifecycleScope.launch {
-            val geocode = "$longitude,$latitude"
-            addressViewModel.insertGeocode(geocode)
-            addressViewModel.addressIntent.send(MainIntent.FetchAddress)
-        }
-        lifecycleScope.launch {
-            addressViewModel.state.collect {
-                when (it) {
-                    is MainState.Loading -> {
-                        binding.addressTv.visibility = GONE
-                        binding.progressBar.visibility = VISIBLE
-                    }
-                    is MainState.Success -> {
-                        binding.progressBar.visibility = GONE
-                        renderAddress(it.data.toString())
-                    }
-                    is MainState.Error -> {
-                        binding.progressBar.visibility = GONE
-                        renderAddress(it.error!!)
-                    }
-                    else -> throw AssertionError()
-                }
-            }
-        }
+        val geocode = "Широта: $latitude, Долгота: $longitude"
+        geocodeViewModel.insertGeocode(geocode)
+        binding.geocodeTv.text = geocode
 
         reminderViewModel.outputStatus.observe(viewLifecycleOwner, Observer {
             it?.let {
@@ -623,16 +628,6 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
                 isReminder = !workInfo.state.isFinished
             }
         })
-    }
-
-    private fun renderAddress(address: String) {
-        binding.addressTv.visibility = VISIBLE
-        address.let { addressName ->
-            addressName.let {
-                binding.addressTv.text = it
-                addressViewModel.insertAddressName(it)
-            }
-        }
     }
 
     override fun onDestroyView() {

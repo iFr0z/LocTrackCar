@@ -78,10 +78,6 @@
         <item name="cardElevation">2dp</item>
     </style>
 
-    <style name="ContentLoadingProgressBarTheme">
-        <item name="colorAccent">@color/colorAccent</item>
-    </style>
-
     <style name="AppCompatTextViewPrimaryTheme">
         <item name="android:textColor">@color/colorPrimaryDark</item>
         <item name="android:textSize">16sp</item>
