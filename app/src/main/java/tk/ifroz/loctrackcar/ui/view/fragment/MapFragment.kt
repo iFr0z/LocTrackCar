@@ -11,16 +11,12 @@ import android.content.res.Configuration.UI_MODE_NIGHT_MASK
 import android.content.res.Configuration.UI_MODE_NIGHT_NO
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import android.graphics.PointF
-import android.os.Build.VERSION.SDK_INT
-import android.os.Build.VERSION_CODES.VANILLA_ICE_CREAM
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
-import android.widget.FrameLayout.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-import android.widget.FrameLayout.SYSTEM_UI_FLAG_LAYOUT_STABLE
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.addCallback
 import androidx.activity.result.ActivityResultLauncher
@@ -39,7 +35,7 @@ import androidx.navigation.fragment.findNavController
 import com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_EXPANDED
 import com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_HIDDEN
 import com.google.android.material.bottomsheet.BottomSheetBehavior.from
-import com.google.android.material.snackbar.Snackbar.LENGTH_SHORT
+import com.google.android.material.snackbar.Snackbar.LENGTH_LONG
 import com.yandex.mapkit.Animation
 import com.yandex.mapkit.Animation.Type.SMOOTH
 import com.yandex.mapkit.MapKitFactory
@@ -58,15 +54,15 @@ import com.yandex.mapkit.map.Map
 import com.yandex.mapkit.map.MapObjectCollection
 import com.yandex.mapkit.map.MapType.VECTOR_MAP
 import com.yandex.mapkit.map.PlacemarkMapObject
+import com.yandex.mapkit.places.PlacesFactory
+import com.yandex.mapkit.places.panorama.PanoramaService
 import com.yandex.mapkit.transport.TransportFactory
-import com.yandex.mapkit.transport.masstransit.FilterVehicleTypes
 import com.yandex.mapkit.transport.masstransit.FitnessOptions
 import com.yandex.mapkit.transport.masstransit.PedestrianRouter
 import com.yandex.mapkit.transport.masstransit.Route
 import com.yandex.mapkit.transport.masstransit.RouteOptions
 import com.yandex.mapkit.transport.masstransit.Session.RouteListener
 import com.yandex.mapkit.transport.masstransit.TimeOptions
-import com.yandex.mapkit.transport.masstransit.TransitOptions
 import com.yandex.mapkit.user_location.UserLocationLayer
 import com.yandex.mapkit.user_location.UserLocationObjectListener
 import com.yandex.mapkit.user_location.UserLocationView
@@ -86,9 +82,9 @@ import tk.ifroz.loctrackcar.util.extension.action
 import tk.ifroz.loctrackcar.util.extension.bottomSheetStateCallback
 import tk.ifroz.loctrackcar.util.extension.snackBarTop
 
-
 @ExperimentalCoroutinesApi
-class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, RouteListener {
+class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, RouteListener,
+    PanoramaService.SearchListener {
 
     private var _binding: MapFragmentBinding? = null
     private val binding get() = _binding!!
@@ -177,7 +173,7 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
         isPermission = true
 
         val locationDetected = getString(R.string.location_detected)
-        binding.coordinatorLayout.snackBarTop(locationDetected, LENGTH_SHORT) {}
+        binding.coordinatorLayout.snackBarTop(locationDetected, LENGTH_LONG) {}
     }
 
 
@@ -250,21 +246,13 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
     override fun onObjectUpdated(userLocationView: UserLocationView, event: ObjectEvent) {}
 
     private fun userInterface(view: View) {
-        @Suppress("DEPRECATION") view.apply {
-            systemUiVisibility = SYSTEM_UI_FLAG_LAYOUT_STABLE or SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-        }
-        if (SDK_INT >= VANILLA_ICE_CREAM) {
-            ViewCompat.setOnApplyWindowInsetsListener(view) { view, windowInsets ->
-                val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemGestures())
-                // Apply the insets as padding to the view. Here, set all the dimensions
-                // as appropriate to your layout. You can also update the view's margin if
-                // more appropriate.
-                view.updatePadding(0, insets.top, 0, insets.bottom)
-
-                // Return CONSUMED if you don't want the window insets to keep passing down
-                // to descendant views.
-                WindowInsetsCompat.CONSUMED
-            }
+        ViewCompat.setOnApplyWindowInsetsListener(view) { _, windowInsets ->
+            val insets = windowInsets.getInsets(
+                WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout()
+            )
+            binding.bottomSheet.translationY = (-90).toFloat()
+            view.updatePadding(0, insets.top, 0, insets.bottom)
+            WindowInsetsCompat.CONSUMED
         }
 
         when (resources.configuration.uiMode and UI_MODE_NIGHT_MASK) {
@@ -288,7 +276,7 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
                     insertCar()
 
                     val markerCreated = getString(R.string.marker_created)
-                    binding.coordinatorLayout.snackBarTop(markerCreated, LENGTH_SHORT) {}
+                    binding.coordinatorLayout.snackBarTop(markerCreated, LENGTH_LONG) {}
                 }
 
                 from(binding.bottomSheet).state = STATE_EXPANDED
@@ -315,7 +303,7 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
         binding.searchPlaceFab.setOnClickListener {
             if (isMarker) {
                 val markerIsAlready = getString(R.string.marker_searched_is_already)
-                binding.coordinatorLayout.snackBarTop(markerIsAlready, LENGTH_SHORT) {
+                binding.coordinatorLayout.snackBarTop(markerIsAlready, LENGTH_LONG) {
                     val notificationChange = getString(R.string.change)
                     action(notificationChange) {
                         searchPlaceDestination()
@@ -345,7 +333,7 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
                 binding.searchPlaceFab.text = searchPlaceTitleFormat
 
                 val markerSearched = getString(R.string.marker_searched)
-                binding.coordinatorLayout.snackBarTop(markerSearched, LENGTH_SHORT) {}
+                binding.coordinatorLayout.snackBarTop(markerSearched, LENGTH_LONG) {}
             } else {
                 binding.searchPlaceFab.text = searchPlaceTitle
             }
@@ -410,7 +398,7 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
                 lifecycleScope.launch {
                     carViewModel.reminders.collect {
                         it?.let {
-                            binding.coordinatorLayout.snackBarTop(it.reminder, LENGTH_SHORT) {
+                            binding.coordinatorLayout.snackBarTop(it.reminder, LENGTH_LONG) {
                                 val notificationChange = getString(R.string.change)
                                 action(notificationChange) {
                                     findNavController().navigate(R.id.reminder_dest, null)
@@ -446,7 +434,7 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
             cameraPositionPedestrian()
 
             val pedestrianIsAlready = getString(R.string.pedestrian_is_already)
-            binding.coordinatorLayout.snackBarTop(pedestrianIsAlready, LENGTH_SHORT) {
+            binding.coordinatorLayout.snackBarTop(pedestrianIsAlready, LENGTH_LONG) {
                 val pedestrianChange = getString(R.string.change)
                 action(pedestrianChange) {
                     deletePedestrian()
@@ -470,7 +458,7 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
         carPedestrianRouter.requestRoutes(points, TimeOptions(), routeOptions, this)
 
         val pedestrianComplete = getString(R.string.pedestrian_complete)
-        binding.coordinatorLayout.snackBarTop(pedestrianComplete, LENGTH_SHORT) {}
+        binding.coordinatorLayout.snackBarTop(pedestrianComplete, LENGTH_LONG) {}
     }
 
     private fun cameraPositionPedestrian() {
@@ -524,7 +512,7 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
     private fun deleteReminder() {
         if (isReminder) {
             val notificationDeleted = getString(R.string.notification_deleted)
-            binding.coordinatorLayout.snackBarTop(notificationDeleted, LENGTH_SHORT) {}
+            binding.coordinatorLayout.snackBarTop(notificationDeleted, LENGTH_LONG) {}
 
             reminderViewModel.deleteScheduleNotification()
             carViewModel.deleteReminder()
@@ -532,7 +520,7 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
             isReminder = false
         } else {
             val isNotAlready = getString(R.string.is_not_already)
-            binding.coordinatorLayout.snackBarTop(isNotAlready, LENGTH_SHORT) {
+            binding.coordinatorLayout.snackBarTop(isNotAlready, LENGTH_LONG) {
                 val notificationInsert = getString(R.string.insert)
                 action(notificationInsert) {
                     findNavController().navigate(R.id.reminder_dest, null)
@@ -544,7 +532,7 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
     private fun deletePedestrian() {
         if (isPedestrian) {
             val pedestrianDeleted = getString(R.string.pedestrian_deleted)
-            binding.coordinatorLayout.snackBarTop(pedestrianDeleted, LENGTH_SHORT) {}
+            binding.coordinatorLayout.snackBarTop(pedestrianDeleted, LENGTH_LONG) {}
 
             carPedestrianObject.clear()
 
@@ -553,7 +541,7 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
             isPedestrian = false
         } else {
             val isNotAlready = getString(R.string.is_not_already)
-            binding.coordinatorLayout.snackBarTop(isNotAlready, LENGTH_SHORT) {
+            binding.coordinatorLayout.snackBarTop(isNotAlready, LENGTH_LONG) {
                 val pedestrianInsert = getString(R.string.insert)
                 action(pedestrianInsert) {
                     setPedestrian()
@@ -579,7 +567,7 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
             from(binding.bottomSheet).state = STATE_HIDDEN
 
             val markerDeleted = getString(R.string.marker_deleted)
-            binding.coordinatorLayout.snackBarTop(markerDeleted, LENGTH_SHORT) {}
+            binding.coordinatorLayout.snackBarTop(markerDeleted, LENGTH_LONG) {}
         }
     }
 
@@ -615,6 +603,8 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
     }
 
     private fun dataCar(latitude: Double, longitude: Double) {
+        showPanorama(routeEnd)
+
         val geocode = "Широта: $latitude, Долгота: $longitude"
         geocodeViewModel.insertGeocode(geocode)
         binding.geocodeTv.text = geocode
@@ -630,6 +620,19 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
         })
     }
 
+    private fun showPanorama(routeEnd: Point) {
+        val panoramaService = PlacesFactory.getInstance().createPanoramaService()
+        panoramaService.findNearest(Point(routeEnd.latitude, routeEnd.longitude), this)
+    }
+
+    override fun onPanoramaSearchResult(panoramaId: String) {
+        binding.panoramaView.player.openPanorama(panoramaId)
+        binding.panoramaView.player.logo.setAlignment(Alignment(LEFT, BOTTOM))
+        binding.panoramaView.setNoninteractive(true)
+    }
+
+    override fun onPanoramaSearchError(error: Error) {}
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
@@ -637,6 +640,7 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
 
     override fun onStop() {
         binding.mapView.onStop()
+        binding.panoramaView.onStop()
         MapKitFactory.getInstance().onStop()
         super.onStop()
     }
@@ -644,6 +648,7 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
     override fun onStart() {
         super.onStart()
         binding.mapView.onStart()
+        binding.panoramaView.onStart()
         MapKitFactory.getInstance().onStart()
     }
 

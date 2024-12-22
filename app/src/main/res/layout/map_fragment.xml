@@ -58,6 +58,12 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
+                <com.yandex.mapkit.places.panorama.PanoramaView
+                    android:id="@+id/panorama_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="120dp"
+                    app:movable="true" />
+
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/geocode_tv"
                     style="@style/AppCompatTextViewPrimaryTheme"

@@ -15,19 +15,19 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.work.Data
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import com.google.android.material.snackbar.Snackbar.LENGTH_SHORT
+import com.google.android.material.snackbar.Snackbar.LENGTH_LONG
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import tk.ifroz.loctrackcar.R
 import tk.ifroz.loctrackcar.data.db.entity.Reminder
 import tk.ifroz.loctrackcar.data.work.ReminderWork.Companion.NOTIFICATION_ADDRESS
 import tk.ifroz.loctrackcar.data.work.ReminderWork.Companion.NOTIFICATION_ID
 import tk.ifroz.loctrackcar.databinding.ReminderFragmentBinding
-import tk.ifroz.loctrackcar.ui.viewmodel.GeocodeViewModel
 import tk.ifroz.loctrackcar.ui.viewmodel.CarViewModel
+import tk.ifroz.loctrackcar.ui.viewmodel.GeocodeViewModel
 import tk.ifroz.loctrackcar.ui.viewmodel.ReminderViewModel
 import tk.ifroz.loctrackcar.util.extension.snackBarBottom
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Calendar
 import java.util.Locale.getDefault
 
 @ExperimentalCoroutinesApi
@@ -119,14 +119,14 @@ class ReminderFragment : BottomSheetDialogFragment() {
 
                                 val notificationCreated = getString(R.string.notification_created)
                                 binding.coordinatorLayout.snackBarBottom(
-                                    notificationCreated, LENGTH_SHORT
+                                    notificationCreated, LENGTH_LONG
                                 ) {}
                             }
                         }
                     })
                 } else {
                     val notificationError = getString(R.string.notification_error)
-                    binding.coordinatorLayout.snackBarBottom(notificationError, LENGTH_SHORT) {}
+                    binding.coordinatorLayout.snackBarBottom(notificationError, LENGTH_LONG) {}
                 }
             } else {
                 if (SDK_INT >= TIRAMISU) {
