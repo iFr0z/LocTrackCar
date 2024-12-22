@@ -1,6 +1,6 @@
 # LocTrackCar
 
-[![API](https://img.shields.io/badge/API-21%2B-brightgreen.svg?style=flat)](https://android-arsenal.com/api?level=26)
+[![API](https://img.shields.io/badge/API-26%2B-brightgreen.svg?style=flat)](https://android-arsenal.com/api?level=26)
 
 Android приложение доступно на <a href="https://apps.rustore.ru/app/tk.ifroz.LocTrackCar">RuStore</a> и на <a href="https://4pda.to/forum/index.php?showtopic=713501&st=100">4pda</a>
 
@@ -24,7 +24,7 @@ Android приложение доступно на <a href="https://apps.rustore
 
 • Приложение <b>LocTrackCar</b> не использует надоедливую рекламу или платный функционал.
 
-<b>Версия: 9.4.0</b>
+<b>Версия: 9.5.0</b>
 
 ---
 
@@ -44,6 +44,7 @@ Android приложение доступно на <a href="https://apps.rustore
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3'
 
     implementation 'com.google.android.material:material:1.12.0'
+    implementation 'androidx.activity:activity-ktx:1.9.3'
     implementation 'androidx.appcompat:appcompat:1.7.0'
     implementation 'androidx.room:room-runtime:2.6.1'
     implementation 'androidx.room:room-ktx:2.6.1'
@@ -53,8 +54,8 @@ Android приложение доступно на <a href="https://apps.rustore
     implementation 'androidx.work:work-runtime:2.10.0'
     implementation 'androidx.work:work-runtime-ktx:2.10.0'
     implementation 'androidx.fragment:fragment-ktx:1.8.5'
-    implementation 'androidx.navigation:navigation-fragment-ktx:2.8.4'
-    implementation 'androidx.navigation:navigation-ui-ktx:2.8.4'
+    implementation 'androidx.navigation:navigation-fragment-ktx:2.8.5'
+    implementation 'androidx.navigation:navigation-ui-ktx:2.8.5'
     implementation 'androidx.constraintlayout:constraintlayout:2.2.0'
 
     implementation 'com.google.android.gms:play-services-location:21.3.0'
