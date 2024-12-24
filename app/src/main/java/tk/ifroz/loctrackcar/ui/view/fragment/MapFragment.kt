@@ -17,6 +17,7 @@ import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.addCallback
 import androidx.activity.result.ActivityResultLauncher
@@ -42,6 +43,8 @@ import com.yandex.mapkit.MapKitFactory
 import com.yandex.mapkit.RequestPoint
 import com.yandex.mapkit.RequestPointType.WAYPOINT
 import com.yandex.mapkit.geometry.Point
+import com.yandex.mapkit.layers.GeoObjectTapEvent
+import com.yandex.mapkit.layers.GeoObjectTapListener
 import com.yandex.mapkit.layers.ObjectEvent
 import com.yandex.mapkit.logo.Alignment
 import com.yandex.mapkit.logo.HorizontalAlignment.LEFT
@@ -49,13 +52,23 @@ import com.yandex.mapkit.logo.VerticalAlignment.BOTTOM
 import com.yandex.mapkit.map.CameraListener
 import com.yandex.mapkit.map.CameraPosition
 import com.yandex.mapkit.map.CameraUpdateReason
+import com.yandex.mapkit.map.GeoObjectSelectionMetadata
 import com.yandex.mapkit.map.IconStyle
+import com.yandex.mapkit.map.InputListener
 import com.yandex.mapkit.map.Map
 import com.yandex.mapkit.map.MapObjectCollection
 import com.yandex.mapkit.map.MapType.VECTOR_MAP
 import com.yandex.mapkit.map.PlacemarkMapObject
 import com.yandex.mapkit.places.PlacesFactory
 import com.yandex.mapkit.places.panorama.PanoramaService
+import com.yandex.mapkit.search.Address
+import com.yandex.mapkit.search.Response
+import com.yandex.mapkit.search.SearchFactory
+import com.yandex.mapkit.search.SearchManager
+import com.yandex.mapkit.search.SearchManagerType
+import com.yandex.mapkit.search.SearchOptions
+import com.yandex.mapkit.search.Session
+import com.yandex.mapkit.search.ToponymObjectMetadata
 import com.yandex.mapkit.transport.TransportFactory
 import com.yandex.mapkit.transport.masstransit.FitnessOptions
 import com.yandex.mapkit.transport.masstransit.PedestrianRouter
@@ -119,6 +132,57 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
 
     private lateinit var customBack: OnBackPressedCallback
 
+    private val searchListener = object : Session.SearchListener {
+        override fun onSearchResponse(response: Response) {
+            val street = response.collection.children.firstOrNull()?.obj
+                ?.metadataContainer
+                ?.getItem(ToponymObjectMetadata::class.java)
+                ?.address
+                ?.components
+                ?.firstOrNull { it.kinds.contains(Address.Component.Kind.STREET)}
+                ?.name ?: "Информация об улице не найдена"
+
+            val house = response.collection.children.firstOrNull()?.obj
+                ?.metadataContainer
+                ?.getItem(ToponymObjectMetadata::class.java)
+                ?.address
+                ?.components
+                ?.firstOrNull { it.kinds.contains(Address.Component.Kind.HOUSE)}
+                ?.name ?: "Информация об доме не найдена"
+
+            Toast.makeText(context, "$street, $house", Toast.LENGTH_LONG).show()
+        }
+
+        override fun onSearchError(p0: Error) {}
+    }
+    lateinit var searchManager: SearchManager
+    lateinit var searchSession: Session
+    private val inputListener = object : InputListener {
+        override fun onMapTap(map: Map, point: Point) {
+            searchSession = searchManager.submit(point, 20, SearchOptions(), searchListener)
+        }
+        override fun onMapLongTap(map: Map, point: Point) {}
+    }
+    private val geoObjectTapListener = GeoObjectTapListener {
+        val point = it.geoObject.geometry.firstOrNull()
+            ?.point
+            ?: return@GeoObjectTapListener true
+        binding.mapView.mapWindow.map.cameraPosition.run {
+            val position = CameraPosition(point, zoom, azimuth, tilt)
+            binding.mapView.mapWindow.map.move(position)
+            if (!isFollowUser) {
+                noAnchor()
+            }
+        }
+
+        val selectionMetadata = it.geoObject.metadataContainer.getItem(
+            GeoObjectSelectionMetadata::class.java
+        )
+        binding.mapView.mapWindow.map.selectGeoObject(selectionMetadata)
+
+        false
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         MapKitFactory.setApiKey(mapKitApiKey)
@@ -163,6 +227,10 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
         userLocationLayer.isVisible = true
         userLocationLayer.isHeadingEnabled = false
         userLocationLayer.setObjectListener(this)
+
+        searchManager = SearchFactory.getInstance().createSearchManager(SearchManagerType.ONLINE)
+        binding.mapView.mapWindow.map.addInputListener(inputListener)
+        binding.mapView.mapWindow.map.addTapListener(geoObjectTapListener)
 
         binding.mapView.mapWindow.map.addCameraListener(this)
         binding.mapView.mapWindow.map.mapType = VECTOR_MAP
