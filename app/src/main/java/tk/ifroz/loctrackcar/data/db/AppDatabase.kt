@@ -32,7 +32,7 @@ abstract class AppDatabase : RoomDatabase() {
             synchronized(this) {
                 val instance = databaseBuilder(
                     context.applicationContext, AppDatabase::class.java, DATABASE_NAME
-                ).fallbackToDestructiveMigration().build()
+                ).fallbackToDestructiveMigration(false).build()
                 INSTANCE = instance
                 return instance
             }

@@ -17,6 +17,7 @@ import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
+import android.view.ViewGroup.MarginLayoutParams
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.addCallback
@@ -26,7 +27,9 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat.checkSelfPermission
 import androidx.core.app.ActivityCompat.getColor
 import androidx.core.view.ViewCompat
+import androidx.core.view.ViewGroupCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updateLayoutParams
 import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -68,6 +71,7 @@ import com.yandex.mapkit.search.SearchManager
 import com.yandex.mapkit.search.SearchManagerType
 import com.yandex.mapkit.search.SearchOptions
 import com.yandex.mapkit.search.Session
+import com.yandex.mapkit.search.Session.SearchListener
 import com.yandex.mapkit.search.ToponymObjectMetadata
 import com.yandex.mapkit.transport.TransportFactory
 import com.yandex.mapkit.transport.masstransit.FitnessOptions
@@ -94,10 +98,13 @@ import tk.ifroz.loctrackcar.util.custom.ImageProviderCustom
 import tk.ifroz.loctrackcar.util.extension.action
 import tk.ifroz.loctrackcar.util.extension.bottomSheetStateCallback
 import tk.ifroz.loctrackcar.util.extension.snackBarTop
+import androidx.core.graphics.toColorInt
+import androidx.core.view.insets.GradientProtection
+import androidx.core.view.insets.ProtectionLayout
 
 @ExperimentalCoroutinesApi
 class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, RouteListener,
-    PanoramaService.SearchListener {
+    PanoramaService.SearchListener, SearchListener, InputListener, GeoObjectTapListener {
 
     private var _binding: MapFragmentBinding? = null
     private val binding get() = _binding!!
@@ -132,60 +139,15 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
 
     private lateinit var customBack: OnBackPressedCallback
 
-    private val searchListener = object : Session.SearchListener {
-        override fun onSearchResponse(response: Response) {
-            val street = response.collection.children.firstOrNull()?.obj
-                ?.metadataContainer
-                ?.getItem(ToponymObjectMetadata::class.java)
-                ?.address
-                ?.components
-                ?.firstOrNull { it.kinds.contains(Address.Component.Kind.STREET)}
-                ?.name ?: "Информация об улице не найдена"
-
-            val house = response.collection.children.firstOrNull()?.obj
-                ?.metadataContainer
-                ?.getItem(ToponymObjectMetadata::class.java)
-                ?.address
-                ?.components
-                ?.firstOrNull { it.kinds.contains(Address.Component.Kind.HOUSE)}
-                ?.name ?: "Информация об доме не найдена"
-
-            Toast.makeText(context, "$street, $house", Toast.LENGTH_LONG).show()
-        }
-
-        override fun onSearchError(p0: Error) {}
-    }
-    lateinit var searchManager: SearchManager
-    lateinit var searchSession: Session
-    private val inputListener = object : InputListener {
-        override fun onMapTap(map: Map, point: Point) {
-            searchSession = searchManager.submit(point, 20, SearchOptions(), searchListener)
-        }
-        override fun onMapLongTap(map: Map, point: Point) {}
-    }
-    private val geoObjectTapListener = GeoObjectTapListener {
-        val point = it.geoObject.geometry.firstOrNull()
-            ?.point
-            ?: return@GeoObjectTapListener true
-        binding.mapView.mapWindow.map.cameraPosition.run {
-            val position = CameraPosition(point, zoom, azimuth, tilt)
-            binding.mapView.mapWindow.map.move(position)
-            if (!isFollowUser) {
-                noAnchor()
-            }
-        }
-
-        val selectionMetadata = it.geoObject.metadataContainer.getItem(
-            GeoObjectSelectionMetadata::class.java
-        )
-        binding.mapView.mapWindow.map.selectGeoObject(selectionMetadata)
-
-        false
-    }
+    private var cameraListener: CameraListener? = null
+    private var searchListener: SearchListener? = null
+    private lateinit var searchManager: SearchManager
+    private lateinit var searchSession: Session
+    private var inputListener: InputListener? = null
+    private var geoObjectTapListener: GeoObjectTapListener? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        MapKitFactory.setApiKey(mapKitApiKey)
         MapKitFactory.initialize(this.requireActivity())
     }
 
@@ -213,8 +175,7 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
 
     private fun checkPermission(view: View) {
         if (checkSelfPermission(view.context, ACCESS_FINE_LOCATION) == PERMISSION_GRANTED ||
-            checkSelfPermission(view.context, ACCESS_COARSE_LOCATION) == PERMISSION_GRANTED
-        ) {
+            checkSelfPermission(view.context, ACCESS_COARSE_LOCATION) == PERMISSION_GRANTED) {
             onMapReady()
         } else {
             checkLocationPermission.launch(arrayOf(ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION))
@@ -225,14 +186,20 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
         val mapKit = MapKitFactory.getInstance()
         userLocationLayer = mapKit.createUserLocationLayer(binding.mapView.mapWindow)
         userLocationLayer.isVisible = true
-        userLocationLayer.isHeadingEnabled = false
+        userLocationLayer.isHeadingModeActive = false
         userLocationLayer.setObjectListener(this)
 
         searchManager = SearchFactory.getInstance().createSearchManager(SearchManagerType.ONLINE)
-        binding.mapView.mapWindow.map.addInputListener(inputListener)
-        binding.mapView.mapWindow.map.addTapListener(geoObjectTapListener)
 
-        binding.mapView.mapWindow.map.addCameraListener(this)
+        inputListener = this
+        searchListener = this
+        binding.mapView.mapWindow.map.addInputListener(inputListener!!)
+        geoObjectTapListener = this
+        binding.mapView.mapWindow.map.addTapListener(geoObjectTapListener!!)
+        cameraListener = this
+        binding.mapView.mapWindow.map.addCameraListener(cameraListener!!)
+
+
         binding.mapView.mapWindow.map.mapType = VECTOR_MAP
         binding.mapView.mapWindow.map.logo.setAlignment(Alignment(LEFT, BOTTOM))
 
@@ -243,8 +210,6 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
         val locationDetected = getString(R.string.location_detected)
         binding.coordinatorLayout.snackBarTop(locationDetected, LENGTH_LONG) {}
     }
-
-
 
     private fun cameraPositionUser() {
         if (userLocationLayer.cameraPosition() != null) {
@@ -296,7 +261,7 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
         setAnchor()
 
         val bitmap = view?.let {
-            ImageProviderCustom(it.context, R.drawable.ic_dot_rose_24dp).image
+            ImageProviderCustom(it.context, R.drawable.ic_dot_blue_24dp).image
         }
         userLocationView.apply {
             pin.setIcon(fromBitmap(bitmap))
@@ -314,12 +279,28 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
     override fun onObjectUpdated(userLocationView: UserLocationView, event: ObjectEvent) {}
 
     private fun userInterface(view: View) {
-        ViewCompat.setOnApplyWindowInsetsListener(view) { _, windowInsets ->
-            val insets = windowInsets.getInsets(
+        binding.protectionLayout.setProtections(
+            listOf(
+                GradientProtection(WindowInsetsCompat.Side.TOP,"#60000000".toColorInt())
+            )
+        )
+        ViewGroupCompat.installCompatInsetsDispatch(binding.coordinatorLayout)
+        ViewCompat.setOnApplyWindowInsetsListener(binding.bottomSheet) { v, insets ->
+            val systemBarsInsets = insets.getInsets(
                 WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout()
             )
-            binding.bottomSheet.translationY = (-90).toFloat()
-            view.updatePadding(0, insets.top, 0, insets.bottom)
+            v.updatePadding(
+                bottom = systemBarsInsets.bottom
+            )
+            WindowInsetsCompat.CONSUMED
+        }
+        ViewCompat.setOnApplyWindowInsetsListener(binding.searchPlaceFab) { v, insets ->
+            val systemBarsInsets = insets.getInsets(
+                WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout()
+            )
+            v.updateLayoutParams<MarginLayoutParams> {
+                bottomMargin = systemBarsInsets.bottom
+            }
             WindowInsetsCompat.CONSUMED
         }
 
@@ -516,8 +497,8 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
     private fun drawPedestrian() {
         carPedestrianObject = binding.mapView.mapWindow.map.mapObjects.addCollection()
         val points = ArrayList<RequestPoint>().apply {
-            add(RequestPoint(routeStart, WAYPOINT, null, null))
-            add(RequestPoint(routeEnd, WAYPOINT, null, null))
+            add(RequestPoint(routeStart, WAYPOINT, null, null, null))
+            add(RequestPoint(routeEnd, WAYPOINT, null, null,null))
         }
         val avoidSteep = false
         val avoidStairs = false
@@ -543,6 +524,7 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
         if (routes.isNotEmpty()) {
             view?.context?.let {
                 carPedestrianObject.addPolyline(routes[0].geometry).apply {
+                    setStrokeColor("#2196F3".toColorInt())
                     outlineColor = getColor(it, R.color.colorWayOutline)
                     outlineWidth = 3f
                 }
@@ -701,9 +683,70 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
 
     override fun onPanoramaSearchError(error: Error) {}
 
+    override fun onSearchResponse(response: Response) {
+        val street = response.collection.children.firstOrNull()?.obj
+            ?.metadataContainer
+            ?.getItem(ToponymObjectMetadata::class.java)
+            ?.address
+            ?.components
+            ?.firstOrNull { it.kinds.contains(Address.Component.Kind.STREET)}
+            ?.name ?: "Информация об улице не найдена"
+
+        val house = response.collection.children.firstOrNull()?.obj
+            ?.metadataContainer
+            ?.getItem(ToponymObjectMetadata::class.java)
+            ?.address
+            ?.components
+            ?.firstOrNull { it.kinds.contains(Address.Component.Kind.HOUSE)}
+            ?.name ?: "Информация об доме не найдена"
+
+        Toast.makeText(context, "$street, $house", Toast.LENGTH_LONG).show()
+    }
+
+    override fun onSearchError(p0: Error) {}
+
+    override fun onMapTap(p0: Map, point: Point) {
+        lifecycleScope.launch {
+            searchSession = searchManager.submit(point, 20, SearchOptions(), searchListener!!)
+        }
+    }
+
+    override fun onMapLongTap(p0: Map, p1: Point) {}
+
+    override fun onObjectTap(goTapEvent: GeoObjectTapEvent): Boolean {
+        val point = goTapEvent.geoObject.geometry.firstOrNull()?.point ?: return true
+        binding.mapView.mapWindow.map.cameraPosition.run {
+            binding.mapView.mapWindow.map.move(CameraPosition(point, zoom, azimuth, tilt))
+            if (!isFollowUser) {
+                noAnchor()
+            }
+        }
+
+        val selectionMetadata = goTapEvent.geoObject.metadataContainer.getItem(
+            GeoObjectSelectionMetadata::class.java
+        )
+        binding.mapView.mapWindow.map.selectGeoObject(selectionMetadata)
+
+        return false
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
+        searchListener = null
+        binding.mapView.mapWindow.map.removeCameraListener(cameraListener!!)
+        cameraListener = null
+        binding.mapView.mapWindow.map.removeInputListener(inputListener!!)
+        inputListener = null
+        binding.mapView.mapWindow.map.removeTapListener(geoObjectTapListener!!)
+        geoObjectTapListener = null
         _binding = null
+    }
+
+    override fun onStart() {
+        super.onStart()
+        MapKitFactory.getInstance().onStart()
+        binding.mapView.onStart()
+        binding.panoramaView.onStart()
     }
 
     override fun onStop() {
@@ -711,16 +754,5 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
         binding.panoramaView.onStop()
         MapKitFactory.getInstance().onStop()
         super.onStop()
-    }
-
-    override fun onStart() {
-        super.onStart()
-        binding.mapView.onStart()
-        binding.panoramaView.onStart()
-        MapKitFactory.getInstance().onStart()
-    }
-
-    companion object {
-        const val mapKitApiKey = "bb20cb74-9351-4c60-a3c3-494214e391ac"
     }
 }

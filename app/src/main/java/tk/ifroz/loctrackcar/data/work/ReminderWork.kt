@@ -67,24 +67,22 @@ class ReminderWork(context: Context, params: WorkerParameters) : Worker(context,
 
         notification.priority = PRIORITY_MAX
 
-        if (SDK_INT >= O) {
-            notification.setChannelId(NOTIFICATION_CHANNEL)
+        notification.setChannelId(NOTIFICATION_CHANNEL)
 
-            val ringtoneManager = getDefaultUri(TYPE_NOTIFICATION)
-            val audioAttributes = AudioAttributes.Builder().setUsage(USAGE_NOTIFICATION_RINGTONE)
-                .setContentType(CONTENT_TYPE_SONIFICATION).build()
+        val ringtoneManager = getDefaultUri(TYPE_NOTIFICATION)
+        val audioAttributes = AudioAttributes.Builder().setUsage(USAGE_NOTIFICATION_RINGTONE)
+            .setContentType(CONTENT_TYPE_SONIFICATION).build()
 
-            val channel = NotificationChannel(
-                NOTIFICATION_CHANNEL, NOTIFICATION_NAME, IMPORTANCE_HIGH
-            ).apply {
-                enableLights(true)
-                lightColor = RED
-                enableVibration(true)
-                vibrationPattern = longArrayOf(100, 200, 300, 400, 500, 400, 300, 200, 400)
-                setSound(ringtoneManager, audioAttributes)
-            }
-            notificationManager.createNotificationChannel(channel)
+        val channel = NotificationChannel(
+            NOTIFICATION_CHANNEL, NOTIFICATION_NAME, IMPORTANCE_HIGH
+        ).apply {
+            enableLights(true)
+            lightColor = RED
+            enableVibration(true)
+            vibrationPattern = longArrayOf(100, 200, 300, 400, 500, 400, 300, 200, 400)
+            setSound(ringtoneManager, audioAttributes)
         }
+        notificationManager.createNotificationChannel(channel)
 
         notificationManager.notify(id, notification.build())
     }

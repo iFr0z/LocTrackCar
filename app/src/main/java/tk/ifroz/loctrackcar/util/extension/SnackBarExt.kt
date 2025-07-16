@@ -5,7 +5,6 @@ import android.view.View
 import androidx.coordinatorlayout.widget.CoordinatorLayout.LayoutParams
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.updatePadding
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.snackbar.Snackbar.LENGTH_LONG
 import com.google.android.material.snackbar.Snackbar.make
@@ -21,14 +20,13 @@ inline fun View.snackBarTop(string: String, length: Int = LENGTH_LONG, f: Snackb
     val snackBarView = snackBarTop.view
     val params: LayoutParams = snackBarView.layoutParams as LayoutParams
     params.gravity = Gravity.TOP
-//    ViewCompat.setOnApplyWindowInsetsListener(snackBarView) { _, windowInsets ->
-//        val insets = windowInsets.getInsets(
-//            WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout()
-//        )
-//        snackBarView.translationY = insets.top.toFloat()
-//        snackBarView.updatePadding(0, insets.top, 0, 0)
-//        WindowInsetsCompat.CONSUMED
-//    }
+    ViewCompat.setOnApplyWindowInsetsListener(snackBarView) { v, windowInsets ->
+        val systemBarsInsets = windowInsets.getInsets(
+            WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout()
+        )
+        v.translationY = systemBarsInsets.top.toFloat()
+        WindowInsetsCompat.CONSUMED
+    }
     snackBarView.layoutParams = params
     snackBarTop.f()
     snackBarTop.show()

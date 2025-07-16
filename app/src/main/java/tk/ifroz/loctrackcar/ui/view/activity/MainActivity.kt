@@ -1,5 +1,6 @@
 package tk.ifroz.loctrackcar.ui.view.activity
 
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -12,7 +13,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var appBarConfiguration: AppBarConfiguration
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        //enableEdgeToEdge()
+        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         setContentView(R.layout.navigation_activity)
 
@@ -25,5 +26,9 @@ class MainActivity : AppCompatActivity() {
 
         val navController = host.navController
         appBarConfiguration = AppBarConfiguration(navController.graph)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            window.isNavigationBarContrastEnforced = true
+        }
     }
 }

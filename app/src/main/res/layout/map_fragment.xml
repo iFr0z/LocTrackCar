@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.view.insets.ProtectionLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/coordinator_layout"
+    android:id="@+id/protection_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.google.android.material.circularreveal.CircularRevealFrameLayout
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:id="@+id/coordinator_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -14,152 +16,153 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/car_fab"
-            style="@style/FloatingActionButtonPrimaryTheme"
-            app:shapeAppearanceOverlay="@style/FloatingActionButtonSquare"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|end"
-            android:layout_marginEnd="16dp"
-            android:translationY="-134dp"
-            app:srcCompat="@drawable/ic_marker_with_outline_24dp" />
-
-        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-            android:id="@+id/search_place_fab"
-            style="@style/ExtendedFloatingActionButtonTheme"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|end"
-            android:text="@string/search_place_title"
-            app:icon="@drawable/ic_search_grey_24dp"
-            app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.ExtendedFloatingActionButtonOneCornerTheme.ExtendedFloatingActionButton.Rounded" />
-
-    </com.google.android.material.circularreveal.CircularRevealFrameLayout>
-
-    <androidx.core.widget.NestedScrollView
-        android:id="@+id/bottom_sheet"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/colorTransparent"
-        app:behavior_hideable="true"
-        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
-
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/card_view"
-            style="@style/MaterialCardViewPrimaryTheme"
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/bottom_sheet"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="8dp"
-            app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.MaterialCardViewTheme.MaterialCardView.Rounded">
+            android:background="@color/colorTransparent"
+            android:clipToPadding="false"
+            app:behavior_hideable="true"
+            app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
 
-            <androidx.appcompat.widget.LinearLayoutCompat
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/card_view"
+                style="@style/MaterialCardViewPrimaryTheme"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:layout_margin="8dp"
+                app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.MaterialCardViewTheme.MaterialCardView.Rounded">
 
-                <com.yandex.mapkit.places.panorama.PanoramaView
-                    android:id="@+id/panorama_view"
-                    android:layout_width="match_parent"
-                    android:layout_height="120dp"
-                    app:movable="true" />
-
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/geocode_tv"
-                    style="@style/AppCompatTextViewPrimaryTheme"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginTop="16dp"
-                    android:layout_marginEnd="16dp" />
+                    android:orientation="vertical">
 
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/distance_tv"
-                    style="@style/AppCompatTextViewSecondaryTheme"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginEnd="16dp"
-                    android:visibility="gone" />
+                    <com.yandex.mapkit.places.panorama.PanoramaView
+                        android:id="@+id/panorama_view"
+                        android:layout_width="match_parent"
+                        android:layout_height="120dp"
+                        app:movable="true" />
 
-                <HorizontalScrollView
-                    style="@style/NestedScrollViewTheme"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                    <androidx.appcompat.widget.LinearLayoutCompat
-                        android:layout_width="wrap_content"
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/geocode_tv"
+                        style="@style/AppCompatTextViewPrimaryTheme"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal">
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="16dp"
+                        android:layout_marginEnd="16dp" />
 
-                        <com.google.android.material.chip.ChipGroup
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/distance_tv"
+                        style="@style/AppCompatTextViewSecondaryTheme"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginEnd="16dp"
+                        android:visibility="gone" />
+
+                    <HorizontalScrollView
+                        style="@style/NestedScrollViewTheme"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="16dp"
-                            android:layout_marginEnd="16dp"
-                            android:layout_marginBottom="16dp">
+                            android:orientation="horizontal">
 
-                            <com.google.android.material.chip.Chip
-                                android:id="@+id/pedestrian_chip"
-                                style="@style/ChipPrimaryTheme"
+                            <com.google.android.material.chip.ChipGroup
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="@string/pedestrian_title"
-                                app:chipIcon="@drawable/ic_directions_walk_black_24dp" />
+                                android:layout_marginStart="16dp"
+                                android:layout_marginEnd="16dp"
+                                android:layout_marginBottom="16dp">
 
-                            <com.google.android.material.chip.Chip
-                                android:id="@+id/reminder_chip"
-                                style="@style/ChipSecondaryTheme"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/notification"
-                                app:chipIcon="@drawable/ic_schedule_black_24dp" />
+                                <com.google.android.material.chip.Chip
+                                    android:id="@+id/pedestrian_chip"
+                                    style="@style/ChipPrimaryTheme"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/pedestrian_title"
+                                    app:chipIcon="@drawable/ic_directions_walk_black_24dp" />
 
-                            <com.google.android.material.chip.Chip
-                                android:id="@+id/share_chip"
-                                style="@style/ChipSecondaryTheme"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/share_title"
-                                app:chipIcon="@drawable/ic_share_black_24dp" />
+                                <com.google.android.material.chip.Chip
+                                    android:id="@+id/reminder_chip"
+                                    style="@style/ChipSecondaryTheme"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/notification"
+                                    app:chipIcon="@drawable/ic_schedule_black_24dp" />
 
-                            <com.google.android.material.chip.Chip
-                                android:id="@+id/delete_chip"
-                                style="@style/ChipSecondaryTheme"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/dialog_menu_title"
-                                app:chipIcon="@drawable/ic_delete_forever_black_24dp" />
+                                <com.google.android.material.chip.Chip
+                                    android:id="@+id/share_chip"
+                                    style="@style/ChipSecondaryTheme"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/share_title"
+                                    app:chipIcon="@drawable/ic_share_black_24dp" />
 
-                        </com.google.android.material.chip.ChipGroup>
+                                <com.google.android.material.chip.Chip
+                                    android:id="@+id/delete_chip"
+                                    style="@style/ChipSecondaryTheme"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/dialog_menu_title"
+                                    app:chipIcon="@drawable/ic_delete_forever_black_24dp" />
 
-                    </androidx.appcompat.widget.LinearLayoutCompat>
+                            </com.google.android.material.chip.ChipGroup>
 
-                </HorizontalScrollView>
+                        </LinearLayout>
 
-            </androidx.appcompat.widget.LinearLayoutCompat>
+                    </HorizontalScrollView>
 
-        </com.google.android.material.card.MaterialCardView>
+                </LinearLayout>
 
-    </androidx.core.widget.NestedScrollView>
+            </com.google.android.material.card.MaterialCardView>
 
-    <androidx.appcompat.widget.LinearLayoutCompat
-        android:id="@+id/location_layout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:translationY="-48dp"
-        app:layout_anchor="@id/bottom_sheet"
-        app:layout_anchorGravity="top|end">
+        </androidx.core.widget.NestedScrollView>
 
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/location_fab"
-            style="@style/FloatingActionButtonSecondaryTheme"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            app:srcCompat="@drawable/ic_gps_off_black_24dp" />
+            android:orientation="vertical"
+            android:layout_gravity="end"
+            app:layout_anchor="@id/bottom_sheet"
+            app:layout_anchorGravity="top|end">
 
-    </androidx.appcompat.widget.LinearLayoutCompat>
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/car_fab"
+                style="@style/FloatingActionButtonPrimaryTheme"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                app:srcCompat="@drawable/ic_marker_with_outline_24dp"
+                app:shapeAppearanceOverlay="@style/FloatingActionButtonSquare" />
 
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/location_fab"
+                style="@style/FloatingActionButtonSecondaryTheme"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:layout_margin="16dp"
+                app:srcCompat="@drawable/ic_gps_off_black_24dp" />
+
+            <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+                android:id="@+id/search_place_fab"
+                style="@style/ExtendedFloatingActionButtonTheme"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:text="@string/search_place_title"
+                app:icon="@drawable/ic_search_grey_24dp"
+                app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.ExtendedFloatingActionButtonOneCornerTheme.ExtendedFloatingActionButton.Rounded" />
+
+        </LinearLayout>
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+</androidx.core.view.insets.ProtectionLayout>
