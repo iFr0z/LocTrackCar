@@ -15,7 +15,7 @@ android {
         minSdk 26
         targetSdk 36
         versionCode 83
-        versionName '9.5.0'
+        versionName '10.0.0'
     }
 
     buildTypes {
