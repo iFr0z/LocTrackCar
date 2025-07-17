@@ -101,6 +101,7 @@ import tk.ifroz.loctrackcar.util.extension.snackBarTop
 import androidx.core.graphics.toColorInt
 import androidx.core.view.insets.GradientProtection
 import androidx.core.view.insets.ProtectionLayout
+import com.yandex.mapkit.map.LineStyle
 
 @ExperimentalCoroutinesApi
 class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, RouteListener,
@@ -145,6 +146,7 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
     private lateinit var searchSession: Session
     private var inputListener: InputListener? = null
     private var geoObjectTapListener: GeoObjectTapListener? = null
+    private var routeListener: RouteListener? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -191,6 +193,7 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
 
         searchManager = SearchFactory.getInstance().createSearchManager(SearchManagerType.ONLINE)
 
+        routeListener = this
         inputListener = this
         searchListener = this
         binding.mapView.mapWindow.map.addInputListener(inputListener!!)
@@ -495,19 +498,51 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
     }
 
     private fun drawPedestrian() {
-        carPedestrianObject = binding.mapView.mapWindow.map.mapObjects.addCollection()
-        val points = ArrayList<RequestPoint>().apply {
-            add(RequestPoint(routeStart, WAYPOINT, null, null, null))
-            add(RequestPoint(routeEnd, WAYPOINT, null, null,null))
-        }
-        val avoidSteep = false
-        val avoidStairs = false
-        val routeOptions = RouteOptions(FitnessOptions(avoidSteep, avoidStairs))
-        carPedestrianRouter = TransportFactory.getInstance().createPedestrianRouter()
-        carPedestrianRouter.requestRoutes(points, TimeOptions(), routeOptions, this)
+        // Инициализация коллекции объектов карты
+        val mapObjects = binding.mapView.mapWindow.map.mapObjects
+        carPedestrianObject = mapObjects.addCollection()
 
-        val pedestrianComplete = getString(R.string.pedestrian_complete)
-        binding.coordinatorLayout.snackBarTop(pedestrianComplete, LENGTH_LONG) {}
+        // Создание точек маршрута
+        val routePoints = createRoutePoints(routeStart, routeEnd)
+
+        // Настройка опций маршрута
+        val routeOptions = configureRouteOptions()
+
+        // Создание и настройка маршрутизатора
+        carPedestrianRouter = createPedestrianRouter()
+
+        // Запрос маршрута
+        requestPedestrianRoute(routePoints, routeOptions)
+
+        // Отображение уведомления
+        showPedestrianCompleteMessage()
+    }
+
+    private fun createRoutePoints(start: Point, end: Point): List<RequestPoint> {
+        return listOf(
+            RequestPoint(start, WAYPOINT, null, null, null),
+            RequestPoint(end, WAYPOINT, null, null, null)
+        )
+    }
+
+    private fun configureRouteOptions(): RouteOptions {
+        val fitnessOptions = FitnessOptions(false, false)
+        return RouteOptions(fitnessOptions)
+    }
+
+    private fun createPedestrianRouter(): PedestrianRouter {
+        return TransportFactory.getInstance().createPedestrianRouter()
+    }
+
+    private fun requestPedestrianRoute(points: List<RequestPoint>, routeOptions: RouteOptions) {
+        lifecycleScope.launch {
+            carPedestrianRouter.requestRoutes(points, TimeOptions(), routeOptions, routeListener!!)
+        }
+    }
+
+    private fun showPedestrianCompleteMessage() {
+        val message = getString(R.string.pedestrian_complete)
+        binding.coordinatorLayout.snackBarTop(message, LENGTH_LONG) {}
     }
 
     private fun cameraPositionPedestrian() {
@@ -522,11 +557,12 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
 
     override fun onMasstransitRoutes(routes: List<Route>) {
         if (routes.isNotEmpty()) {
-            view?.context?.let {
-                carPedestrianObject.addPolyline(routes[0].geometry).apply {
-                    setStrokeColor("#2196F3".toColorInt())
-                    outlineColor = getColor(it, R.color.colorWayOutline)
+            carPedestrianObject.addPolyline(routes[0].geometry).apply {
+                setStrokeColor("#2196F3".toColorInt())
+                style = LineStyle().apply {
+                    strokeWidth = 5f
                     outlineWidth = 3f
+                    outlineColor = "#1976D2".toColorInt()
                 }
             }
 
@@ -535,8 +571,10 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
             val distance = routes[0].sections[0].metadata.weight.walkingDistance.text
             val time = routes[0].sections[0].metadata.weight.time.text
             val combination = "$distance \u00B7 $time \u00B7\uD83D\uDEB6"
-            binding.distanceTv.text = combination
-            binding.distanceTv.visibility = VISIBLE
+            binding.distanceTv.apply {
+                text = combination
+                visibility = VISIBLE
+            }
 
             isPedestrian = true
         }
@@ -739,6 +777,7 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
         inputListener = null
         binding.mapView.mapWindow.map.removeTapListener(geoObjectTapListener!!)
         geoObjectTapListener = null
+        routeListener = null
         _binding = null
     }
 
