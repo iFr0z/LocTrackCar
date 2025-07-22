@@ -26,9 +26,11 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat.checkSelfPermission
 import androidx.core.app.ActivityCompat.getColor
+import androidx.core.graphics.toColorInt
 import androidx.core.view.ViewCompat
 import androidx.core.view.ViewGroupCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.insets.GradientProtection
 import androidx.core.view.updateLayoutParams
 import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
@@ -58,6 +60,7 @@ import com.yandex.mapkit.map.CameraUpdateReason
 import com.yandex.mapkit.map.GeoObjectSelectionMetadata
 import com.yandex.mapkit.map.IconStyle
 import com.yandex.mapkit.map.InputListener
+import com.yandex.mapkit.map.LineStyle
 import com.yandex.mapkit.map.Map
 import com.yandex.mapkit.map.MapObjectCollection
 import com.yandex.mapkit.map.MapType.VECTOR_MAP
@@ -98,10 +101,6 @@ import tk.ifroz.loctrackcar.util.custom.ImageProviderCustom
 import tk.ifroz.loctrackcar.util.extension.action
 import tk.ifroz.loctrackcar.util.extension.bottomSheetStateCallback
 import tk.ifroz.loctrackcar.util.extension.snackBarTop
-import androidx.core.graphics.toColorInt
-import androidx.core.view.insets.GradientProtection
-import androidx.core.view.insets.ProtectionLayout
-import com.yandex.mapkit.map.LineStyle
 
 @ExperimentalCoroutinesApi
 class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, RouteListener,
@@ -147,6 +146,7 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
     private var inputListener: InputListener? = null
     private var geoObjectTapListener: GeoObjectTapListener? = null
     private var routeListener: RouteListener? = null
+    private var searchPanoramaListener: PanoramaService.SearchListener? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -196,6 +196,7 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
         routeListener = this
         inputListener = this
         searchListener = this
+        searchPanoramaListener = this
         binding.mapView.mapWindow.map.addInputListener(inputListener!!)
         geoObjectTapListener = this
         binding.mapView.mapWindow.map.addTapListener(geoObjectTapListener!!)
@@ -498,23 +499,16 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
     }
 
     private fun drawPedestrian() {
-        // Инициализация коллекции объектов карты
         val mapObjects = binding.mapView.mapWindow.map.mapObjects
         carPedestrianObject = mapObjects.addCollection()
 
-        // Создание точек маршрута
         val routePoints = createRoutePoints(routeStart, routeEnd)
-
-        // Настройка опций маршрута
         val routeOptions = configureRouteOptions()
 
-        // Создание и настройка маршрутизатора
         carPedestrianRouter = createPedestrianRouter()
 
-        // Запрос маршрута
         requestPedestrianRoute(routePoints, routeOptions)
 
-        // Отображение уведомления
         showPedestrianCompleteMessage()
     }
 
@@ -710,7 +704,9 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
 
     private fun showPanorama(routeEnd: Point) {
         val panoramaService = PlacesFactory.getInstance().createPanoramaService()
-        panoramaService.findNearest(Point(routeEnd.latitude, routeEnd.longitude), this)
+        lifecycleScope.launch {
+            panoramaService.findNearest(Point(routeEnd.latitude, routeEnd.longitude), searchPanoramaListener!!)
+        }
     }
 
     override fun onPanoramaSearchResult(panoramaId: String) {
@@ -723,19 +719,13 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
 
     override fun onSearchResponse(response: Response) {
         val street = response.collection.children.firstOrNull()?.obj
-            ?.metadataContainer
-            ?.getItem(ToponymObjectMetadata::class.java)
-            ?.address
-            ?.components
-            ?.firstOrNull { it.kinds.contains(Address.Component.Kind.STREET)}
+            ?.metadataContainer?.getItem(ToponymObjectMetadata::class.java)?.address
+            ?.components?.firstOrNull { it.kinds.contains(Address.Component.Kind.STREET)}
             ?.name ?: "Информация об улице не найдена"
 
         val house = response.collection.children.firstOrNull()?.obj
-            ?.metadataContainer
-            ?.getItem(ToponymObjectMetadata::class.java)
-            ?.address
-            ?.components
-            ?.firstOrNull { it.kinds.contains(Address.Component.Kind.HOUSE)}
+            ?.metadataContainer?.getItem(ToponymObjectMetadata::class.java)?.address
+            ?.components?.firstOrNull { it.kinds.contains(Address.Component.Kind.HOUSE)}
             ?.name ?: "Информация об доме не найдена"
 
         Toast.makeText(context, "$street, $house", Toast.LENGTH_LONG).show()
@@ -778,6 +768,7 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
         binding.mapView.mapWindow.map.removeTapListener(geoObjectTapListener!!)
         geoObjectTapListener = null
         routeListener = null
+        searchPanoramaListener = null
         _binding = null
     }
 
