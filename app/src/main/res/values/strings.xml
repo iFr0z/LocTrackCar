@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">LocTrackCar</string>
-    <string name="location_detected">Местоположение установлено</string>
+    <string name="app_version">Версия приложения:</string>
     <string name="pedestrian_title">Маршрут</string>
     <string name="pedestrian_complete">Маршрут установлен</string>
     <string name="pedestrian_is_already">Уже установлен</string>

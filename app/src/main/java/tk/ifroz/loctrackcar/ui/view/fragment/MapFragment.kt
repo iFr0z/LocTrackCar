@@ -2,16 +2,20 @@ package tk.ifroz.loctrackcar.ui.view.fragment
 
 import android.Manifest.permission.ACCESS_COARSE_LOCATION
 import android.Manifest.permission.ACCESS_FINE_LOCATION
+import android.content.Context
 import android.content.Intent
 import android.content.Intent.ACTION_SEND
 import android.content.Intent.EXTRA_TEXT
 import android.content.Intent.createChooser
+import android.content.pm.PackageManager
 import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.content.res.Configuration.UI_MODE_NIGHT_MASK
 import android.content.res.Configuration.UI_MODE_NIGHT_NO
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import android.graphics.PointF
+import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
@@ -86,6 +90,7 @@ import com.yandex.mapkit.transport.masstransit.TimeOptions
 import com.yandex.mapkit.user_location.UserLocationLayer
 import com.yandex.mapkit.user_location.UserLocationObjectListener
 import com.yandex.mapkit.user_location.UserLocationView
+import com.yandex.maps.mobile.BuildConfig
 import com.yandex.runtime.Error
 import com.yandex.runtime.image.ImageProvider.fromBitmap
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -167,7 +172,7 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
         ) { permissions ->
             if (permissions[ACCESS_FINE_LOCATION] == true ||
                 permissions[ACCESS_COARSE_LOCATION] == true) {
-                onMapReady()
+                onMapReady(view)
             }
         }
 
@@ -179,13 +184,13 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
     private fun checkPermission(view: View) {
         if (checkSelfPermission(view.context, ACCESS_FINE_LOCATION) == PERMISSION_GRANTED ||
             checkSelfPermission(view.context, ACCESS_COARSE_LOCATION) == PERMISSION_GRANTED) {
-            onMapReady()
+            onMapReady(view)
         } else {
             checkLocationPermission.launch(arrayOf(ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION))
         }
     }
 
-    private fun onMapReady() {
+    private fun onMapReady(view: View) {
         val mapKit = MapKitFactory.getInstance()
         userLocationLayer = mapKit.createUserLocationLayer(binding.mapView.mapWindow)
         userLocationLayer.isVisible = true
@@ -213,8 +218,19 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
 
         isPermission = true
 
-        val locationDetected = getString(R.string.location_detected)
-        binding.coordinatorLayout.snackBarTop(locationDetected, LENGTH_LONG) {}
+        val appVersion = getString(R.string.app_version)
+        val versionName = getAppVersion(view.context)
+        binding.coordinatorLayout.snackBarTop("$appVersion $versionName", LENGTH_LONG) {}
+    }
+
+    private fun getAppVersion(context: Context): String? {
+        return try {
+            val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
+            packageInfo.versionName
+        } catch (e: PackageManager.NameNotFoundException) {
+            Log.e("Version", "Не удалось получить версию приложения", e)
+            null
+        }
     }
 
     private fun cameraPositionUser() {
