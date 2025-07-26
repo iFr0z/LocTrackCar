@@ -139,6 +139,7 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
 
     private lateinit var customBack: OnBackPressedCallback
 
+    private var userLocationObjectListener: UserLocationObjectListener? = null
     private var cameraListener: CameraListener? = null
     private var searchListener: SearchListener? = null
     private lateinit var searchManager: SearchManager
@@ -189,7 +190,8 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
         userLocationLayer = mapKit.createUserLocationLayer(binding.mapView.mapWindow)
         userLocationLayer.isVisible = true
         userLocationLayer.isHeadingModeActive = false
-        userLocationLayer.setObjectListener(this)
+        userLocationObjectListener = this
+        userLocationLayer.setObjectListener(userLocationObjectListener!!)
 
         searchManager = SearchFactory.getInstance().createSearchManager(SearchManagerType.ONLINE)
 
@@ -769,6 +771,7 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
         geoObjectTapListener = null
         routeListener = null
         searchPanoramaListener = null
+        userLocationObjectListener = null
         _binding = null
     }
 
