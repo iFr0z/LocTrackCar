@@ -13,7 +13,6 @@ import android.content.res.Configuration.UI_MODE_NIGHT_MASK
 import android.content.res.Configuration.UI_MODE_NIGHT_NO
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import android.graphics.PointF
-import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -90,7 +89,6 @@ import com.yandex.mapkit.transport.masstransit.TimeOptions
 import com.yandex.mapkit.user_location.UserLocationLayer
 import com.yandex.mapkit.user_location.UserLocationObjectListener
 import com.yandex.mapkit.user_location.UserLocationView
-import com.yandex.maps.mobile.BuildConfig
 import com.yandex.runtime.Error
 import com.yandex.runtime.image.ImageProvider.fromBitmap
 import kotlinx.coroutines.ExperimentalCoroutinesApi
