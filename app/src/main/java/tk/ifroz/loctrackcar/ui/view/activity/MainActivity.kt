@@ -22,7 +22,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun userInterface() {
         val host: NavHostFragment = supportFragmentManager
-            .findFragmentById(R.id.my_nav_host_fragment) as NavHostFragment? ?: return
+            .findFragmentById(R.id.my_nav_host_fragment) as? NavHostFragment? ?: return
 
         val navController = host.navController
         appBarConfiguration = AppBarConfiguration(navController.graph)

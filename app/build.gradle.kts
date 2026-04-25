@@ -6,13 +6,13 @@ plugins {
 android {
     namespace = "tk.ifroz.loctrackcar"
     compileSdk {
-        version = release(36)
+        version = release(37)
     }
 
     defaultConfig {
         applicationId = "tk.ifroz.LocTrackCar"
         minSdk = 26
-        targetSdk = 36
+        targetSdk = 37
         versionCode = 85
         versionName = "10.0.1"
     }
@@ -40,21 +40,21 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2")
 
     implementation("com.google.android.material:material:1.13.0")
-    implementation("androidx.activity:activity-ktx:1.12.3")
+    implementation("androidx.activity:activity-ktx:1.13.0")
     implementation("androidx.appcompat:appcompat:1.7.1")
     implementation("androidx.room:room-runtime:2.8.4")
     implementation("androidx.room:room-ktx:2.8.4")
     ksp("androidx.room:room-compiler:2.8.4")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.10.0")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.10.0")
-    implementation("androidx.work:work-runtime:2.11.1")
-    implementation("androidx.work:work-runtime-ktx:2.11.1")
+    implementation("androidx.work:work-runtime:2.11.2")
+    implementation("androidx.work:work-runtime-ktx:2.11.2")
     implementation("androidx.fragment:fragment-ktx:1.8.9")
-    implementation("androidx.navigation:navigation-fragment-ktx:2.9.7")
-    implementation("androidx.navigation:navigation-ui-ktx:2.9.7")
+    implementation("androidx.navigation:navigation-fragment-ktx:2.9.8")
+    implementation("androidx.navigation:navigation-ui-ktx:2.9.8")
     implementation("androidx.constraintlayout:constraintlayout:2.2.1")
-    implementation("androidx.core:core-ktx:1.17.0")
+    implementation("androidx.core:core-ktx:1.18.0")
 
     implementation("com.google.android.gms:play-services-location:21.3.0")
-    implementation("com.yandex.android:maps.mobile:4.30.0-full")
+    implementation("com.yandex.android:maps.mobile:4.33.1-full")
 }
