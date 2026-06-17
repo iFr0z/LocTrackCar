@@ -24,7 +24,7 @@ Android приложение доступно на <a href="https://apps.rustore
 
 • Приложение <b>LocTrackCar</b> не использует надоедливую рекламу или платный функционал.
 
-<b>Версия: 10.0.1</b>
+<b>Версия: 10.1.0</b>
 
 ---
 
@@ -32,6 +32,8 @@ Android приложение доступно на <a href="https://apps.rustore
 ---
 Данный проект построен на базе <a href="https://github.com/yandex/mapkit-android-demo">Яндекс Карт</a>. Каждый может сделать что-то свое на основе моего решения, но было бы здорово совместно улучшать данный проект. У меня полно идей, но не знаю как их реализовать пока что. Мои соцсети указаны в профиле для общения, присоединяйтесь. Если есть вопросы, задавайте тут https://t.me/ifr0z
 
-Прежде чем начать, изучите это руководство от <a href="https://yandex.ru/dev/mapkit/doc/ru/android/quickstart">Яндекса</a>. Вы можете использовать мой ключ для <a href="https://github.com/iFr0z/LocTrackCar/blob/db9487344fdb4afceff648acf0d84bd57616f862/app/src/main/java/tk/ifroz/loctrackcar/ui/view/App.kt#L14">подключения</a>, но лучше завести свой на этом <a href="https://developer.tech.yandex.ru/services">сайте</a>.
+Прежде чем начать, изучите это руководство от <a href="https://yandex.ru/dev/mapkit/doc/ru/android/quickstart">Яндекса</a>. 
+Так же необходимо завести свой ключ на этом <a href="https://developer.tech.yandex.ru/services">сайте</a> и прописать его в переменную MAPKIT_API_KEY=<ключ без фигурных скобок> на локальном файле local.properties, который находится в корне проекта и исключен в .gitignore
+
 
 ---
