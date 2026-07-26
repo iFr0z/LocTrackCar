@@ -104,6 +104,7 @@ import tk.ifroz.loctrackcar.util.custom.ImageProviderCustom
 import tk.ifroz.loctrackcar.util.extension.action
 import tk.ifroz.loctrackcar.util.extension.bottomSheetStateCallback
 import tk.ifroz.loctrackcar.util.extension.snackBarTop
+import java.lang.ref.WeakReference
 
 @ExperimentalCoroutinesApi
 class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, RouteListener,
@@ -194,7 +195,7 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
         userLocationLayer.isVisible = true
         userLocationLayer.isHeadingModeActive = false
         userLocationObjectListener = this
-        userLocationLayer.setObjectListener(userLocationObjectListener!!)
+        userLocationLayer.setObjectListener(WeakReference(userLocationObjectListener!!))
 
         searchManager = SearchFactory.getInstance().createSearchManager(SearchManagerType.ONLINE)
 
@@ -202,11 +203,11 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
         inputListener = this
         searchListener = this
         searchPanoramaListener = this
-        binding.mapView.mapWindow.map.addInputListener(inputListener!!)
+        binding.mapView.mapWindow.map.addInputListener(WeakReference(inputListener!!))
         geoObjectTapListener = this
-        binding.mapView.mapWindow.map.addTapListener(geoObjectTapListener!!)
+        binding.mapView.mapWindow.map.addTapListener(WeakReference(geoObjectTapListener!!))
         cameraListener = this
-        binding.mapView.mapWindow.map.addCameraListener(cameraListener!!)
+        binding.mapView.mapWindow.map.addCameraListener(WeakReference(cameraListener!!))
 
 
         binding.mapView.mapWindow.map.mapType = VECTOR_MAP
@@ -777,11 +778,11 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
     override fun onDestroyView() {
         super.onDestroyView()
         searchListener = null
-        binding.mapView.mapWindow.map.removeCameraListener(cameraListener!!)
+        binding.mapView.mapWindow.map.removeCameraListener(WeakReference(cameraListener!!))
         cameraListener = null
-        binding.mapView.mapWindow.map.removeInputListener(inputListener!!)
+        binding.mapView.mapWindow.map.removeInputListener(WeakReference(inputListener!!))
         inputListener = null
-        binding.mapView.mapWindow.map.removeTapListener(geoObjectTapListener!!)
+        binding.mapView.mapWindow.map.removeTapListener(WeakReference(geoObjectTapListener!!))
         geoObjectTapListener = null
         routeListener = null
         searchPanoramaListener = null
