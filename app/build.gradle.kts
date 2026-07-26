@@ -27,8 +27,8 @@ android {
         applicationId = "tk.ifroz.LocTrackCar"
         minSdk = 26
         targetSdk = 37
-        versionCode = 86
-        versionName = "10.1.0"
+        versionCode = 87
+        versionName = "10.2.0"
     }
 
     buildFeatures {
