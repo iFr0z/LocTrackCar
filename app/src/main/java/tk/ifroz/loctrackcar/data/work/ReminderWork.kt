@@ -50,9 +50,6 @@ class ReminderWork(context: Context, params: WorkerParameters) : Worker(context,
         val notificationManager =
             applicationContext.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
 
-        val bitmap =
-            applicationContext.vectorDrawableToBitmap(R.drawable.ic_marker_with_outline_45dp)
-
         val titleNotification = applicationContext.getString(R.string.notification_title)
         val pendingIntent = if (SDK_INT >= S) {
             getActivity(applicationContext, 0, intent, FLAG_MUTABLE)
@@ -60,7 +57,7 @@ class ReminderWork(context: Context, params: WorkerParameters) : Worker(context,
             getActivity(applicationContext, 0, intent, FLAG_UPDATE_CURRENT)
         }
         val notification = NotificationCompat.Builder(applicationContext, NOTIFICATION_CHANNEL)
-            .setLargeIcon(bitmap).setSmallIcon(R.drawable.ic_marker_notification_white)
+            .setSmallIcon(R.drawable.ic_marker_notification_white)
             .setContentTitle(titleNotification).setContentText(addressName)
             .setDefaults(DEFAULT_ALL).setContentIntent(pendingIntent).setAutoCancel(true)
 
