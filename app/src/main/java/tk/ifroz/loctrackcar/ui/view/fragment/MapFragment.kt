@@ -68,7 +68,6 @@ import com.yandex.mapkit.map.LineStyle
 import com.yandex.mapkit.map.Map
 import com.yandex.mapkit.map.MapObjectCollection
 import com.yandex.mapkit.map.MapType.VECTOR_MAP
-import com.yandex.mapkit.map.PlacemarkMapObject
 import com.yandex.mapkit.places.PlacesFactory
 import com.yandex.mapkit.places.panorama.PanoramaService
 import com.yandex.mapkit.search.Address
@@ -131,7 +130,6 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
     private lateinit var userLocationLayer: UserLocationLayer
 
     private lateinit var carObject: MapObjectCollection
-    private lateinit var carPlacemark: PlacemarkMapObject
 
     private lateinit var carPedestrianObject: MapObjectCollection
     private lateinit var carPedestrianRouter: PedestrianRouter
@@ -691,7 +689,7 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
     private fun drawCar(routeEnd: Point, view: View) {
         val bitmap = ImageProviderCustom(view.context, R.drawable.ic_marker_with_outline_45dp).image
         carObject = binding.mapView.mapWindow.map.mapObjects.addCollection()
-        carPlacemark = carObject.addPlacemark().apply {
+        carObject.addPlacemark().apply {
             geometry = routeEnd
             setIcon(fromBitmap(bitmap))
             setIconStyle(IconStyle().setAnchor(PointF(0.5f, 1f)))
