@@ -28,4 +28,7 @@
     <string name="ok">Ок</string>
     <string name="notification_deleted">Напоминание удалено</string>
     <string name="notification_error">Некорректные данные</string>
+    <string name="geocode_format">Широта: %1$s, Долгота: %2$s</string>
+    <string name="street_not_found">Информация об улице не найдена</string>
+    <string name="house_not_found">Информация об доме не найдена</string>
 </resources>

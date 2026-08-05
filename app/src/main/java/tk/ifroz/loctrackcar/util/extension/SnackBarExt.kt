@@ -9,13 +9,17 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.snackbar.Snackbar.LENGTH_LONG
 import com.google.android.material.snackbar.Snackbar.make
 
-inline fun View.snackBarBottom(string: String, length: Int = LENGTH_LONG, f: Snackbar.() -> Unit) {
+inline fun View.snackBarBottom(
+    string: String, length: Int = LENGTH_LONG, f: Snackbar.() -> Unit = {}
+) {
     val snackBarBottom = make(this, string, length)
     snackBarBottom.f()
     snackBarBottom.show()
 }
 
-inline fun View.snackBarTop(string: String, length: Int = LENGTH_LONG, f: Snackbar.() -> Unit) {
+inline fun View.snackBarTop(
+    string: String, length: Int = LENGTH_LONG, f: Snackbar.() -> Unit = {}
+) {
     val snackBarTop = make(this, string, length)
     val snackBarView = snackBarTop.view
     val params: LayoutParams = snackBarView.layoutParams as LayoutParams

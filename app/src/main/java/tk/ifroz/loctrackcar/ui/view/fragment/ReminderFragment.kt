@@ -118,15 +118,13 @@ class ReminderFragment : BottomSheetDialogFragment() {
                                 )
 
                                 val notificationCreated = getString(R.string.notification_created)
-                                binding.coordinatorLayout.snackBarBottom(
-                                    notificationCreated, LENGTH_LONG
-                                ) {}
+                                binding.coordinatorLayout.snackBarBottom(notificationCreated)
                             }
                         }
                     })
                 } else {
                     val notificationError = getString(R.string.notification_error)
-                    binding.coordinatorLayout.snackBarBottom(notificationError, LENGTH_LONG) {}
+                    binding.coordinatorLayout.snackBarBottom(notificationError)
                 }
             } else {
                 if (SDK_INT >= TIRAMISU) {

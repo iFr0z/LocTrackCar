@@ -127,6 +127,8 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
 
     private val mapKit by lazy { MapKitFactory.getInstance() }
 
+    private val panoramaService by lazy { PlacesFactory.getInstance().createPanoramaService() }
+
     private lateinit var userLocationLayer: UserLocationLayer
 
     private lateinit var carObject: MapObjectCollection
@@ -218,7 +220,7 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
 
         val appVersion = getString(R.string.app_version)
         val versionName = getAppVersion(view.context)
-        binding.coordinatorLayout.snackBarTop("$appVersion $versionName", LENGTH_LONG) {}
+        binding.coordinatorLayout.snackBarTop("$appVersion $versionName")
     }
 
     private fun getAppVersion(context: Context): String? {
@@ -355,7 +357,7 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
                     insertCar()
 
                     val markerCreated = getString(R.string.marker_created)
-                    binding.coordinatorLayout.snackBarTop(markerCreated, LENGTH_LONG) {}
+                    binding.coordinatorLayout.snackBarTop(markerCreated)
                 }
 
                 from(binding.bottomSheet).state = STATE_EXPANDED
@@ -412,7 +414,7 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
                 binding.searchPlaceFab.text = searchPlaceTitleFormat
 
                 val markerSearched = getString(R.string.marker_searched)
-                binding.coordinatorLayout.snackBarTop(markerSearched, LENGTH_LONG) {}
+                binding.coordinatorLayout.snackBarTop(markerSearched)
             } else {
                 binding.searchPlaceFab.text = searchPlaceTitle
             }
@@ -551,19 +553,18 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
     }
 
     private fun requestPedestrianRoute(points: List<RequestPoint>, routeOptions: RouteOptions) {
-        lifecycleScope.launch {
-            carPedestrianRouter.requestRoutes(points, TimeOptions(), routeOptions, routeListener!!)
-        }
+        carPedestrianRouter.requestRoutes(points, TimeOptions(), routeOptions, routeListener!!)
     }
 
     private fun showPedestrianCompleteMessage() {
         val message = getString(R.string.pedestrian_complete)
-        binding.coordinatorLayout.snackBarTop(message, LENGTH_LONG) {}
+        binding.coordinatorLayout.snackBarTop(message)
     }
 
     override fun onMasstransitRoutes(routes: List<Route>) {
         if (routes.isNotEmpty()) {
-            val polyline = routes[0].geometry
+            val route = routes[0]
+            val polyline = route.geometry
             carPedestrianObject.addPolyline(polyline).apply {
                 setStrokeColor("#2196F3".toColorInt())
                 style = LineStyle().apply {
@@ -576,8 +577,8 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
             val position = binding.mapView.mapWindow.map.cameraPosition(geometry)
             binding.mapView.mapWindow.map.move(position, Animation(SMOOTH, 0.4f), null)
 
-            val distance = routes[0].sections[0].metadata.weight.walkingDistance.text
-            val time = routes[0].sections[0].metadata.weight.time.text
+            val distance = route.sections[0].metadata.weight.walkingDistance.text
+            val time = route.sections[0].metadata.weight.time.text
             val combination = "$distance \u00B7 $time \u00B7\uD83D\uDEB6"
             binding.distanceTv.apply {
                 text = combination
@@ -610,7 +611,7 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
     private fun deleteReminder() {
         if (isReminder) {
             val notificationDeleted = getString(R.string.notification_deleted)
-            binding.coordinatorLayout.snackBarTop(notificationDeleted, LENGTH_LONG) {}
+            binding.coordinatorLayout.snackBarTop(notificationDeleted)
 
             reminderViewModel.deleteScheduleNotification()
             carViewModel.deleteReminder()
@@ -630,7 +631,7 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
     private fun deletePedestrian() {
         if (isPedestrian) {
             val pedestrianDeleted = getString(R.string.pedestrian_deleted)
-            binding.coordinatorLayout.snackBarTop(pedestrianDeleted, LENGTH_LONG) {}
+            binding.coordinatorLayout.snackBarTop(pedestrianDeleted)
 
             carPedestrianObject.clear()
 
@@ -665,7 +666,7 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
             from(binding.bottomSheet).state = STATE_HIDDEN
 
             val markerDeleted = getString(R.string.marker_deleted)
-            binding.coordinatorLayout.snackBarTop(markerDeleted, LENGTH_LONG) {}
+            binding.coordinatorLayout.snackBarTop(markerDeleted)
         }
     }
 
@@ -703,16 +704,13 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
     private fun dataCar(latitude: Double, longitude: Double) {
         showPanorama(routeEnd)
 
-        val geocode = "Широта: $latitude, Долгота: $longitude"
+        val geocode = getString(R.string.geocode_format, latitude.toString(), longitude.toString())
         geocodeViewModel.insertGeocode(geocode)
         binding.geocodeTv.text = geocode
     }
 
     private fun showPanorama(routeEnd: Point) {
-        val panoramaService = PlacesFactory.getInstance().createPanoramaService()
-        lifecycleScope.launch {
-            panoramaService.findNearest(Point(routeEnd.latitude, routeEnd.longitude), searchPanoramaListener!!)
-        }
+        panoramaService.findNearest(Point(routeEnd.latitude, routeEnd.longitude), searchPanoramaListener!!)
     }
 
     override fun onPanoramaSearchResult(panoramaId: String) {
@@ -724,26 +722,26 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
     override fun onPanoramaSearchError(error: Error) {}
 
     override fun onSearchResponse(response: Response) {
-        val street = response.collection.children.firstOrNull()?.obj
-            ?.metadataContainer?.getItem(ToponymObjectMetadata::class.java)?.address
-            ?.components?.firstOrNull { it.kinds.contains(Address.Component.Kind.STREET)}
-            ?.name ?: "Информация об улице не найдена"
-
-        val house = response.collection.children.firstOrNull()?.obj
-            ?.metadataContainer?.getItem(ToponymObjectMetadata::class.java)?.address
-            ?.components?.firstOrNull { it.kinds.contains(Address.Component.Kind.HOUSE)}
-            ?.name ?: "Информация об доме не найдена"
+        val street = addressComponent(response, Address.Component.Kind.STREET)
+            ?: getString(R.string.street_not_found)
+        val house = addressComponent(response, Address.Component.Kind.HOUSE)
+            ?: getString(R.string.house_not_found)
 
         Toast.makeText(context, "$street, $house", Toast.LENGTH_LONG).show()
+    }
+
+    private fun addressComponent(response: Response, kind: Address.Component.Kind): String? {
+        return response.collection.children.firstOrNull()?.obj
+            ?.metadataContainer?.getItem(ToponymObjectMetadata::class.java)?.address
+            ?.components?.firstOrNull { it.kinds.contains(kind) }
+            ?.name
     }
 
     override fun onSearchError(p0: Error) {}
 
     override fun onMapTap(p0: Map, point: Point) {
-        lifecycleScope.launch {
-            searchSession?.cancel()
-            searchSession = searchManager.submit(point, 20, SearchOptions(), searchListener!!)
-        }
+        searchSession?.cancel()
+        searchSession = searchManager.submit(point, 20, SearchOptions(), searchListener!!)
     }
 
     override fun onMapLongTap(p0: Map, p1: Point) {}
