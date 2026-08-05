@@ -15,7 +15,6 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.work.Data
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import com.google.android.material.snackbar.Snackbar.LENGTH_LONG
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import tk.ifroz.loctrackcar.R
 import tk.ifroz.loctrackcar.data.db.entity.Reminder
@@ -38,10 +37,13 @@ class ReminderFragment : BottomSheetDialogFragment() {
 
     private lateinit var checkNotificationPermission: ActivityResultLauncher<String>
     private var isPermission = false
+    private var pendingReminderCalendar: Calendar? = null
 
     private val geocodeViewModel: GeocodeViewModel by activityViewModels()
     private val reminderViewModel: ReminderViewModel by activityViewModels()
     private val carViewModel: CarViewModel by activityViewModels()
+
+    private val dateFormatter by lazy { SimpleDateFormat(DATE_PATTERN, getDefault()) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -85,6 +87,25 @@ class ReminderFragment : BottomSheetDialogFragment() {
         val titleNotification = getString(R.string.notification)
         binding.collapsingToolbar.title = titleNotification
 
+        reminderViewModel.outputStatus.observe(viewLifecycleOwner, Observer {
+            it?.let {
+                if (it.isEmpty()) {
+                    return@Observer
+                }
+                val workInfo = it[0]
+                if (!workInfo.state.isFinished) {
+                    val calendar = pendingReminderCalendar
+                    if (calendar != null) {
+                        val notificationCreated = getString(R.string.notification_created)
+                        carViewModel.upsertReminder(
+                            Reminder(dateFormatter.format(calendar.time).toString())
+                        )
+                        binding.coordinatorLayout.snackBarBottom(notificationCreated)
+                    }
+                }
+            }
+        })
+
         binding.doneFab.setOnClickListener {
             if (isPermission) {
                 val customCalendar = Calendar.getInstance().apply {
@@ -104,24 +125,8 @@ class ReminderFragment : BottomSheetDialogFragment() {
                     val data = Data.Builder().putInt(NOTIFICATION_ID, 0)
                         .putString(NOTIFICATION_ADDRESS, geocode.toString()).build()
 
+                    pendingReminderCalendar = customCalendar
                     reminderViewModel.scheduleNotification(customCalendar, data)
-                    reminderViewModel.outputStatus.observe(viewLifecycleOwner, Observer {
-                        it?.let {
-                            if (it.isEmpty()) {
-                                return@Observer
-                            }
-                            val workInfo = it[0]
-                            if (!workInfo.state.isFinished) {
-                                val dateFormat = SimpleDateFormat(datePattern, getDefault())
-                                carViewModel.upsertReminder(
-                                    Reminder(dateFormat.format(customCalendar.time).toString())
-                                )
-
-                                val notificationCreated = getString(R.string.notification_created)
-                                binding.coordinatorLayout.snackBarBottom(notificationCreated)
-                            }
-                        }
-                    })
                 } else {
                     val notificationError = getString(R.string.notification_error)
                     binding.coordinatorLayout.snackBarBottom(notificationError)
@@ -140,6 +145,6 @@ class ReminderFragment : BottomSheetDialogFragment() {
     }
 
     companion object {
-        const val datePattern = "dd.MM.yy \u00B7 HH:mm"
+        const val DATE_PATTERN = "dd.MM.yy \u00B7 HH:mm"
     }
 }

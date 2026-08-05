@@ -15,12 +15,12 @@ class MarkerCarRepository(private val targetDao: TargetDao, private val reminder
     val reminders: Flow<Reminder?> = reminderDao.getReminder()
 
     @WorkerThread
-    suspend fun insertTarget(target: Target?) {
-        targetDao.insert(target!!)
+    suspend fun insertTarget(target: Target) {
+        targetDao.insert(target)
     }
 
     @WorkerThread
-    suspend fun upsertReminder(reminder: Reminder?) {
+    suspend fun upsertReminder(reminder: Reminder) {
         reminderDao.upsert(reminder)
     }
 

@@ -1,5 +1,6 @@
 package tk.ifroz.loctrackcar.ui.viewmodel
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
@@ -11,11 +12,11 @@ class GeocodeViewModel : ViewModel() {
         _geocode.value = geocode
     }
 
-    internal fun fetchGeocode(): MutableLiveData<String?> {
+    internal fun fetchGeocode(): LiveData<String?> {
         return _geocode
     }
 
     internal fun deleteGeocode() {
-        _geocode.postValue(null)
+        _geocode.value = null
     }
 }

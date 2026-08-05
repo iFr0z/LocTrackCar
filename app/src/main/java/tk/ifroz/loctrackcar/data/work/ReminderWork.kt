@@ -4,7 +4,9 @@ import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.NotificationManager.IMPORTANCE_HIGH
-import android.app.PendingIntent.*
+import android.app.PendingIntent.FLAG_MUTABLE
+import android.app.PendingIntent.FLAG_UPDATE_CURRENT
+import android.app.PendingIntent.getActivity
 import android.content.Context
 import android.content.Context.NOTIFICATION_SERVICE
 import android.content.Intent
@@ -26,7 +28,6 @@ import androidx.work.Worker
 import androidx.work.WorkerParameters
 import tk.ifroz.loctrackcar.R
 import tk.ifroz.loctrackcar.ui.view.activity.MainActivity
-import tk.ifroz.loctrackcar.util.extension.vectorDrawableToBitmap
 
 class ReminderWork(context: Context, params: WorkerParameters) : Worker(context, params) {
 
@@ -75,7 +76,7 @@ class ReminderWork(context: Context, params: WorkerParameters) : Worker(context,
             enableLights(true)
             lightColor = RED
             enableVibration(true)
-            vibrationPattern = longArrayOf(100, 200, 300, 400, 500, 400, 300, 200, 400)
+            vibrationPattern = VIBRATION_PATTERN
             setSound(ringtoneManager, audioAttributes)
         }
         notificationManager.createNotificationChannel(channel)
@@ -89,5 +90,6 @@ class ReminderWork(context: Context, params: WorkerParameters) : Worker(context,
         const val NOTIFICATION_CHANNEL = "LocTrackCar_channel_01"
         const val NOTIFICATION_WORK = "LocTrackCar_notification_work"
         const val NOTIFICATION_ADDRESS = "LocTrackCar_address"
+        private val VIBRATION_PATTERN = longArrayOf(100, 200, 300, 400, 500, 400, 300, 200, 400)
     }
 }

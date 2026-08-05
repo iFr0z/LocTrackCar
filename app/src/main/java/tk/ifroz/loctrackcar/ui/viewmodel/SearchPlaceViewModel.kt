@@ -1,17 +1,20 @@
 package tk.ifroz.loctrackcar.ui.viewmodel
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
 class SearchPlaceViewModel : ViewModel() {
 
-    val searchPlaceResults = MutableLiveData<List<String>?>()
+    private val _searchPlaceResults = MutableLiveData<List<String>?>()
+    val searchPlaceResults: LiveData<List<String>?>
+        get() = _searchPlaceResults
 
     internal fun insertSearchPlaceResult(searchPlaceResult: List<String>?) {
-        searchPlaceResults.value = searchPlaceResult
+        _searchPlaceResults.value = searchPlaceResult
     }
 
     internal fun deleteSearchPlaceResult() {
-        searchPlaceResults.postValue(null)
+        _searchPlaceResults.value = null
     }
 }

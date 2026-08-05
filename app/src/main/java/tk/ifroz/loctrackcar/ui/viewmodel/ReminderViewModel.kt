@@ -2,7 +2,7 @@ package tk.ifroz.loctrackcar.ui.viewmodel
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.LiveData
 import androidx.work.Data
 import androidx.work.ExistingWorkPolicy.REPLACE
 import androidx.work.OneTimeWorkRequest
@@ -17,10 +17,10 @@ import java.util.concurrent.TimeUnit.MILLISECONDS
 class ReminderViewModel(application: Application) : AndroidViewModel(application) {
 
     private val workManager: WorkManager = WorkManager.getInstance(application)
-    internal val outputStatus: MutableLiveData<List<WorkInfo>>
+    internal val outputStatus: LiveData<List<WorkInfo>>
         get() = workManager.getWorkInfosForUniqueWorkLiveData(
             NOTIFICATION_WORK
-        ) as MutableLiveData<List<WorkInfo>>
+        )
 
     internal fun scheduleNotification(customCalendar: Calendar, data: Data) {
         val currentTime = currentTimeMillis()

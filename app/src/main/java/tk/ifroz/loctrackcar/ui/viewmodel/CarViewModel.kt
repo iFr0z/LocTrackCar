@@ -20,18 +20,17 @@ class CarViewModel(application: Application) : AndroidViewModel(application) {
     val reminders: Flow<Reminder?>
 
     init {
-        val targetsDao = AppDatabase.getDatabase(application).targetDao()
-        val remindersDao = AppDatabase.getDatabase(application).reminderDao()
-        repository = MarkerCarRepository(targetsDao, remindersDao)
+        val database = AppDatabase.getDatabase(application)
+        repository = MarkerCarRepository(database.targetDao(), database.reminderDao())
         targets = repository.targets
         reminders = repository.reminders
     }
 
-    fun insertTarget(target: Target?) = viewModelScope.launch(Dispatchers.IO) {
+    fun insertTarget(target: Target) = viewModelScope.launch(Dispatchers.IO) {
         repository.insertTarget(target)
     }
 
-    fun upsertReminder(reminder: Reminder?) = viewModelScope.launch(Dispatchers.IO) {
+    fun upsertReminder(reminder: Reminder) = viewModelScope.launch(Dispatchers.IO) {
         repository.upsertReminder(reminder)
     }
 
