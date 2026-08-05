@@ -126,6 +126,8 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
     private var routeEnd = Point(0.0, 0.0)
     private var routeStart = Point(0.0, 0.0)
 
+    private val mapKit by lazy { MapKitFactory.getInstance() }
+
     private lateinit var userLocationLayer: UserLocationLayer
 
     private lateinit var carObject: MapObjectCollection
@@ -135,12 +137,11 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
     private lateinit var carPedestrianRouter: PedestrianRouter
 
     private lateinit var markerObject: MapObjectCollection
-    private lateinit var markerPlacemark: PlacemarkMapObject
 
     private val carViewModel: CarViewModel by activityViewModels()
     private val reminderViewModel: ReminderViewModel by activityViewModels()
     private val searchPlaceViewModel: SearchPlaceViewModel by activityViewModels()
-    private val geocodeViewModel: GeocodeViewModel by activityViewModels ()
+    private val geocodeViewModel: GeocodeViewModel by activityViewModels()
 
     private lateinit var customBack: OnBackPressedCallback
 
@@ -148,7 +149,7 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
     private var cameraListener: CameraListener? = null
     private var searchListener: SearchListener? = null
     private lateinit var searchManager: SearchManager
-    private lateinit var searchSession: Session
+    private var searchSession: Session? = null
     private var inputListener: InputListener? = null
     private var geoObjectTapListener: GeoObjectTapListener? = null
     private var routeListener: RouteListener? = null
@@ -191,7 +192,6 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
     }
 
     private fun onMapReady(view: View) {
-        val mapKit = MapKitFactory.getInstance()
         userLocationLayer = mapKit.createUserLocationLayer(binding.mapView.mapWindow)
         userLocationLayer.isVisible = true
         userLocationLayer.isHeadingModeActive = false
@@ -333,6 +333,16 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
 
         searchPlace()
 
+        reminderViewModel.outputStatus.observe(viewLifecycleOwner, Observer {
+            it?.let {
+                if (it.isEmpty()) {
+                    return@Observer
+                }
+                val workInfo = it[0]
+                isReminder = !workInfo.state.isFinished
+            }
+        })
+
         bottomSheetCar(view)
 
         binding.carFab.setOnClickListener {
@@ -425,7 +435,7 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
         val bitmap = view?.let {
             ImageProviderCustom(it.context, R.drawable.ic_place_black_45dp).image
         }
-        markerPlacemark = markerObject.addPlacemark().apply {
+        markerObject.addPlacemark().apply {
             geometry = point
             setIcon(fromBitmap(bitmap))
             setIconStyle(IconStyle().setAnchor(PointF(0.5f, 1f)))
@@ -698,16 +708,6 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
         val geocode = "Широта: $latitude, Долгота: $longitude"
         geocodeViewModel.insertGeocode(geocode)
         binding.geocodeTv.text = geocode
-
-        reminderViewModel.outputStatus.observe(viewLifecycleOwner, Observer {
-            it?.let {
-                if (it.isEmpty()) {
-                    return@Observer
-                }
-                val workInfo = it[0]
-                isReminder = !workInfo.state.isFinished
-            }
-        })
     }
 
     private fun showPanorama(routeEnd: Point) {
@@ -743,6 +743,7 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
 
     override fun onMapTap(p0: Map, point: Point) {
         lifecycleScope.launch {
+            searchSession?.cancel()
             searchSession = searchManager.submit(point, 20, SearchOptions(), searchListener!!)
         }
     }
@@ -768,6 +769,8 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
 
     override fun onDestroyView() {
         super.onDestroyView()
+        searchSession?.cancel()
+        searchSession = null
         searchListener = null
         binding.mapView.mapWindow.map.removeCameraListener(WeakReference(cameraListener!!))
         cameraListener = null
@@ -783,7 +786,7 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
 
     override fun onStart() {
         super.onStart()
-        MapKitFactory.getInstance().onStart()
+        mapKit.onStart()
         binding.mapView.onStart()
         binding.panoramaView.onStart()
     }
@@ -791,7 +794,7 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
     override fun onStop() {
         binding.mapView.onStop()
         binding.panoramaView.onStop()
-        MapKitFactory.getInstance().onStop()
+        mapKit.onStop()
         super.onStop()
     }
 }
