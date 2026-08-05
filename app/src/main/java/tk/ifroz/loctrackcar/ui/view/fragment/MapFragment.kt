@@ -50,6 +50,7 @@ import com.yandex.mapkit.Animation.Type.SMOOTH
 import com.yandex.mapkit.MapKitFactory
 import com.yandex.mapkit.RequestPoint
 import com.yandex.mapkit.RequestPointType.WAYPOINT
+import com.yandex.mapkit.geometry.Geometry
 import com.yandex.mapkit.geometry.Point
 import com.yandex.mapkit.layers.GeoObjectTapEvent
 import com.yandex.mapkit.layers.GeoObjectTapListener
@@ -501,8 +502,6 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
         if (!isPedestrian) {
             drawPedestrian()
         } else {
-            cameraPositionPedestrian()
-
             val pedestrianIsAlready = getString(R.string.pedestrian_is_already)
             binding.coordinatorLayout.snackBarTop(pedestrianIsAlready, LENGTH_LONG) {
                 val pedestrianChange = getString(R.string.change)
@@ -525,8 +524,6 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
         carPedestrianRouter = createPedestrianRouter()
 
         requestPedestrianRoute(routePoints, routeOptions)
-
-        showPedestrianCompleteMessage()
     }
 
     private fun createRoutePoints(start: Point, end: Point): List<RequestPoint> {
@@ -556,19 +553,10 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
         binding.coordinatorLayout.snackBarTop(message, LENGTH_LONG) {}
     }
 
-    private fun cameraPositionPedestrian() {
-        val screenCenter = Point(
-            (routeStart.latitude + routeEnd.latitude) / 2,
-            (routeStart.longitude + routeEnd.longitude) / 2
-        )
-        binding.mapView.mapWindow.map.move(
-            CameraPosition(screenCenter, 16f, 0f, 0f), Animation(SMOOTH, 1f), null
-        )
-    }
-
     override fun onMasstransitRoutes(routes: List<Route>) {
         if (routes.isNotEmpty()) {
-            carPedestrianObject.addPolyline(routes[0].geometry).apply {
+            val polyline = routes[0].geometry
+            carPedestrianObject.addPolyline(polyline).apply {
                 setStrokeColor("#2196F3".toColorInt())
                 style = LineStyle().apply {
                     strokeWidth = 5f
@@ -576,8 +564,9 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
                     outlineColor = "#1976D2".toColorInt()
                 }
             }
-
-            cameraPositionPedestrian()
+            val geometry = Geometry.fromPolyline(polyline)
+            val position = binding.mapView.mapWindow.map.cameraPosition(geometry)
+            binding.mapView.mapWindow.map.move(position, Animation(SMOOTH, 0.4f), null)
 
             val distance = routes[0].sections[0].metadata.weight.walkingDistance.text
             val time = routes[0].sections[0].metadata.weight.time.text
@@ -588,6 +577,8 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
             }
 
             isPedestrian = true
+
+            showPedestrianCompleteMessage()
         }
     }
 
