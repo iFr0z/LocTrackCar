@@ -126,8 +126,9 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
     private var routeStart = Point(0.0, 0.0)
 
     private val mapKit by lazy { MapKitFactory.getInstance() }
-
     private val panoramaService by lazy { PlacesFactory.getInstance().createPanoramaService() }
+    private val searchManager by lazy { SearchFactory.getInstance().createSearchManager(SearchManagerType.ONLINE) }
+    private val transportFactory by lazy { TransportFactory.getInstance().createPedestrianRouter() }
 
     private lateinit var userLocationLayer: UserLocationLayer
 
@@ -148,7 +149,6 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
     private var userLocationObjectListener: UserLocationObjectListener? = null
     private var cameraListener: CameraListener? = null
     private var searchListener: SearchListener? = null
-    private lateinit var searchManager: SearchManager
     private var searchSession: Session? = null
     private var inputListener: InputListener? = null
     private var geoObjectTapListener: GeoObjectTapListener? = null
@@ -197,8 +197,6 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
         userLocationLayer.isHeadingModeActive = false
         userLocationObjectListener = this
         userLocationLayer.setObjectListener(WeakReference(userLocationObjectListener!!))
-
-        searchManager = SearchFactory.getInstance().createSearchManager(SearchManagerType.ONLINE)
 
         routeListener = this
         inputListener = this
@@ -549,7 +547,7 @@ class MapFragment : Fragment(), UserLocationObjectListener, CameraListener, Rout
     }
 
     private fun createPedestrianRouter(): PedestrianRouter {
-        return TransportFactory.getInstance().createPedestrianRouter()
+        return transportFactory
     }
 
     private fun requestPedestrianRoute(points: List<RequestPoint>, routeOptions: RouteOptions) {
